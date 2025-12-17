@@ -1,4 +1,4 @@
-# Personal Homelab (On-Prem)
+# Personal Home Lab (On-Prem)
 
 Welcome to my personal home lab! :wave:  
 
@@ -8,12 +8,12 @@ Bootstrapped, deployed, and managed using Terraform and CI/CD workflows.
 
 As a big fan of small tech (think micro-pcs, Raspberry Pi etc), a primary requirement is maintaining a small footprint for my on-prem environment. I aim to re-use as much existing hardware as possible, recycling second hand gear and giving it a new life in my lab. 
 
-### Project Environments
+### 📎 Project Environments
 
 - **On-Prem:** [Homelab](https://github.com/tim-shand/homelab)
 - **Cloud:** [Azure](https://github.com/tim-shand/azure)
 
-![Photo of my current homelab setup.](docs/images/homelab.jpg)
+![Photo of my current home lab setup.](docs/images/homelab.jpg)
 
 ---
 
