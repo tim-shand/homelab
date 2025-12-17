@@ -1,0 +1,44 @@
+# Environments
+.env
+*.env
+*.env.ps1
+*env.psd1
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+# Allowed
+!env-example.psd1
+
+# Terraform directories, CLI config and state files.
+**/.terraform/*
+.terraform
+.terraformrc
+terraform.rc
+tfplan.*
+*.tfplan
+*.plan
+*.tfstate
+*.tfstate.*
+*.lock.*
+crash.log
+crash.*.log
+backend.conf
+
+# Ignore override files as they are usually used to override resources locally.
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Optional:
+*tfplan*
+.notes/
+.notes.md
+.token
+.config
+*.log
+*.test/
+*.dev/
