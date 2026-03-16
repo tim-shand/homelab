@@ -3,14 +3,22 @@
 Welcome to my personal home lab! :wave:  
 
 This project provides an environment for self-hosting and experimenting with different technologies.
-A base for hands-on learning, developing knowledge and improving my skills in GitOps and Infrastructure-as-Code.
-Deployed, and managed using Terraform and CI/CD workflows.
+A base for hands-on learning, developing knowledge and improving my skills relating to DevOps practices.
+The main goal is to deploy and manage the environment using:
+
+- Infrastructure as Code (IaC).
+- Configuration as Code.
+- CI/CD Pipelines for automated deployments.
 
 As a big fan of small tech (micro-pcs, Raspberry Pi etc), a primary requirement is maintaining a small footprint for my on-prem environment. I aim to re-use as much existing hardware as possible, recycling second hand gear and giving it a new life in my lab.
 
 ![Photo of my current home lab setup.](docs/images/homelab.jpg)
 
 ---
+
+## Documentation
+
+Please refer to the [docs](docs/) directory for documentation on how I setup my homelab, including guides for Proxmox and OPNsense.
 
 ## :computer: Physical Hardware
 
@@ -20,8 +28,8 @@ As a big fan of small tech (micro-pcs, Raspberry Pi etc), a primary requirement 
   - Running clustered [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) for VMs.  
   - Currently investigating NAS options to improve high availability and failover :eyes:.
 - 1x Raspberry Pi 1B+ (yes, very old)
-  - Running as a QDevice, maintaining Proxmox cluster quorum [details on setup found here](https://www.tshand.com/p/home-lab-part-6-setup-qdevice-for-proxmox-quorum/).
-  - Will be replaced and repurposed in future when I add a 3rd Proxmox node.
+  - Running as a QDevice, maintaining Proxmox cluster quorum.
+  - Will be replaced and repurposed in future when I add a third Proxmox node.
 
 ### Networking
 
@@ -57,7 +65,6 @@ As a big fan of small tech (micro-pcs, Raspberry Pi etc), a primary requirement 
 
 ## :memo: To Do
 
-- [ ] Revisit bootstrapping process.
 - [ ] Setup self-hosted GitHub Runner on-prem.
 - [ ] Review details for migration to GitLab.
 - [ ] Investigate Docker hosts with HA/failover.
