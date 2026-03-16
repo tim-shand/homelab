@@ -20,6 +20,8 @@ As a big fan of small tech (micro-pcs, Raspberry Pi etc), a primary requirement 
 
 Please refer to the [docs](docs/) directory for documentation on how I setup my homelab, including guides for Proxmox and OPNsense.
 
+---
+
 ## :computer: Physical Hardware
 
 ### Hypervisors (Proxmox)
