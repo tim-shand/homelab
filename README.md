@@ -1,4 +1,4 @@
-# Personal Home Lab (On-Prem)
+# Personal Home Lab
 
 Welcome to my personal home lab! :wave:  
 
@@ -16,7 +16,7 @@ As a big fan of small tech (micro-pcs, Raspberry Pi etc), a primary requirement 
 
 ---
 
-## Documentation
+## 📚 Documentation
 
 Please refer to the [docs](docs/) directory for documentation on how I setup my homelab, including guides for Proxmox and OPNsense.
 
