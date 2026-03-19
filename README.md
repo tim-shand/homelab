@@ -8,6 +8,8 @@ A base for hands-on learning, developing knowledge and improving my skills.
 As a big fan of small tech (micro-pcs, Raspberry Pi etc), a primary requirement is maintaining a small footprint for my on-prem environment.
 I aim to re-use as much existing hardware as possible, recycling second hand gear and giving it a new life in my lab.
 
+![Current home lab hardware.](./docs/images/homelab_current.png)
+
 ---
 
 ## 🎯 Goals & Objectives
@@ -30,7 +32,7 @@ The design for this project places the home lab network behind the existing home
 - A static route entry is added to the ISP router to direct connections from the home network into the lab network via the firewall WAN IP.
 - Virtual server workloads are isolated on dedicated VLANs for improved security and network traffic control.
 
-![Homelab Design](./docs/images/homelab_design.png)
+![Home Lab Design](./docs/images/homelab_design.png)
 
 ---
 
