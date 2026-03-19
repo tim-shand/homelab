@@ -43,3 +43,6 @@ override.tf.json
 *.test/
 *.dev/
 *.bkp
+
+### Ansible ###
+*.retry
