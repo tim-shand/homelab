@@ -1,5 +1,5 @@
 #======================================================#
-# Proxmox: Terraform - Variable Values File (Example)
+# Proxmox: Terraform - Variable File (Example)
 #======================================================#
 
 #----- Proxmox: Host Configuration -----#
