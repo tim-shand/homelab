@@ -16,23 +16,20 @@
 # NOTE: 
 # Requires administrator (sudo) privileges to run.
 
-# USAGE:
-# This script is to be run from the Proxmox VE host itself.
-# ./scripts/utility/local-setup-linux.sh
-
 #------------------------------------------------#
 # VARIABLES
 #------------------------------------------------#
 
 required_pkgs="git curl libguestfs-tools" # List of required packages to install on host executing this script.
-img_url="https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img" # Image source URL.
-img_file=$(echo $img_url | sed 's/^.*noble/noble/') # Image name extracted from URL.
+dist_name="resolute" # Ubuntu distribution code name.
+img_url="https://cloud-images.ubuntu.com/${dist_name}/current/${dist_name}-server-cloudimg-amd64.img" # Image source URL.
+img_file="ubuntu-server-${dist_name}-cloudimg-amd64.img" # Image name.
 tmpdir=/opt/tmpdir-images # Temporary directory for downloaded image file.
 dstpath=/var/lib/vz/template/iso # Final destination path for image file.
 exp_fs="32G" # String value for desired file system size during expansion.
 default_rootpw="changeme123!" # Default root password for VM.
 template_id=9000 # Template ID used in Proxmox, must be unique.
-template_name="ztmp-ubuntu24-cloudinit" # Template name used in Proxmox.
+template_name="ztmp-ubuntu-server-${dist_name}-cloudinit" # Template name used in Proxmox.
 
 # Confirmation of variables and user input to approve.
 clear
@@ -44,7 +41,10 @@ echo "  - Modify image file (expand file system, set root password)."
 echo "  - Create Proxmox VM, convert it to template."
 echo
 echo "~~~ IMPORTANT NOTE ~~~"
-echo "Please review the variables defined in this script BEFORE proceeding."
+echo "Please review the script variables BEFORE proceeding."
+echo "- Distribution: ${dist_name}"
+echo "- Source URL: ${img_url}"
+echo "- Template Name: ${template_name}"
 echo "---------------------------------------------------------------------"
 read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
