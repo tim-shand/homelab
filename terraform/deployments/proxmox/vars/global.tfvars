@@ -17,7 +17,7 @@ pve_nodes = {
         production  = true
     }
     "node3" = {
-        hostname    = "inf-pve-03-prd"
+        hostname    = "inf-pve-03-dev"
         ip_address  = "10.0.10.3"
         production  = false
     }
@@ -25,14 +25,15 @@ pve_nodes = {
 
 # Proxmox Networking Configuration ------------------------------------------- #
 pve_network = {
-    mtu = 1500 # Default MTU for Proxmox cluster and SDN zones, can be overridden in specific SDN zone configurations if needed.
-    cluster = {         # Network configuration for Proxmox cluster.
+    "cluster" = {     # Network configuration for Proxmox cluster.
         nic         = "nic0" # Network interface used for Proxmox cluster communication and management.
         bridge      = "vmbr0" # Linux bridge used for Proxmox cluster.
+        mtu         = 1500 # Default MTU for Proxmox cluster and SDN zones, can be overridden in specific SDN zone configurations if needed.
     }
-    guest = {       # Network configuration for guest VMs and containers.
+    "guest" = {       # Network configuration for guest VMs and containers.
         nic         = "nic1"
         bridge      = "vmbr1"
+        mtu         = 1500
     }
 }
 

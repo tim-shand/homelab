@@ -22,15 +22,9 @@ variable "pve_nodes" {
 variable "pve_network" {
     description = "Map of Proxmox network configurations for the cluster and guest VMs."
     type = map(object({
+        nic = string
+        bridge = string
         mtu = number
-        cluster = object({
-            nic = string
-            bridge = string
-        })
-        guest = object({
-            nic = string
-            bridge = string
-        })
     }))
 }
 
@@ -41,19 +35,3 @@ variable "pve_pools" {
         comment = string
     }))
 }
-
-# variable "pve_sdn_zones" {
-#     description = "Map of Proxmox SDN zones to create, with configuration for each zone."
-#     type = map(object({
-#         id = string
-#         nodes = optional(list(string))
-#         bridge = string
-#         mtu = number
-#         # Optional Attributes. Only required if using Proxmox IPAM for DHCP and DNS management.
-#         # Ignore for OPNsense DHCP and DNS management.
-#         dns = optional(string)
-#         dns_zone = optional(string)
-#         ipam = optional(string)
-#         reverse_dns = optional(string)
-#     }))
-# }
