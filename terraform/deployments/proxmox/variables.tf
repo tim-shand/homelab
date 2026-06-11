@@ -11,20 +11,25 @@ variable "pve_auth_api_token" {
 }
 
 variable "pve_nodes" {
-    description = "Map of Proxmox nodes in the cluster, with details for API access and network configuration."
+    description = "Map of Proxmox nodes in the cluster, with details for API access and production status."
     type = map(object({
         hostname    = string
-        dns_domain  = string
         ip_address  = string
-        network = object({
-            pve = object({
-                nic_name    = string
-                bridge_name = string
-            })
-            vms = object({
-                nic_name    = string
-                bridge_name = string
-            })
+        production  = bool
+    }))
+}
+
+variable "pve_network" {
+    description = "Map of Proxmox network configurations for the cluster and guest VMs."
+    type = map(object({
+        mtu = number
+        cluster = object({
+            nic = string
+            bridge = string
+        })
+        guest = object({
+            nic = string
+            bridge = string
         })
     }))
 }
@@ -37,18 +42,18 @@ variable "pve_pools" {
     }))
 }
 
-variable "pve_sdn_zones" {
-    description = "Map of Proxmox SDN zones to create, with configuration for each zone."
-    type = map(object({
-        id = string
-        nodes = optional(list(string))
-        bridge = string
-        mtu = number
-        # Optional Attributes. Only required if using Proxmox IPAM for DHCP and DNS management.
-        # Ignore for OPNsense DHCP and DNS management.
-        dns = optional(string)
-        dns_zone = optional(string)
-        ipam = optional(string)
-        reverse_dns = optional(string)
-    }))
-}
+# variable "pve_sdn_zones" {
+#     description = "Map of Proxmox SDN zones to create, with configuration for each zone."
+#     type = map(object({
+#         id = string
+#         nodes = optional(list(string))
+#         bridge = string
+#         mtu = number
+#         # Optional Attributes. Only required if using Proxmox IPAM for DHCP and DNS management.
+#         # Ignore for OPNsense DHCP and DNS management.
+#         dns = optional(string)
+#         dns_zone = optional(string)
+#         ipam = optional(string)
+#         reverse_dns = optional(string)
+#     }))
+# }

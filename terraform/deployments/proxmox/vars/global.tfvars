@@ -26,7 +26,7 @@ pve_nodes = {
 # Proxmox Networking Configuration ------------------------------------------- #
 pve_network = {
     mtu = 1500 # Default MTU for Proxmox cluster and SDN zones, can be overridden in specific SDN zone configurations if needed.
-    pve = {         # Network configuration for Proxmox cluster.
+    cluster = {         # Network configuration for Proxmox cluster.
         nic         = "nic0" # Network interface used for Proxmox cluster communication and management.
         bridge      = "vmbr0" # Linux bridge used for Proxmox cluster.
     }

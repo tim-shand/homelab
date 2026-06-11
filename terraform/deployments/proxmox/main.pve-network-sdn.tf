@@ -5,9 +5,9 @@
 # - Network definitions for Proxmox cluster and VM traffic, using separate bridges and VLANs for isolation.
 # ========================================================================================================= #
 
-resource "proxmox_sdn_zone_vlan" "vlan_zone" {
-    id = "ZoneVLAN"
+resource "proxmox_sdn_zone_vlan" "vlan" {
+    id = "zone_vlan"
     nodes = [local.pve_nodes_prd] # List of production nodes in cluster.
-    bridge = "vmbr1"
-    mtu = 1500
+    bridge = var.pve_network.guest.bridge # Use guest bridge for SDN zone.
+    mtu = var.pve_network.mtu
 }
