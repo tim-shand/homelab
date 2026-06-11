@@ -10,8 +10,8 @@ variable "pve_auth_api_token" {
     sensitive = true
 }
 
-variable "pve_hosts" {
-    description = "Map of Proxmox hosts in the cluster, with details for API access and network configuration."
+variable "pve_nodes" {
+    description = "Map of Proxmox nodes in the cluster, with details for API access and network configuration."
     type = map(object({
         hostname    = string
         dns_domain  = string
@@ -34,5 +34,21 @@ variable "pve_pools" {
     type = map(object({
         pool_id = string
         comment = string
+    }))
+}
+
+variable "pve_sdn_zones" {
+    description = "Map of Proxmox SDN zones to create, with configuration for each zone."
+    type = map(object({
+        id = string
+        nodes = optional(list(string))
+        bridge = string
+        mtu = number
+        # Optional Attributes. Only required if using Proxmox IPAM for DHCP and DNS management.
+        # Ignore for OPNsense DHCP and DNS management.
+        dns = optional(string)
+        dns_zone = optional(string)
+        ipam = optional(string)
+        reverse_dns = optional(string)
     }))
 }

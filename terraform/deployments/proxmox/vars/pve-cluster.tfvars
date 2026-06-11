@@ -1,10 +1,11 @@
 # Variables: Cluster Configuration ------------------------------------------- #
 
-pve_hosts = {
+pve_nodes = {
   "node1" = {
     hostname    = "inf-pve-01-prd" # Proxmox host name, used to access and identify host in cluster.
     dns_domain  = "mgt.tshand.net" # Proxmox host domain, used to compile full FQDN host name.
     ip_address  = "10.0.10.1" # Proxmox host IP address, used for API access.
+    production = true # Used for targeting resources to production nodes in the cluster.
     network = {
       pve = {
         nic_name    = "nic0" # Network interface used for Proxmox cluster communication and management.
@@ -20,6 +21,7 @@ pve_hosts = {
     hostname    = "inf-pve-02-prd"
     dns_domain  = "mgt.tshand.net"
     ip_address  = "10.0.10.2"
+    production = true # Used for targeting resources to production nodes in the cluster.
     network = {
       pve = {
         nic_name    = "nic0"
@@ -35,6 +37,7 @@ pve_hosts = {
     hostname    = "inf-pve-03-dev"
     dns_domain  = "mgt.tshand.net"
     ip_address  = "10.0.10.3"
+    production = true # Used for targeting resources to production nodes in the cluster.
     network = {
       pve = {
         nic_name    = "nic0"
@@ -59,3 +62,23 @@ pve_pools = {
     comment = "Development Workloads"
   }
 }
+
+# Proxmox SDN: Zones ------------------------------------------- #
+
+# pve_sdn_zones = {
+#   "vlan_zone" = {
+#     id      = "ZoneVLAN"
+#     bridge  = "vmbr1"
+#     mtu     = 1500
+#     # nodes = [
+#     #   var.pve_nodes.node1.hostname,
+#     #   var.pve_nodes.node2.hostname,
+#     # ]
+#     # Optional Attributes. Only required if using Proxmox IPAM for DHCP and DNS management.
+#     # Ignore for OPNsense DHCP and DNS management.
+#     # dns         = "1.1.1.1"
+#     # dns_zone    = "example.com"
+#     # ipam        = "pve"
+#     # reverse_dns = "1.1.1.1"
+#   }
+# }
