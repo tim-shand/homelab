@@ -24,7 +24,7 @@ resource "proxmox_sdn_applier" "final" {
 
 resource "proxmox_sdn_zone_vlan" "vlan" {
     id = "zonevlan"
-    nodes   = local.pve_nodes_prd # List of production nodes in cluster.
+    #nodes   = local.pve_nodes_prd # List of production nodes in cluster.
     bridge  = var.pve_network.guest.bridge # Use guest bridge for SDN zone.
     mtu     = var.pve_network.guest.mtu
 }
