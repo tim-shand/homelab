@@ -1,43 +1,38 @@
-#======================================================#
-# Proxmox: Terraform - Variable Definitions File (Root)
-#======================================================#
+# ====================================================================== #
+# Proxmox: Variables
+# Description:
+# - Variable definitions for Proxmox configuration.
+# ====================================================================== #
 
-#----- Proxmox: Host Configuration -----#
 variable "pve_auth_api_token" {
-  description   = "Proxmox service account API token for Terraform."
-  type          = string
-  sensitive     = true # Secret value, keep hidden from outputs.
+    description = "Proxmox API token for authentication, should be stored securely and passed in via environment variable or workflow secrets."
+    type = string
+    sensitive = true
 }
 
-variable "pve_auth_ssh_un" {
-  description   = "SSH account username, used for non-supported API actions."
-  type          = string
-  sensitive     = true # Secret value, keep hidden from outputs.
+variable "pve_hosts" {
+    description = "Map of Proxmox hosts in the cluster, with details for API access and network configuration."
+    type = map(object({
+        hostname    = string
+        dns_domain  = string
+        ip_address  = string
+        network = object({
+            pve = object({
+                nic_name    = string
+                bridge_name = string
+            })
+            vms = object({
+                nic_name    = string
+                bridge_name = string
+            })
+        })
+    }))
 }
 
-variable "pve_auth_ssh_keyfile" {
-  description   = "SSH key file path, used for non-supported API actions."
-  type          = string
-  sensitive     = true # Secret value, keep hidden from outputs.
-}
-
-variable "pve_sys_node_domain_dns" {
-  description   = "Map of domain and DNS configuration for the Proxmox cluster nodes."
-  type          = map(string)
-}
-
-variable "pve_host_config_01" {
-  description   = "A map of configuration items for Proxmox host 1."
-  type          = map(string)
-}
-
-variable "pve_host_config_02" {
-  description   = "A map of configuration items for Proxmox host 2."
-  type          = map(string)
-}
-
-#----- VM: Cloud-Init Configuration -----#
-variable "cloudinit_config" {
-  description   = "Map of default cloud-init settings to use with VMs."
-  type          = map(string)
+variable "pve_pools" {
+    description = "Map of Proxmox resource pools to create, with pool ID and comment for each pool."
+    type = map(object({
+        pool_id = string
+        comment = string
+    }))
 }
