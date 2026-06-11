@@ -10,22 +10,21 @@ variable "pve_auth_api_token" {
     sensitive = true
 }
 
-variable "pve_hosts" {
-    description = "Map of Proxmox hosts in the cluster, with details for API access and network configuration."
+variable "pve_nodes" {
+    description = "Map of Proxmox nodes in the cluster, with details for API access and production status."
     type = map(object({
         hostname    = string
-        dns_domain  = string
         ip_address  = string
-        network = object({
-            pve = object({
-                nic_name    = string
-                bridge_name = string
-            })
-            vms = object({
-                nic_name    = string
-                bridge_name = string
-            })
-        })
+        production  = bool
+    }))
+}
+
+variable "pve_network" {
+    description = "Map of Proxmox network configurations for the cluster and guest VMs."
+    type = map(object({
+        nic = string
+        bridge = string
+        mtu = number
     }))
 }
 

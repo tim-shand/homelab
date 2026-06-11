@@ -5,7 +5,7 @@
 # ====================================================================== #
 
 # Resource: Proxmox Virtual Environment Pool ------------------------------------------- #
-resource "proxmox_virtual_environment_pool" "operations_pool" {
+resource "proxmox_virtual_environment_pool" "pve_pools" {
     for_each = var.pve_pools
     pool_id = each.value.pool_id
     comment = each.value.comment

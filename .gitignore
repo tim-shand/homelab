@@ -1,18 +1,21 @@
-# Environments
-.env
-*.env
-*.env.ps1
-*env.psd1
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-# Allowed
-!env-example.psd1
+### Gitignore file for Home Lab project.
 
-# Terraform directories, CLI config and state files.
+# General ----------------------------- #
+.notes.md
+*.bkp
+*.backup
+*.bak
+
+# Secrets ----------------------------- #
+*.key
+*.env
+*.env.*
+
+# Variables----------------------------- #
+terraform.tfvars
+auth.tfvars
+
+# Terraform ------------------------------- #
 **/.terraform/*
 .terraform
 .terraformrc
@@ -27,24 +30,14 @@ crash.log
 crash.*.log
 backend.conf
 backend.tf
-auth.tfvars
-
-# Ignore override files as they are usually used to override resources locally.
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
 
-# Optional:
-*tfplan*
-.notes/
-.notes.md
-.token
-.config
-*.log
-*.test/
-*.dev/
-*.bkp
-
-### Ansible ###
+# Ansible ------------------------------- #
 *.retry
+
+# Allowed ------------------------------ #
+!env-example.psd1
+*-example.*
