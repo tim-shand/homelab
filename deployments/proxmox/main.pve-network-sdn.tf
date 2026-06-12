@@ -6,7 +6,8 @@
 # ========================================================================================================= #
 
 # PVE SDN Applier --------------------------------- #
-
+# Used to trigger updates to the Proxmox SDN configuration when changes are made to the SDN zones or VNets. 
+# SDN configuration is applied to the Proxmox cluster without requiring manual effort (click 'Apply' button).
 resource "proxmox_sdn_applier" "final" {
     lifecycle {
         replace_triggered_by = [

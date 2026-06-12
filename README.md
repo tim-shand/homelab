@@ -8,6 +8,10 @@ A base for hands-on learning, developing knowledge and improving my skills.
 As a big fan of small tech (micro-pcs, Raspberry Pi etc), a primary requirement is maintaining a small footprint for my on-prem environment.
 I aim to re-use as much existing hardware as possible, recycling second hand gear and giving it a new life in my lab.
 
+_For more in-depth details on how to configure Proxmox and other platforms, check out my website where I share guides and other articles._
+
+🌏 [Personal Website](https://tshand.com/)
+
 ![Current home lab hardware.](./docs/images/homelab_current.jpg)
 
 ---
@@ -40,48 +44,62 @@ The design for this project places the home lab network behind the existing home
 
 ### 🏭 Hypervisors
 
-Refurbished mini-PCs running [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) as the virtualisation layer. Chosen due to being free (zero-cost) and open source, with extensive vendor and user documentation available.
+Refurbished mini-PCs running [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) as the virtualisation layer. 
+Chosen due to being free (zero-cost) and open source, with extensive vendor and user documentation available.
 
 - **Lenovo Thinkcentre P330 Tiny (x2)**
   - Chosen for its minimal size and dual M.2 slots.
   - Can accept an additional low-profile NIC (requires PCIe riser), providing extra LAN port capabilities.
+  - M.2 WiFi card slot inhabited by 2.5Gb Ethernet card providing dedicated workload interfaces.
   - **Compute:**
     - Intel i5-9500 (6 Core, 6 Thread, 3.00 GHz)
     - 16GB (DDR4, 1x 16GB SODIMM)
   - **Storage:**
     - Boot/OS: 256GB NVMe
     - Data: 1TB NVMe
-- **Raspberry Pi 1B+ (x1)**
-  - Running as a QDevice, maintaining Proxmox cluster quorum (required for two-node clusters).
-  - To be replaced and repurposed when a third Proxmox node is added.
+- **Lenovo Thinkcentre M700 (x1)**
+  - Third Proxmox node, replacing Raspberry Pi QDevice. 
+  - Can accept an additional low-profile NIC (via M.2 Ethernet adapter).
+  - **Compute:**
+    - Intel i5-6400T (4 Core, 4 Thread, 2.20 GHz)
+    - 8GB (DDR4, 1x 8GB SODIMM)
+  - **Storage:**
+    - Boot/OS: 256GB SATA SSD
+    - Data: N/A
+- **Raspberry Pi 1B+ (x1) _(Decommissioned)_**
+  - Was running as a QDevice, maintaining Proxmox cluster quorum (required for two-node clusters).
+  - Replaced and awaiting repurpose as environmental monitoring agent.
 
 ### 🧱 Firewall
 
-A repurposed mini-pc from a previous Proxmox cluster running [OPNsense](https://opnsense.org/get-started/).
-Dedicated physical firewall appliance, using the ISP provided router as WAN gateway.
+A twin of my third Proxmox node. A second Lenovo M700 running [OPNsense](https://opnsense.org/get-started/).
+Dedicated as a physical firewall appliance, using the ISP provided router as upstream WAN gateway.
 
-- **HP Elitedesk 800 G1 Mini**
+- **Lenovo Thinkcentre M700**
   - **Compute:**
-    - Intel i5-4590T (4 Core, 4 Thread, 2.00 GHz)
-    - 10GB (DDR3, 1x 8GB, 1x 2GB SODIMM)
+    - Intel i5-6400T (4 Core, 4 Thread, 2.20 GHz)
+    - 8GB (DDR4, 1x 8GB SODIMM)
   - **Storage:**
-    - Boot/OS: 256GB (SATA SSD)
+    - Boot/OS: 256GB SATA SSD
   - **Networking:**
-    - On-board NIC: WAN interface, connected to home ISP router.
-    - USB NIC: LAN interface, a temporary solution until suitable replacement is made.
+    - WAN: On-board 1Gb NIC, connected to home ISP router.
+    - LAN: M.2 Ethernet Adapter 2.5Gb (Intel i226-V Gigabit 2.5G)
+
+> Check out [this blog post](https://tshand.com/posts/homelab-08-update/#new-hardware--components) on how I replaced the original M.2 WiFi adapter with 2.5Gb Ethernet.
 
 ### 🌐 Networking
 
 - **Switch: TP Link TL-SG108PE**
-  - Basic 8 port switch, with some management features (VLANs and port mirroring).
+  - Semi-Managed 8 port switch, with management features for VLANs and port mirroring.
   - Capable of PoE (Power over Ethernet), although this is not being used, and has been disabled.
 
 ---
 
 ## 🧩 Workloads
 
-- **Firewall/Router:** Virtualized [pfSense](https://www.pfsense.org/download/) VM (for internal lab use).
-- **Virtual Machines:** Management and jump host servers, self hosted CI/CD runners, test and misc utility VMs.
+- Self-hosted GitLab instance for repo mirroring and executing pipelines locally.
+- Virtualized [pfSense](https://www.pfsense.org/download/) VM (for internal lab use).
+- Management and jump host servers, test and misc utility VMs.
 
 ---
 
