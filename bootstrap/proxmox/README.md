@@ -10,9 +10,7 @@ This account can then be used with automation pipelines, preparing for future Ia
 - No state file to manage or store post deployment.
 - Uses Proxmox native terminal command `pveum` to create resources.
 
----
-
-## Resources
+## 🔨 Resources
 
 - **Role:**
   - Custom role with necessary actions assigned for IaC accounts, using least privilege.
@@ -23,16 +21,12 @@ This account can then be used with automation pipelines, preparing for future Ia
 - **API Token:**
   - Generated for the service account to use when authenticating with Proxmox API.
 
----
+## ❔ Requirements
 
-## Requirements
+- [x] Root account credentials to the Proxmox environment.
+- [x] SSH access to a target Proxmox node, either singular or in a cluster.
 
-[x] Root account credentials to the Proxmox environment.
-[x] SSH access to a target Proxmox node, either singular or in a cluster.
-
----
-
-## Usage
+## ▶️ Usage
 
 1. Execute from a device with SSH connectivity to a Proxmox node or nodes within a cluster.
 
@@ -41,5 +35,3 @@ ssh root@proxmox-node 'bash -s' < scripts/bootstrap-proxmox.sh
 ```
 
 2. Save the token secret from output, storing securely in a password manager or CI/CD pipeline secrets.
-
----
