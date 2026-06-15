@@ -90,8 +90,26 @@ Dedicated as a physical firewall appliance, using the ISP provided router as ups
 ### 🌐 Networking
 
 - **Switch: TP Link TL-SG108PE**
-  - Semi-Managed 8 port switch, with management features for VLANs and port mirroring.
+  - Managed 8 port switch supporting VLANs.
   - Capable of PoE (Power over Ethernet), although this is not being used, and has been disabled.
+
+```text
+Proxmox Node 1 (prd)
+    eth0 → untagged → INF10 (10.0.10.1/24) → vmbr0
+    eth1 → trunk → managed switch
+               ├── VLAN 20 (MGT20) → vmbr1 (VLAN-aware)
+               └── VLAN 30 (SVR30) → vmbr1 (VLAN-aware)
+
+Proxmox Node 2 (prd)
+    eth0 → untagged → INF10 (10.0.10.2/24) → vmbr0
+    eth1 → trunk → managed switch
+               ├── VLAN 20 (MGT20) → vmbr1 (VLAN-aware)
+               └── VLAN 30 (SVR30) → vmbr1 (VLAN-aware)
+
+Proxmox Node 3 (dev)
+    eth0 → untagged → INF10 (10.0.10.3/24) → vmbr0
+    No vmbr1, dev node, no ZFS pool, no workload bridge
+```
 
 ---
 
