@@ -40,4 +40,4 @@ override.tf.json
 
 # Allowed ------------------------------ #
 !env-example.psd1
-*-example.*
+!*-example.*
