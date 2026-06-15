@@ -29,7 +29,9 @@ TOKEN_COMMENT="API Token: $(date +%Y%m%d)" # Description of token shown in the P
 # Custom Role: Built-in 'Administrator' role has more permissions than needed, so create a custom role with only the necessary privileges.
 # Principle of least privilege to reduce risk if the token is compromised. Also, 'PVEAdmin' is too light (missing sys.modify).
 PRIVILEGES=(
+  "Datastore.Allocate"            # Allocate disk images to datastores.
   "Datastore.AllocateSpace"       # Create and resize disks on datastores.
+  "Datastore.AllocateTemplate"    # Create, download, add templates to datastores.
   "Datastore.Audit"               # Read datastore contents and status.
   "Pool.Allocate"                 # Create and delete resource pools.
   "Pool.Audit"                    # Read pool contents and membership.
