@@ -4,7 +4,7 @@
 # - Global variable definitions for Proxmox cluster, node configuration, resource pools, and SDN zones etc.
 # ========================================================================================================== #
 
-# Proxmox Cluster Nodes ------------------------------------------- #
+# Proxmox Cluster: Nodes ------------------------------------------- #
 pve_nodes = {
     "node1" = {
         hostname    = "inf-pve-01-prd"  # Proxmox host name, used to access and identify host in cluster.
@@ -23,28 +23,14 @@ pve_nodes = {
     }
 }
 
-# Proxmox Networking Configuration ------------------------------------------- #
+# Proxmox Cluster: Networking ------------------------------------------- #
 pve_network = {
-    "cluster" = {     # Network configuration for Proxmox cluster.
-        nic         = "nic0" # Network interface used for Proxmox cluster communication and management.
-        bridge      = "vmbr0" # Linux bridge used for Proxmox cluster.
-        mtu         = 1500 # Default MTU for Proxmox cluster and SDN zones, can be overridden in specific SDN zone configurations if needed.
-    }
-    "guest" = {       # Network configuration for guest VMs and containers.
-        nic         = "nic1"
-        bridge      = "vmbr1"
-        mtu         = 1500
-    }
-}
-
-# Proxmox Virtual Environment Pools ------------------------------------------- #
-pve_pools = {
-  "prd" = {
-    pool_id = "production-pool"
-    comment = "Production Workloads"
+  "cluster" = {     # Network configuration for Proxmox cluster.
+    nic         = "nic0" # Network interface used for Proxmox cluster communication and management.
+    bridge      = "vmbr0" # Linux bridge used for Proxmox cluster.
   }
-  "dev" = {
-    pool_id = "development-pool"
-    comment = "Development Workloads"
+  "guest" = {       # Network configuration for guest VMs and containers.
+    nic         = "nic1"
+    bridge      = "vmbr1"
   }
 }
