@@ -11,6 +11,7 @@
 # Internal Zone --------------------------------- #
 resource "proxmox_sdn_zone_simple" "znintnl" {
   id        = "znvlan" # Max 8 characters, no symbols.
+  #nodes     = local.pve_nodes_production # Comment out to add to all nodes in cluster.
   mtu       = 1500     # Default 1550 for VLAN zones.
   ipam      = "pve"    # Use Proxmox IPAM.
   depends_on = [
@@ -21,6 +22,7 @@ resource "proxmox_sdn_zone_simple" "znintnl" {
 # VLAN Zone --------------------------------- #
 resource "proxmox_sdn_zone_vlan" "znvlan" {
   id        = "znvlan" # Max 8 characters, no symbols.
+  nodes     = local.pve_nodes_production # Remove to add to all nodes.
   bridge    = "vmbr1"  # VLAN aware bridge for workloads.
   mtu       = 1500     # Default 1550 for VLAN zones.
   ipam      = "pve"    # Use Proxmox IPAM.
