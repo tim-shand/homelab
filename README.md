@@ -42,56 +42,56 @@ The design for this project places the home lab network behind the existing home
 
 ## 🖥️ Hardware & Components
 
-### 🏭 Hypervisors
+### 🏭 Hypervisors (Proxmox)
 
 Refurbished mini-PCs running [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) as the virtualisation layer. 
 Chosen due to being free (zero-cost) and open source, with extensive vendor and user documentation available.
 
-- **Lenovo Thinkcentre P330 Tiny (x2)**
-  - Chosen for its minimal size and dual M.2 slots.
-  - Can accept an additional low-profile NIC (requires PCIe riser), providing extra LAN port capabilities.
-  - M.2 WiFi card slot inhabited by 2.5Gb Ethernet card providing dedicated workload interfaces.
-  - **Compute:**
-    - Intel i5-9500 (6 Core, 6 Thread, 3.00 GHz)
-    - 16GB (DDR4, 1x 16GB SODIMM)
-  - **Storage:**
-    - Boot/OS: 256GB NVMe
-    - Data: 1TB NVMe
-- **Lenovo Thinkcentre M700 (x1)**
-  - Third Proxmox node, replacing Raspberry Pi QDevice. 
-  - Can accept an additional low-profile NIC (via M.2 Ethernet adapter).
-  - **Compute:**
-    - Intel i5-6400T (4 Core, 4 Thread, 2.20 GHz)
-    - 8GB (DDR4, 1x 8GB SODIMM)
-  - **Storage:**
-    - Boot/OS: 256GB SATA SSD
-    - Data: N/A
-- **Raspberry Pi 1B+ (x1) _(Decommissioned)_**
-  - Was running as a QDevice, maintaining Proxmox cluster quorum (required for two-node clusters).
-  - Replaced and awaiting repurpose as environmental monitoring agent.
+**Lenovo ThinkCentre P330 Tiny (x2)**
 
-### 🧱 Firewall
+- Production nodes 1 & 2, chosen for physical footprint and dual M.2 NVMe slots.
+- ZFS pools configured with replication enabled for priority workloads.
+- PCIe slot available (requires specific PCIe riser), providing extra LAN port or storage capabilities.
+- M.2 WiFi card slot now in use by 2.5Gb Ethernet adapter, providing dedicated workload interface.
+
+| CPU                            | Memory     | Storage (OS) | Storage (Data) | Networking                          |
+| ------------------------------ | ---------- | ------------ | -------------- | ----------------------------------- |
+| Intel i5-9500 (6C/6T, 3.0 GHz) | 16 GB DDR4 | 256 GB NVMe  | 1 TB NVMe      | Integrated NIC + 2.5GbE M.2 adapter |
+
+**Lenovo ThinkCentre M700 (x1)**
+
+- Considered a test/dev node, similar family as the P330 nodes.
+- Replaced old Raspberry Pi (QDevice), adding a proper third node to the cluster.
+- Single disk node with no ZFS or secondary network interface (yet).
+
+| CPU                             | Memory    | Storage (OS)    | Storage (Data) | Networking     |
+| ------------------------------- | --------- | --------------- | -------------- | -------------- |
+| Intel i5-6400T (4C/4T, 2.2 GHz) | 8 GB DDR4 | 256 GB SATA SSD | N/A            | Integrated NIC |
+
+**Raspberry Pi 1B+** _(Decommissioned)_
+
+- Was running as a QDevice, maintaining Proxmox cluster quorum (required for two-node clusters).
+- Replaced by the Lenovo M700 and awaiting a new purpose as environment monitoring agent.
+
+### 🧱 Firewall (OPNsense)
 
 A twin of my third Proxmox node. A second Lenovo M700 running [OPNsense](https://opnsense.org/get-started/).
 Dedicated as a physical firewall appliance, using the ISP provided router as upstream WAN gateway.
 
-- **Lenovo Thinkcentre M700**
-  - **Compute:**
-    - Intel i5-6400T (4 Core, 4 Thread, 2.20 GHz)
-    - 8GB (DDR4, 1x 8GB SODIMM)
-  - **Storage:**
-    - Boot/OS: 256GB SATA SSD
-  - **Networking:**
-    - WAN: On-board 1Gb NIC, connected to home ISP router.
-    - LAN: M.2 Ethernet Adapter 2.5Gb (Intel i226-V Gigabit 2.5G)
+**Lenovo Thinkcentre M700**
 
-> Check out [this blog post](https://tshand.com/posts/homelab-08-update/#new-hardware--components) on how I replaced the original M.2 WiFi adapter with 2.5Gb Ethernet.
+| CPU                             | Memory    | Storage (OS)    | Storage (Data) | Networking                          |
+| ------------------------------- | --------- | --------------- | -------------- | ----------------------------------- |
+| Intel i5-6400T (4C/4T, 2.2 GHz) | 8 GB DDR4 | 256 GB SATA SSD | N/A            | Integrated NIC + 2.5GbE M.2 adapter |
+
+> Check out [this blog post](https://tshand.com/posts/homelab-08-update/#new-hardware--components) for details on replacing the original M.2 WiFi adapter with 2.5Gb Ethernet adapter.
 
 ### 🌐 Networking
 
-- **Switch: TP Link TL-SG108PE**
-  - Semi-Managed 8 port switch, with management features for VLANs and port mirroring.
-  - Capable of PoE (Power over Ethernet), although this is not being used, and has been disabled.
+**Switch (TP Link TL-SG108PE)**
+
+- Basic 8 port "smart" managed switch, supporting VLANs (802.1Q and port based).
+- Capable of PoE (Power over Ethernet), although this is not being used currently, and has been disabled.
 
 ---
 
@@ -116,6 +116,6 @@ Dedicated as a physical firewall appliance, using the ISP provided router as ups
 
 ## 📚 Documentation
 
-Please refer to the [docs](docs/) directory for documentation and guides on how this environment is configured.
+Please refer to the [docs](docs/) directory for operational guides on how this environment is configured.
 
 ---

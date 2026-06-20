@@ -7,18 +7,18 @@
 # Proxmox Cluster: Nodes ------------------------------------------- #
 pve_nodes = {
     "node1" = {
-        hostname    = "inf-pve-01-prd"  # Proxmox host name, used to access and identify host in cluster.
-        ip_address  = "10.0.10.1"       # Proxmox host IP address, used for API access.
+        hostname    = "proxmox-node-01" # Proxmox host name, used to access and identify host in cluster.
+        ip_address  = "10.0.0.1"        # Proxmox host IP address, used for API access.
         production  = true              # True/False: Used for targeting resources to production nodes in the cluster.
     }
     "node2" = {
-        hostname    = "inf-pve-02-prd"
-        ip_address  = "10.0.10.2"
+        hostname    = "proxmox-node-02"
+        ip_address  = "10.0.0.2"
         production  = true
     }
     "node3" = {
-        hostname    = "inf-pve-03-dev"
-        ip_address  = "10.0.10.3"
+        hostname    = "proxmox-node-03"
+        ip_address  = "10.0.0.3"
         production  = false
     }
 }

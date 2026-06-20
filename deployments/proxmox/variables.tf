@@ -27,11 +27,3 @@ variable "pve_network" {
         mtu = number
     }))
 }
-
-variable "pve_pools" {
-    description = "Map of Proxmox resource pools to create, with pool ID and comment for each pool."
-    type = map(object({
-        pool_id = string
-        comment = string
-    }))
-}

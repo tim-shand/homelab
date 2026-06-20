@@ -9,8 +9,7 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint    = "https://${var.bootstrap_pve_node.ip_address}:8006/api2/json" # API endpoint for Proxmox cluster, using first host in cluster.
-  username    = var.bootstrap_pve_un # Proxmox username for authentication. Prompted for password input during runtime.
-  password    = var.bootstrap_pve_pw # Prompted for password input during runtime.
+  endpoint    = "https://${var.pve_connection.ip_address}:8006/api2/json"
+  api_token   = var.pve_connection.api_token
   insecure    = true # Disable TLS certificate verification is required when using self-signed certificate.
 }
