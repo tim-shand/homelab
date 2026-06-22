@@ -1,10 +1,14 @@
 # Deployment: Proxmox Cluster
 
-This directory contains the configuration used to manage Proxmox at a cluster level.
-This includes system settings, software defined networking (SDN) and other high level configuration.
+This directory contains the configuration used to manage Proxmox VE at a cluster level.
 
-## Pools
+- Cluster system settings.
+- Software defined networking (SDN).
+- VM templates.
 
+## Resource Pools
+
+Used to group related resources (VMs, containers, templates) for easy management.
 
 
 ## Software Defined Networking (SDN)
