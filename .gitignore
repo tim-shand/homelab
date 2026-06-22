@@ -5,6 +5,7 @@
 *.bkp
 *.backup
 *.bak
+*prompt*.md
 
 # Secrets ----------------------------- #
 *.key
