@@ -168,7 +168,8 @@ This ensures that connected devices are able to communicate with the need to set
 - **Enable DHCP listener for VLANs:** `Services > Dnsmasq DNS & DHCP > General`.
 - **Configure DHCP scopes per VLAN:** `Services > Dnsmasq DNS & DHCP > DHCP Ranges`
 
-> [!NOTE] DHCP is not used for the MGT10 VLAN. Being a privileged management network, it uses static addressing only.
+> [!NOTE]
+> DHCP is not used for the MGT10 VLAN. Being a privileged management network, it uses static addressing only.
 
 | Interface  | Start Address | End Address | Domain         | Description  |
 | ---------- | ------------- | ----------- | -------------- | ------------ |
