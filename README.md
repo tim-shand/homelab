@@ -8,11 +8,9 @@ A base for hands-on learning, developing knowledge and improving my skills.
 As a big fan of small tech (micro-pcs, Raspberry Pi etc), a primary requirement is maintaining a small footprint for my on-prem environment.
 I aim to re-use as much existing hardware as possible, recycling second hand gear and giving it a new life in my lab.
 
-_For more in-depth details on how to configure Proxmox and other platforms, check out my website where I share guides and other articles._
+_Check out my [website](https://tshand.com/tags/homelab/) where I share guides on how this home lab was configured._
 
-🌏 [Personal Website](https://tshand.com/)
-
-![Current home lab hardware.](./docs/images/homelab_current.jpg)
+![Current home lab hardware.](docs/images/homelab_current.jpg)
 
 ---
 
@@ -36,7 +34,10 @@ The design for this project places the home lab network behind the existing home
 - A static route entry is added to the ISP router to direct connections from the home network into the lab network via the firewall WAN IP.
 - Virtual server workloads are isolated on dedicated VLANs for improved security and network traffic control.
 
-![Home Lab Design](./docs/images/homelab_design.png)
+> [!INFO]
+> Further details on architecture and design can be found in the [Architecture](/docs/architecture.md) documentation.
+
+![Home Lab Design](docs/images/homelab_design.png)
 
 ---
 
@@ -84,6 +85,7 @@ Dedicated as a physical firewall appliance, using the ISP provided router as ups
 | ------------------------------- | --------- | --------------- | -------------- | ----------------------------------- |
 | Intel i5-6400T (4C/4T, 2.2 GHz) | 8 GB DDR4 | 256 GB SATA SSD | N/A            | Integrated NIC + 2.5GbE M.2 adapter |
 
+> [!TIP]
 > Check out [this blog post](https://tshand.com/posts/homelab-08-update/#new-hardware--components) for details on replacing the original M.2 WiFi adapter with 2.5Gb Ethernet adapter.
 
 ### 🌐 Networking
