@@ -41,52 +41,90 @@ This design is relatively simple and allows room for future expansion.
 
 ![Home Lab Design](docs/images/homelab_architecture.png)
 
+## 🏛️ Design & Architecture
+
+The lab network sits behind a dedicated OPNsense firewall, isolated from
+the home network and segmented internally by VLAN.
+
+> [!NOTE]
+> Full topology, VLAN tables, and firewall rule design live in
+> [Architecture](docs/architecture.md).
+
+![Home Lab Design](docs/images/homelab_architecture.png)
+
 ---
 
 ## 🖥️ Hardware & Components
 
 ### 🏭 Hypervisors (Proxmox)
 
-Refurbished mini-PCs running [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) as the virtualisation layer. 
-Chosen due to being free (zero-cost) and open source, with extensive vendor and user documentation available.
+The Proxmox cluster resides on three refurbished mini-PCs running [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) as the virtualisation layer. Proxmox was chosen for the hypervisor due to being free (zero-cost) and open source, with extensive vendor and user documentation available.
 
-**Lenovo ThinkCentre P330 Tiny (x2)**
+**Lenovo Thinkcentre P330 Tiny**
 
-- Production nodes 1 & 2, chosen for small physical footprint and dual M.2 NVMe slots.
-- ZFS pools configured with replication enabled for priority workloads.
-- PCIe expansion slot available (requires specific PCIe riser #01AJ940).
-  - This can provide expansion for additional network adapters, graphics cards, or increasing storage capabilities.
-- M.2 WiFi card slot now in use by 2.5Gb Ethernet adapter, providing a dedicated networking interface for workload traffic.
+- Small physical footprint _(known as "1-litre PCs")_.
+- Accessible price point, these average around NZD$350 in local used markets.
+- Dual M.2 NVMe slots for easy storage expansion.
+- PCIe expansion slot for an additional network adapter, graphics card, or increasing storage capabilities.
+  - **Note:** Requires a specific PCIe riser, part number #01AJ940.
+- M.2 WiFi card slot can be [replaced with an Ethernet adapter](https://tshand.com/posts/homelab-08-update/), providing additional networking capabilities.
 
-| CPU                            | Memory     | Storage (OS) | Storage (Data) | Networking                          |
-| ------------------------------ | ---------- | ------------ | -------------- | ----------------------------------- |
-| Intel i5-9500 (6C/6T, 3.0 GHz) | 16 GB DDR4 | 256 GB NVMe  | 1 TB NVMe      | Integrated NIC + 2.5GbE M.2 adapter |
+**Lenovo Thinkcentre M700 Tiny**
 
-**Lenovo ThinkCentre M700 (x1)**
+- Same physical size of the P330 Tiny, fits in well with existing hardware.
+- Cheaper price point of around NZD$180.
+- Limited to older 6th-Gen Intel Core processors.
+- Single M.2 NVMe slot available for storage expansion.
+- M.2 WiFi card slot for expanding network capabilities with additional network card.
+- Replaced old Raspberry Pi [QDevice](https://tshand.com/posts/homelab-04-proxmox-cluster-qdevice/), adding a proper third node to the cluster.
 
-- Considered a test/dev node, similar family as the P330 nodes.
-- Replaced old Raspberry Pi (QDevice), adding a proper third node to the cluster.
-- Single disk node with no ZFS or secondary network interface (yet).
+**Compute:**
 
-| CPU                             | Memory    | Storage (OS)    | Storage (Data) | Networking     |
-| ------------------------------- | --------- | --------------- | -------------- | -------------- |
-| Intel i5-6400T (4C/4T, 2.2 GHz) | 8 GB DDR4 | 256 GB SATA SSD | N/A            | Integrated NIC |
+| Name           | Make/Model                   | CPU                              | Memory              |
+| -------------- | ---------------------------- | -------------------------------- | ------------------- |
+| inf-pve-01-prd | Lenovo ThinkCentre P330 Tiny | Intel i5-9500  (6C/6T, 3.0 GHz)  | 16 GB DDR4 (2x 8GB) |
+| inf-pve-02-prd | Lenovo ThinkCentre P330 Tiny | Intel i5-9500  (6C/6T, 3.0 GHz)  | 16 GB DDR4 (2x 8GB) |
+| inf-pve-03-dev | Lenovo ThinkCentre M700 Tiny | Intel i5-6400T (4C/4T, 2.2 GHz)  | 8 GB DDR4 (1x 8GB)  |
 
-**Raspberry Pi 1B+** _(Decommissioned)_
+**Storage:**
 
-- Was running as a [QDevice](https://tshand.com/posts/homelab-04-proxmox-cluster-qdevice/), maintaining Proxmox cluster quorum (required for two-node clusters).
-- Replaced by the Lenovo M700 and awaiting a new purpose as an environmental monitoring agent.
+| Name           | Drive 1 (SATA) | Drive 2 (NVMe) | Drive 3 (NVMe)   |
+| -------------- | -------------- | -------------- | ---------------- |
+| inf-pve-01-prd | Empty          | 256 GB (OS)    | 1 TB (Data: ZFS) |
+| inf-pve-02-prd | Empty          | 256 GB (OS)    | 1 TB (Data: ZFS) |
+| inf-pve-03-dev | 256 GB (OS)    | Empty          | N/A              |
+
+**Networking:**
+
+| Name           | NIC 1 (Onboard)        | NIC 2 (M.2 Slot)      |
+| -------------- | ---------------------- | --------------------- |
+| inf-pve-01-prd | Intel I219-LM (rev 10) | Intel I226-V (rev 04) |
+| inf-pve-02-prd | Intel I219-LM (rev 10) | Intel I226-V (rev 04) |
+| inf-pve-03-dev | Intel I219-V (rev 31)  | Empty                 |
+
 
 ### 🧱 Firewall (OPNsense)
 
-A twin of the third Proxmox node. A second Lenovo M700 running [OPNsense](https://opnsense.org/get-started/).
-Dedicated as a physical firewall appliance, using the ISP provided router as upstream WAN gateway.
+A twin of the third hypervisor node, a second Lenovo M700 is configured running [OPNsense](https://opnsense.org/get-started/).
+Dedicated as a physical firewall appliance, provides firewall, routing, VLAN, DNS and DHCP functionality.
 
-**Lenovo Thinkcentre M700**
+**Compute:**
 
-| CPU                             | Memory    | Storage (OS)    | Storage (Data) | Networking                          |
-| ------------------------------- | --------- | --------------- | -------------- | ----------------------------------- |
-| Intel i5-6400T (4C/4T, 2.2 GHz) | 8 GB DDR4 | 256 GB SATA SSD | N/A            | Integrated NIC + 2.5GbE M.2 adapter |
+| Name           | Make/Model                   | CPU                              | Memory             |
+| -------------- | ---------------------------- | -------------------------------- | ------------------ |
+| inf-net-fwl-01 | Lenovo ThinkCentre M700 Tiny | Intel i5-6400T (4C/4T, 2.2 GHz)  | 8 GB DDR4 (1x 8GB) |
+
+**Storage:**
+
+| Name           | Drive 1 (SATA) | Drive 2 (NVMe) | Drive 3 (NVMe)   |
+| -------------- | -------------- | -------------- | ---------------- |
+| inf-pve-01-prd | 256 GB (OS)    | Empty          | N/A              |
+
+**Networking:**
+
+| Name           | NIC 1 (Onboard)        | NIC 2 (M.2 Slot)      |
+| -------------- | ---------------------- | --------------------- |
+| inf-pve-03-dev | Intel I219-V (rev 31)  | Intel I226-V (rev 04) |
 
 > [!TIP]
 > Check out [this blog post](https://tshand.com/posts/homelab-08-update/#new-hardware--components) for details on replacing the original M.2 WiFi adapter with 2.5Gb Ethernet adapter.
@@ -122,5 +160,11 @@ Dedicated as a physical firewall appliance, using the ISP provided router as ups
 ## 📚 Documentation
 
 Please refer to the [docs](docs/) directory for information covering operations, configuration and design.
+
+| Name                                    | Purpose                                       |
+| --------------------------------------- | --------------------------------------------- |
+| [Architecture](/docs/architecture.md)   | Topology, VLANs, SDN design.                  |
+| [Hardware](/docs/hardware.md)           | Device specs, upgrades, expansion.            |
+| [Configuration](/docs/configuration.md) | Proxmox, OPNsense, switch config, automation. |
 
 ---
