@@ -4,7 +4,7 @@ This document provides an overview of the physical and virtual architecture used
 
 ## 🌟 Overview
 
-- The lab environment is positioned _behind_ my home network ISP router.
+- The lab zone is positioned _behind_ my home network ISP router (home zone).
 - The OPNsense firewall provides a security layer between the `home` network and the `lab` network.
   - The WAN interface is connected to the ISP router via Ethernet and receives and IPv4 address via static DHCP entry.
   - The LAN interface on the OPNsense firewall is connected to a managed switch and acts as the parent interface for VLANs.
@@ -13,27 +13,43 @@ This document provides an overview of the physical and virtual architecture used
 - VLANs are configured in OPNsense, Proxmox SDN (VNets), and on the managed switch to separate management traffic from workload traffic.
 - Proxmox Software Defined Networking (SDN) is used to provide VMs with virtual networks pre-configured for specific VLANs.
 
-![Architecture diagram of current home lab environment.](images/Network_Design_2026_V2.png)
+![Architecture diagram of current home lab environment.](images/homelab_architecture.png)
 
 ---
 
-## 🏢 Proxmox Cluster
+## 🏢 Hypervisor Cluster
 
-- An additional third Proxmox node added to the existing cluster.
-- The Raspberry Pi **QDevice**, previously used to provide the missing third quorum vote, is no longer required and has been decommissioned. 
+- The cluster is comprised of three physical hosts, each running Proxmox VE.
+- Each nodes primary NIC is connected via Ethernet to a managed switch on ports 2, 3 and 4.
+  - Only two nodes currently have a secondary NIC for dedicated workload traffic.
+  - These NICs are connected to the managed switch on ports 5 and 6.
+- Prior to the addition of the third node, a Raspberry Pi **QDevice** was used to provide the missing third quorum vote.
+  - This is no longer required and has been decommissioned, pending re-purpose as an environmental monitoring device.
+  - Details on QDevice configuration can be found [here](https://tshand.com/posts/homelab-04-proxmox-cluster-qdevice/).
 
-![Screenshot of Proxmox cluster with three nodes.](images/proxmox_cluster_01.png)
+### Software Defined Networking (SDN)
 
-### Software Defined Networking
+Software Defined Networking allows the use of virtual networks for Proxmox resources (VMs and containers).
+These virtual networks (VNets) allow segregation between workloads by separating them into isolated Layer 2 or Layer 3 network segments.
+This simplifies network management and reduces manual VLAN configuration, as the VLAN tag IDs can be assigned to the entire VNet.
+
+- **Zones:** Define the SDN backend (`Simple`, `VLAN`, `VXLAN`, `EVPN`) and determine how virtual networks are implemented across the cluster.
+- **VNets:** Represent the virtual networks that VMs and containers connect to. VNets are members of a single zone.
+- **Subnets:** Define the IP addressing for a VNet, including gateway information and IP address management (IPAM). Subnets are members of a single VNet.
+
+The majority of VNets in Proxmox are assigned VLAN tags. This helps to simplify VLAN assignment. 
+Rather than tagging each individual VM or containers, resources can be assigned to a "pre-tagged" VNet.
+For example, if a resource is assigned to a VNet with tag 20, the traffic from that resource will inherit that VLAN tag.
 
 ---
 
 ## 🌍 Edge Router (ISP Router)
 
-- The ISP provided router is positioned as the **edge router**.
-- Provides outbound Internet access and is the **NAT gateway** for the entire network.
+The ISP provided router provides the main `home` network, providing NAT gateway and outbound Internet access for the entire network.
+
+- This device provides a wireless connection for personal laptops, mobiles, TVs, media devices etc.
 - The OPNsense firewall **WAN interface** is connected to this router via Ethernet.
-- Any device connected to the ISP router (home network) is considered **WAN-side** from the perspective of the lab network.
+- Any device connected to the ISP router is considered **WAN-side** from the perspective of the lab network.
 
 ### DHCP Reservation
 
@@ -79,12 +95,13 @@ OPNsense LAN: (10.0.0.254)
 ### Outbound NAT
 
 Outbound NAT is disabled in OPNsense, as the upstream ISP router provides the NAT functionality for outbound Internet access.
+Disabling this prevents potential issues with "double NAT" situations. 
 
 - **Setting:** `Firewall > NAT > Outbound > Disable outbound NAT rule generation [CHECKED]`
 
 ### Reply-To
 
-Keeping reply-to enabled allows state tracking and return traffic handling to function correctly when accessing devices such as Proxmox hosts from the upstream home network. During testing, disabling reply-to caused connectivity issues to LAN hosts.
+Keeping reply-to enabled allows state tracking and return traffic handling to function correctly when accessing devices such as Proxmox hosts from the upstream home network. During testing, disabling reply-to caused connectivity issues.
 
 - **Setting:** `Firewall > Settings > Advanced > Disable reply-to on WAN rules [UNCHECKED]`
 
@@ -122,17 +139,8 @@ Rather than assigning a rule per host and per port, alias groups enable a single
 
 ### VLANs
 
-- Moving to using VLANs allows separation of traffic for different segments of the lab environment. 
+- Using VLANs allows separation of traffic for different segments of the lab environment. 
 - This helps to reduce congestion and adds an extra layer of security by keeping management and workload traffic separated on their own virtual networks (VLANs).
-
-1. Navigate to `Interfaces > Devices > VLAN`.
-2. Add a device name (must be prefixed with `vlan0` followed by desired VLAN tag ID).
-3. Select the LAN interface as the parent device to carry the VLAN traffic.
-4. Enter the VLAN tag ID (between 1 - 4096).
-5. Select the VLAN priority. For a Proxmox cluster, select a high level priority.
-6. Add a description, this will be used as the display name shown under **Interfaces**.
-7. Click `Save`, followed by `Apply` in the Interfaces menu.
-8. Repeat for all required VLANs.
 
 **VLAN Configuration:**
 
@@ -149,10 +157,10 @@ Rather than assigning a rule per host and per port, alias groups enable a single
 - Enable DHCP listener for VLANs that require automatic IP address assignment.**
 - **Setting:** `Services > Dnsmasq DNS & DHCP > General`.
 
-![Screenshot of OPNsense DHCP configuration.](images/opnsense_dhcp_01.png)
-
 - Configure DHCP scopes per VLAN.
 - **Setting:** `Services > Dnsmasq DNS & DHCP > DHCP Ranges`
+
+> Note: DHCP is not in use for the MGT10 VLAN, static addressing only.
 
 | Interface  | Start Address | End Address | Domain         | Description  |
 | ---------- | ------------- | ----------- | -------------- | ------------ |
@@ -160,16 +168,17 @@ Rather than assigning a rule per host and per port, alias groups enable a single
 | vlan020    | 10.0.20.50    | 10.0.20.89  | svr.tshand.net | SVR20 - DHCP |
 | vlan099    | 10.0.99.50    | 10.0.99.89  | dmz.tshand.net | DMZ99 - DHCP |
 
-![Screenshot of OPNsense DHCP configuration.](images/opnsense_dhcp_02.png)
+![Screenshot of OPNsense DHCP configuration.](images/opnsense_dhcp_01.png)
 
 ---
 
 ## 🔀 Managed Switch
 
 - **Tagged:** Ethernet frame contains a VLAN ID in its header. 
-  - Used between VLAN-aware devices (switches, wireless APs, routers).
+  - Used between VLAN-aware devices (VMs, switches, wireless APs, routers).
 - **Untagged:** Ethernet frame has no VLAN ID in its header.
   - The switch uses the PVID (Port VLAN ID) to decide which VLAN to assign the frame to.
+  - Setting untagged VLAN ID for workload ports (5, 6, 7) to 99, keeping them off default of ID 1.
 
 ### 802.1Q VLAN Settings
 
