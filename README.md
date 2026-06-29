@@ -8,7 +8,8 @@ A base for hands-on learning, developing knowledge and improving my skills.
 As a big fan of small tech (micro-pcs, Raspberry Pi etc), a primary requirement is maintaining a small footprint for my on-prem environment.
 I aim to re-use as much existing hardware as possible, recycling second hand gear and giving it a new life in my lab.
 
-_Check out my [website](https://tshand.com/tags/homelab/) where I share guides on how this home lab was configured._
+> [!TIP]
+> Check out my [website](https://tshand.com/tags/homelab/) where I share guides on how this home lab was configured.
 
 ![Current home lab hardware.](docs/images/homelab_current.jpg)
 
