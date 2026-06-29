@@ -27,7 +27,8 @@ This document provides an overview of the physical and virtual architecture used
   - This is no longer required and has been decommissioned, pending re-purpose as an environmental monitoring device.
   - Details on QDevice configuration can be found [here](https://tshand.com/posts/homelab-04-proxmox-cluster-qdevice/).
 
-> [!TIP] Guides for the initial setup and configuration of Proxmox can be found on my [website](https://tshand.com/tags/homelab/).
+> [!TIP]
+> Guides for the initial setup and configuration of Proxmox can be found on my [website](https://tshand.com/tags/homelab/).
 
 ![Screenshot of Proxmox cluster nodes.](images/proxmox_cluster_01.png)
 
