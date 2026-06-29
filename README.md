@@ -1,4 +1,4 @@
-# Home Lab
+# Personal Home Lab (Private Cloud)
 
 Welcome to my personal home lab! :wave:  
 
@@ -28,17 +28,18 @@ I aim to re-use as much existing hardware as possible, recycling second hand gea
 
 ## 🏛️ Design & Architecture
 
-The design for this project places the home lab network behind the existing home network. This design is relatively simple and allows room for expansion.
+The design for this project places the home lab network behind the existing home network. 
+This design is relatively simple and allows room for future expansion.
 
 - The home lab network exists **behind** the lab firewall, connected to the existing home network.
 - The firewall WAN address is provided by the ISP provided WiFi router using a DHCP reservation.
 - A static route entry is added to the ISP router to direct connections from the home network into the lab network via the firewall WAN IP.
 - Virtual server workloads are isolated on dedicated VLANs for improved security and network traffic control.
 
-> [!INFO]
+> [!NOTE]
 > Further details on architecture and design can be found in the [Architecture](/docs/architecture.md) documentation.
 
-![Home Lab Design](docs/images/homelab_design.png)
+![Home Lab Design](docs/images/homelab_architecture.png)
 
 ---
 
@@ -51,10 +52,11 @@ Chosen due to being free (zero-cost) and open source, with extensive vendor and 
 
 **Lenovo ThinkCentre P330 Tiny (x2)**
 
-- Production nodes 1 & 2, chosen for physical footprint and dual M.2 NVMe slots.
+- Production nodes 1 & 2, chosen for small physical footprint and dual M.2 NVMe slots.
 - ZFS pools configured with replication enabled for priority workloads.
-- PCIe slot available (requires specific PCIe riser), providing extra LAN port or storage capabilities.
-- M.2 WiFi card slot now in use by 2.5Gb Ethernet adapter, providing dedicated workload interface.
+- PCIe expansion slot available (requires specific PCIe riser #01AJ940).
+  - This can provide expansion for additional network adapters, graphics cards, or increasing storage capabilities.
+- M.2 WiFi card slot now in use by 2.5Gb Ethernet adapter, providing a dedicated networking interface for workload traffic.
 
 | CPU                            | Memory     | Storage (OS) | Storage (Data) | Networking                          |
 | ------------------------------ | ---------- | ------------ | -------------- | ----------------------------------- |
@@ -72,12 +74,12 @@ Chosen due to being free (zero-cost) and open source, with extensive vendor and 
 
 **Raspberry Pi 1B+** _(Decommissioned)_
 
-- Was running as a QDevice, maintaining Proxmox cluster quorum (required for two-node clusters).
-- Replaced by the Lenovo M700 and awaiting a new purpose as environment monitoring agent.
+- Was running as a [QDevice](https://tshand.com/posts/homelab-04-proxmox-cluster-qdevice/), maintaining Proxmox cluster quorum (required for two-node clusters).
+- Replaced by the Lenovo M700 and awaiting a new purpose as an environmental monitoring agent.
 
 ### 🧱 Firewall (OPNsense)
 
-A twin of my third Proxmox node. A second Lenovo M700 running [OPNsense](https://opnsense.org/get-started/).
+A twin of the third Proxmox node. A second Lenovo M700 running [OPNsense](https://opnsense.org/get-started/).
 Dedicated as a physical firewall appliance, using the ISP provided router as upstream WAN gateway.
 
 **Lenovo Thinkcentre M700**
@@ -100,8 +102,8 @@ Dedicated as a physical firewall appliance, using the ISP provided router as ups
 
 ## 🧩 Workloads
 
-- Self-hosted GitLab instance for repo mirroring and executing pipelines locally.
-- Virtualized [pfSense](https://www.pfsense.org/download/) VM (for internal lab use).
+- Self-hosted GitLab instance for repo mirroring and executing automation pipelines locally.
+- Virtualized [pfSense](https://www.pfsense.org/download/) VM (for internal lab/testing usage).
 - Management and jump host servers, test and misc utility VMs.
 
 ---
@@ -119,6 +121,6 @@ Dedicated as a physical firewall appliance, using the ISP provided router as ups
 
 ## 📚 Documentation
 
-Please refer to the [docs](docs/) directory for operational guides on how this environment is configured.
+Please refer to the [docs](docs/) directory for information covering operations, configuration and design.
 
 ---
