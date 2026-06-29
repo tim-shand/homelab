@@ -162,8 +162,6 @@ Rather than assigning a rule per host and per port, alias groups enable a single
 
 ![Screenshot of OPNsense DHCP configuration.](images/opnsense_dhcp_02.png)
 
-> [!TIP] DHCP is not in use for the MGT10 VLAN, static addressing only.
-
 ---
 
 ## 🔀 Managed Switch
@@ -172,8 +170,6 @@ Rather than assigning a rule per host and per port, alias groups enable a single
   - Used between VLAN-aware devices (switches, wireless APs, routers).
 - **Untagged:** Ethernet frame has no VLAN ID in its header.
   - The switch uses the PVID (Port VLAN ID) to decide which VLAN to assign the frame to.
-
-![Screenshot of TP Link switch VLAN setup.](images/switch_vlans_01.png)
 
 ### 802.1Q VLAN Settings
 
@@ -191,5 +187,7 @@ The PVID defines the default VLAN ID assigned to any **untagged** traffic on the
 | Port     | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   |
 | -------- | --- | --- | --- | --- | --- | --- | --- | --- |
 | **PVID** | 1   | 10  | 10  | 10  | 99  | 99  | 99  | 1   |
+
+![Screenshot of TP Link switch VLAN setup.](images/switch_vlans_01.png)
 
 ---
