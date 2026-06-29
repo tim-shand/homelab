@@ -154,13 +154,13 @@ Rather than assigning a rule per host and per port, alias groups enable a single
 
 ### DHCP
 
-- Enable DHCP listener for VLANs that require automatic IP address assignment.**
-- **Setting:** `Services > Dnsmasq DNS & DHCP > General`.
+DHCP is used to provide automatic IP addressing to devices on networks.
+This ensures that connected devices are able to communicate with the need to set a static IP.
 
-- Configure DHCP scopes per VLAN.
-- **Setting:** `Services > Dnsmasq DNS & DHCP > DHCP Ranges`
+- **Enable DHCP listener for VLANs:** `Services > Dnsmasq DNS & DHCP > General`.
+- **Configure DHCP scopes per VLAN:** `Services > Dnsmasq DNS & DHCP > DHCP Ranges`
 
-> Note: DHCP is not in use for the MGT10 VLAN, static addressing only.
+> [!INFO] DHCP is not used for the MGT10 VLAN. Being a privileged management network, it uses static addressing only.
 
 | Interface  | Start Address | End Address | Domain         | Description  |
 | ---------- | ------------- | ----------- | -------------- | ------------ |
@@ -173,6 +173,11 @@ Rather than assigning a rule per host and per port, alias groups enable a single
 ---
 
 ## 🔀 Managed Switch
+
+This device is the backbone of the lab network. 
+It is used to connect devices, configure VLANs and carry network traffic.
+
+VLANs are configured to carry traffic on ports marked as both `tagged` and `untagged`.
 
 - **Tagged:** Ethernet frame contains a VLAN ID in its header. 
   - Used between VLAN-aware devices (VMs, switches, wireless APs, routers).
