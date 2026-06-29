@@ -10,8 +10,8 @@ This document provides an overview of the physical and virtual architecture used
   - The LAN interface on the OPNsense firewall is connected to a managed switch and acts as the parent interface for VLANs.
 - A static route is added to the ISP router to allow traffic from the home network destined for the lab zone to go via the OPNsense WAN address.
 - Aliases are used in OPNsense to group trusted devices and destination services, making firewall rules easier to implement.
-- VLANs are configured in OPNsense, Proxmox SDN (VNets), and on the managed switch to separate management traffic from workload traffic.
 - Proxmox Software Defined Networking (SDN) is used to provide VMs with virtual networks pre-configured for specific VLANs.
+- VLANs are configured in OPNsense, Proxmox SDN (VNets), and on the managed switch to separate management traffic from workload traffic.
 
 ![Architecture diagram of current home lab environment.](images/homelab_architecture.png)
 
@@ -19,7 +19,7 @@ This document provides an overview of the physical and virtual architecture used
 
 ## 🏢 Hypervisor Cluster
 
-- The cluster is comprised of three physical hosts, each running Proxmox VE.
+- The cluster is comprised of three physical hosts, each running [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview).
 - Each nodes primary NIC is connected via Ethernet to a managed switch on ports 2, 3 and 4.
   - Only two nodes currently have a secondary NIC for dedicated workload traffic.
   - These NICs are connected to the managed switch on ports 5 and 6.
@@ -27,7 +27,9 @@ This document provides an overview of the physical and virtual architecture used
   - This is no longer required and has been decommissioned, pending re-purpose as an environmental monitoring device.
   - Details on QDevice configuration can be found [here](https://tshand.com/posts/homelab-04-proxmox-cluster-qdevice/).
 
-![Screenshot of TP Link switch VLAN setup.](images/proxmox_cluster_01.png)
+> [!TIP] Guides for the initial setup and configuration of Proxmox can be found on my [website](https://tshand.com/tags/homelab/).
+
+![Screenshot of Proxmox cluster nodes.](images/proxmox_cluster_01.png)
 
 ### Software Defined Networking (SDN)
 
@@ -42,6 +44,8 @@ This simplifies network management and reduces manual VLAN configuration, as the
 The majority of VNets in Proxmox are assigned VLAN tags. This helps to simplify VLAN assignment. 
 Rather than tagging each individual VM or containers, resources can be assigned to a "pre-tagged" VNet.
 For example, if a resource is assigned to a VNet with tag 20, the traffic from that resource will inherit that VLAN tag.
+
+> [!NOTE] Some Proxmox configuration, including Software-Defined-Networking is defined and managed via Terraform.
 
 ---
 
@@ -99,13 +103,13 @@ OPNsense LAN: (10.0.0.254)
 Outbound NAT is disabled in OPNsense, as the upstream ISP router provides the NAT functionality for outbound Internet access.
 Disabling this prevents potential issues with "double NAT" situations. 
 
-- **Setting:** `Firewall > NAT > Outbound > Disable outbound NAT rule generation [CHECKED]`
+- **Disable Outbound NAT:** `Firewall > NAT > Outbound > Disable outbound NAT rule generation [CHECKED]`
 
 ### Reply-To
 
 Keeping reply-to enabled allows state tracking and return traffic handling to function correctly when accessing devices such as Proxmox hosts from the upstream home network. During testing, disabling reply-to caused connectivity issues.
 
-- **Setting:** `Firewall > Settings > Advanced > Disable reply-to on WAN rules [UNCHECKED]`
+- **Enable Reply-To:** `Firewall > Settings > Advanced > Disable reply-to on WAN rules [UNCHECKED]`
 
 ### Firewall Rules + Alias Groups
 
@@ -162,7 +166,7 @@ This ensures that connected devices are able to communicate with the need to set
 - **Enable DHCP listener for VLANs:** `Services > Dnsmasq DNS & DHCP > General`.
 - **Configure DHCP scopes per VLAN:** `Services > Dnsmasq DNS & DHCP > DHCP Ranges`
 
-> [!INFO] DHCP is not used for the MGT10 VLAN. Being a privileged management network, it uses static addressing only.
+> [!NOTE] DHCP is not used for the MGT10 VLAN. Being a privileged management network, it uses static addressing only.
 
 | Interface  | Start Address | End Address | Domain         | Description  |
 | ---------- | ------------- | ----------- | -------------- | ------------ |
@@ -176,9 +180,7 @@ This ensures that connected devices are able to communicate with the need to set
 
 ## 🔀 Managed Switch
 
-This device is the backbone of the lab network. 
-It is used to connect devices, configure VLANs and carry network traffic.
-
+This device is the backbone of the lab network. It is used to connect devices, configure VLANs and carry network traffic.
 VLANs are configured to carry traffic on ports marked as both `tagged` and `untagged`.
 
 - **Tagged:** Ethernet frame contains a VLAN ID in its header. 
