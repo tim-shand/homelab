@@ -1,8 +1,8 @@
 # Architecture & Design
 
-This document provides an overview of the physical and virtual architecture used within my home lab environment. 
+This document provides an overview of the physical and virtual architecture used within the lab environment. 
 
-## Overview
+## 🌟 Overview
 
 - The lab environment is positioned _behind_ my home network ISP router.
 - The OPNsense firewall provides a security layer between the `home` network and the `lab` network.
@@ -17,17 +17,10 @@ This document provides an overview of the physical and virtual architecture used
 
 ---
 
-## Hardware
+## 🏢 Proxmox Cluster
 
-
-
----
-
-## Proxmox
-
-### Cluster
-
-With the addition of a third Proxmox node, the Raspberry Pi **QDevice** used to provide the missing third quorum vote is no longer required and has been decommissioned. The cluster now consists of three Proxmox nodes.
+- An additional third Proxmox node added to the existing cluster.
+- The Raspberry Pi **QDevice**, previously used to provide the missing third quorum vote, is no longer required and has been decommissioned. 
 
 ![Screenshot of Proxmox cluster with three nodes.](images/proxmox_cluster_01.png)
 
@@ -35,15 +28,17 @@ With the addition of a third Proxmox node, the Raspberry Pi **QDevice** used to 
 
 ---
 
-## Edge Router (ISP Router)
+## 🌍 Edge Router (ISP Router)
 
-The ISP provided router positioned as the **edge router**, providing Internet access and is the sole **NAT gateway** for the entire network.
-As the OPNsense firewall **WAN interface** is connected to this router via Ethernet, any device connected to the ISP router is considered **WAN-side** from the perspective of the lab network.
+- The ISP provided router is positioned as the **edge router**.
+- Provides outbound Internet access and is the **NAT gateway** for the entire network.
+- The OPNsense firewall **WAN interface** is connected to this router via Ethernet.
+- Any device connected to the ISP router (home network) is considered **WAN-side** from the perspective of the lab network.
 
 ### DHCP Reservation
 
-A DHCP reservation is added to ensure that the IPv4 address of the OPNsense WAN interface is preserved through reboot events. 
-Without this, the OPNsense WAN interface _could_ receive a different IP address from the ISP router when the automatically assigned IP lease expires.
+- A DHCP reservation is added to ensure that the IPv4 address of the OPNsense WAN interface is preserved through reboot events. 
+- Without this, the OPNsense WAN interface _could_ receive a different IP address from the ISP router when the lease expires for the automatically assigned IP.
 
 ```text
 MAC Address: 00:23:24:xx:xx:xx
@@ -53,8 +48,8 @@ Host Name:   inf-net-fwl-01
 
 ### Static Route
 
-A static route configured on the ISP router provides a pathway for WAN-side devices where the target destination address is within the home lab network.
-The network address uses the subnet mask of `255.255.0.0` (/16) to ensure that all VLANs and home lab subnets will be directed via the OPNsense WAN interface.
+- A static route configured on the ISP router provides a pathway for WAN-side devices where the target destination address is within the home lab network.
+- The network address uses the subnet mask of `255.255.0.0` (/16) to ensure that all VLANs and home lab subnets will be directed via the OPNsense WAN interface.
 
 ```text
 Source:       Laptop (172.16.0.10)
@@ -79,7 +74,7 @@ OPNsense LAN: (10.0.0.254)
 
 ---
 
-## Firewall (OPNsense)
+## 🚧 Firewall (OPNsense)
 
 ### Outbound NAT
 
@@ -127,8 +122,8 @@ Rather than assigning a rule per host and per port, alias groups enable a single
 
 ### VLANs
 
-Moving to using VLANs allows separation of traffic for different segments of the lab environment. 
-This helps to reduce congestion and adds an extra layer of security by keeping management and workload traffic separated on their own virtual networks (VLANs).
+- Moving to using VLANs allows separation of traffic for different segments of the lab environment. 
+- This helps to reduce congestion and adds an extra layer of security by keeping management and workload traffic separated on their own virtual networks (VLANs).
 
 1. Navigate to `Interfaces > Devices > VLAN`.
 2. Add a device name (must be prefixed with `vlan0` followed by desired VLAN tag ID).
@@ -139,8 +134,6 @@ This helps to reduce congestion and adds an extra layer of security by keeping m
 7. Click `Save`, followed by `Apply` in the Interfaces menu.
 8. Repeat for all required VLANs.
 
-![Screenshot of OPNsense VLAN setup.](images/opnsense_vlans_01.png)
-
 **VLAN Configuration:**
 
 | Device  | Parent       | VLAN Tag | VLAN Priority                | Description |
@@ -149,25 +142,17 @@ This helps to reduce congestion and adds an extra layer of security by keeping m
 | vlan020 | igc0 \[LAN\] | 20       | Best Effort (0, default)     | SVR20       |
 | vlan099 | igc0 \[LAN\] | 99       | Best Effort (0, default)     | DMZ99       |
 
+![Screenshot of OPNsense VLAN setup.](images/opnsense_vlans_01.png)
+
 ### DHCP
 
-**Enable DHCP listener for VLANs that require automatic IP address assignment.**
-
-1. Navigate to `Services > Dnsmasq DNS & DHCP > General`.
-2. Using the `Interface` drop down menu, select the new VLAN interfaces.
-3. Click `Apply`.
+- Enable DHCP listener for VLANs that require automatic IP address assignment.**
+- **Setting:** `Services > Dnsmasq DNS & DHCP > General`.
 
 ![Screenshot of OPNsense DHCP configuration.](images/opnsense_dhcp_01.png)
 
-**Configure DHCP scopes per VLAN.**
-
-1. Navigate to `Services > Dnsmasq DNS & DHCP > DHCP Ranges`.
-2. Using the `+` button, add a new DHCP range.
-3. Select the first VLAN interface.
-4. Provide a start and end address, with an optional domain name.
-5. Add a description and click `Save`, followed by `Apply`.
-
-![Screenshot of OPNsense DHCP configuration.](images/opnsense_dhcp_02.png)
+- Configure DHCP scopes per VLAN.
+- **Setting:** `Services > Dnsmasq DNS & DHCP > DHCP Ranges`
 
 | Interface  | Start Address | End Address | Domain         | Description  |
 | ---------- | ------------- | ----------- | -------------- | ------------ |
@@ -175,14 +160,18 @@ This helps to reduce congestion and adds an extra layer of security by keeping m
 | vlan020    | 10.0.20.50    | 10.0.20.89  | svr.tshand.net | SVR20 - DHCP |
 | vlan099    | 10.0.99.50    | 10.0.99.89  | dmz.tshand.net | DMZ99 - DHCP |
 
+![Screenshot of OPNsense DHCP configuration.](images/opnsense_dhcp_02.png)
+
 > [!TIP] DHCP is not in use for the MGT10 VLAN, static addressing only.
 
 ---
 
-## Managed Switch
+## 🔀 Managed Switch
 
-- **Tagged:** Ethernet frame contains a VLAN ID in its header. Used between VLAN-aware devices (switches, wireless APs, routers).
-- **Untagged:** Ethernet frame has no VLAN ID in its header. The switch uses the PVID (Port VLAN ID) to decide which VLAN to assign the frame to.
+- **Tagged:** Ethernet frame contains a VLAN ID in its header. 
+  - Used between VLAN-aware devices (switches, wireless APs, routers).
+- **Untagged:** Ethernet frame has no VLAN ID in its header.
+  - The switch uses the PVID (Port VLAN ID) to decide which VLAN to assign the frame to.
 
 ![Screenshot of TP Link switch VLAN setup.](images/switch_vlans_01.png)
 
