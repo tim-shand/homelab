@@ -6,7 +6,7 @@ This document describes the physical hardware and components used within the hom
 
 The Proxmox cluster resides on three refurbished mini-PCs running [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) as the virtualisation layer. Proxmox was chosen for the hypervisor due to being free (zero-cost) and open source, with extensive vendor and user documentation available.
 
-**Lenovo Thinkcentre P330 Tiny**
+**Lenovo Thinkcentre P330 Tiny (x2)**
 
 - Small physical footprint _(known as "1-litre PCs")_.
 - Accessible price point, these average around NZD$350 in local used markets.
@@ -15,7 +15,7 @@ The Proxmox cluster resides on three refurbished mini-PCs running [Proxmox VE](h
   - **Note:** Requires a specific PCIe riser, part number #01AJ940.
 - M.2 WiFi card slot can be [replaced with an Ethernet adapter](https://tshand.com/posts/homelab-08-update/), providing additional networking capabilities.
 
-**Lenovo Thinkcentre M700 Tiny**
+**Lenovo Thinkcentre M700 Tiny (x1)**
 
 - Same physical size of the P330 Tiny, fits in well with existing hardware.
 - Cheaper price point of around NZD$180.
@@ -52,8 +52,8 @@ The Proxmox cluster resides on three refurbished mini-PCs running [Proxmox VE](h
 
 ## 🧱 Firewall
 
-A twin of the third hypervisor node, a second Lenovo M700 is configured running [OPNsense](https://opnsense.org/get-started/).
-Dedicated as a physical firewall appliance, provides firewall, routing, VLAN, DNS and DHCP functionality.
+A twin of the third hypervisor node, a second Lenovo M700 is configured running [OPNsense](https://opnsense.org/get-started/).  
+Dedicated as a physical firewall appliance, also provides routing, VLAN, DNS and DHCP functionality.
 
 **Compute:**
 
@@ -75,11 +75,22 @@ Dedicated as a physical firewall appliance, provides firewall, routing, VLAN, DN
 
 ---
 
-## 🔀 Switches
+## 🔀 Networking
 
 **Core Switch (TP Link TL-SG108PE)**
 
-- Basic 8 port "smart" managed switch, supporting VLANs (802.1Q and port based).
+- Basic 8 port "smart" managed gigabit switch, supporting VLANs (802.1Q and port based).
 - Capable of PoE (Power over Ethernet), although this is not being used currently, and has been disabled.
+
+---
+
+## *️⃣ Additional Devices
+
+**Raspberry Pi 1B+ (Decommissioned)**
+
+- Very old Raspberry Pi model, running Debian 13 Trixie (barely).
+  - Requires using the 32-bit Debian architecture and sticking a CLI-only (headless) environment.
+- Was running as a QDevice, maintaining Proxmox cluster quorum (required for two-node clusters).
+- Replaced by the Lenovo M700 and awaiting a new purpose as environment monitoring agent.
 
 ---
