@@ -27,6 +27,8 @@ This document provides an overview of the physical and virtual architecture used
   - This is no longer required and has been decommissioned, pending re-purpose as an environmental monitoring device.
   - Details on QDevice configuration can be found [here](https://tshand.com/posts/homelab-04-proxmox-cluster-qdevice/).
 
+![Screenshot of TP Link switch VLAN setup.](images/proxmox_cluster_01.png)
+
 ### Software Defined Networking (SDN)
 
 Software Defined Networking allows the use of virtual networks for Proxmox resources (VMs and containers).
