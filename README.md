@@ -11,7 +11,7 @@ I aim to re-use as much existing hardware as possible, recycling second hand gea
 > [!TIP]
 > Check out my [website](https://tshand.com/tags/homelab/) where I share guides on how this home lab was configured.
 
-![Current home lab hardware.](docs/images/homelab_current.jpg)
+![Current home lab hardware.](docs/images/homelab_current_01.jpg)
 
 ---
 
