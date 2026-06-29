@@ -46,7 +46,8 @@ The majority of VNets in Proxmox are assigned VLAN tags. This helps to simplify 
 Rather than tagging each individual VM or containers, resources can be assigned to a "pre-tagged" VNet.
 For example, if a resource is assigned to a VNet with tag 20, the traffic from that resource will inherit that VLAN tag.
 
-> [!NOTE] Some Proxmox configuration, including Software-Defined-Networking is defined and managed via Terraform.
+> [!NOTE] 
+> Some Proxmox configuration, including Software-Defined-Networking is defined and managed via Terraform.
 
 ---
 
