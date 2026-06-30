@@ -1,7 +1,6 @@
 # 🏠 Personal Home Lab
 
 Welcome! This repo documents my personal home lab.
-
 A self-hosted private cloud environment used for hands-on learning, infrastructure experimentation, and developing my skill set.
 
 As a big fan of small tech, a primary requirement is to maintain a small physical footprint.
