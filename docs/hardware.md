@@ -2,7 +2,7 @@
 
 This document describes the physical hardware and components used within the home lab environment.
 
-## 🏭 Hypervisors
+## 🏢 Hypervisors
 
 The Proxmox cluster resides on three refurbished mini-PCs running [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) as the virtualisation layer. Proxmox was chosen for the hypervisor due to being free (zero-cost) and open source, with extensive vendor and user documentation available.
 
