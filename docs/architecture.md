@@ -24,6 +24,9 @@ Only trusted source addresses may reach management interfaces, on specific ports
 
 ### Zones
 
+The environment is split between two separate zones. 
+These zones are used to interpret network locations and where they belong in the overall design.
+
 | Zone | Address Space | Purpose                                               |
 | ---- | ------------- | ----------------------------------------------------- |
 | Home | 172.16.0.0/24 | Main home network, ISP WiFi router, personal devices. |
@@ -58,7 +61,7 @@ Only trusted source addresses may reach management interfaces, on specific ports
 
 **VLAN Segmentation (OPNsense, switch, Proxmox SDN)**
 
-Rather than relying on firewall rules for isolation, VLANs are enforced at the hypervisor, switch, and firewall layers. 
+Rather than relying on purely firewall rules for isolation, VLANs are enforced at the hypervisor, switch, and firewall layers. 
 This ensures VMs are contained within their assigned networks and avoids unauthorised access to privileged workloads.
 
 **Static Addressing on MGT10**
