@@ -1,15 +1,13 @@
-# Personal Home Lab
+# 🏠 Personal Home Lab
 
-Welcome to my personal home lab! :wave:  
+Welcome! This repo documents my personal home lab. 
+A self-hosted private cloud environment used for hands-on learning, infrastructure experimentation, and developing my skill set.
 
-This project provides an environment for self-hosting and experimenting with different technologies.
-A base for hands-on learning, developing knowledge and improving my skills.
-
-As a big fan of small tech (micro-pcs, Raspberry Pi etc), a primary requirement is maintaining a small footprint for my on-prem environment.
-I aim to re-use as much existing hardware as possible, recycling second hand gear and giving it a new life in my lab.
+As a big fan of small tech, a primary requirement is to maintain a small physical footprint.
+I aim to utilise as much existing hardware as possible by recycling second hand gear to give it a new life in my lab.
 
 > [!TIP]
-> Check out my [website](https://tshand.com/tags/homelab/) where I share guides on how this home lab was configured.
+> Guides and articles about how this lab was built can be found on my [website](https://tshand.com/tags/homelab/).
 
 ![Current home lab hardware.](docs/images/homelab_current_01.jpg)
 
@@ -17,26 +15,36 @@ I aim to re-use as much existing hardware as possible, recycling second hand gea
 
 ## 🎯 Goals & Objectives
 
-- Use existing or refurbished hardware, reducing cost and maximizing technology lifespan.
-- Isolation of networks, providing a separation of lab and existing home networks.
-- Implement high availability, redundancy and best practices where applicable.
-- Utilise both infrastructure and configuration as code where possible.
-- Automate deployments, using Git for version control and workflows/pipelines for CI/CD.
-- Maintain a small physical footprint, for both atheistic and practicality purposes.
+- Use existing or refurbished hardware, reducing cost and maximising technology lifespan.
+- Enforce network segmentation between home and lab zones using a dedicated firewall and VLAN architecture.
+- Implement high availability, redundancy, and best practices where applicable.
+- Manage infrastructure declaratively using Terraform and version control.
+- Automate deployments via CI/CD pipelines running on self-hosted GitLab.
+- Maintain a small physical footprint for both practicality and aesthetics.
+
+---
+
+## 💡 Stack at a Glance
+
+| Layer           | Technology                           |
+| --------------- | ------------------------------------ |
+| Hypervisor      | Proxmox VE (3-node cluster)          |
+| Firewall/Router | OPNsense                             |
+| Networking      | TP-Link managed switch, 802.1Q VLANs |
+| IaC             | Terraform (`bpg/proxmox` provider)   |
+| Scripting       | Bash, PowerShell                     |
+| Storage         | Local, ZFS pools, NFS                |
 
 ---
 
 ## 🏛️ Design & Architecture
 
-The design for this project places the home lab network behind the existing home network. 
-This design is relatively simple and allows room for future expansion.
-
-- The home lab network exists **behind** the lab firewall, connected to the existing home network.
-- The firewall WAN address is provided by the ISP router using a DHCP reservation.
-- Virtual server workloads are isolated on dedicated VLANs for improved security and network traffic control.
+The lab sits behind a dedicated OPNsense firewall, isolated from the home network and segmented into VLANs for management, workloads, and DMZ traffic. 
+A three-node Proxmox cluster runs virtualised workloads, with Proxmox Software-Defined Networking (SDN) used to manage VLAN assignment at the hypervisor level.
 
 > [!NOTE]
-> Further details on architecture and design can be found in the [Architecture](/docs/architecture.md) documentation.
+> Full topology, VLAN tables, and firewall design:
+> [Architecture](docs/architecture.md)
 
 ![Home Lab Design](docs/images/homelab_architecture.png)
 
@@ -44,20 +52,19 @@ This design is relatively simple and allows room for future expansion.
 
 ## 🧩 Workloads
 
-- Self-hosted GitLab instance for repo mirroring and executing automation pipelines locally.
-- Virtualized [pfSense](https://www.pfsense.org/download/) VM (for internal lab/testing usage).
-- Management and jump host servers, test and misc utility VMs.
+| Workload             | Purpose                                                 |
+| -------------------- | ------------------------------------------------------- |
+| PFsense/OPNsense VMs | Internal firewall testing and lab network experiments.  |
+| Management/Jump Host | Access point into lab management interfaces.            |
+| Misc utility VMs     | Testing, sand boxing, and evaluating new tech.          |
 
 ---
 
 ## 🛠️ Tools & Utilities
 
-- **[Terraform](https://www.terraform.io/)**
-  - Provider agnostic IaC tool, free to use, plenty of discussion, guides and support available.
-  - Deploy and manage resources using dedicated providers.
-  - **Alternatives:** Pulumi, OpenTofu.
-- **Bash/Powershell**
-  - Bootstrapping and misc utility scripts.
+- **[Terraform](https://www.terraform.io/):** Provider agnostic IaC tool for deploying and managing resources declaratively.
+- **Azure Blob Storage:** Used to store remote state files for Terraform deployments.
+- **Bash/PowerShell:** Bootstrapping scripts and miscellaneous automation utilities.
 
 ---
 
