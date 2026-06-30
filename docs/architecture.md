@@ -38,6 +38,7 @@ Only trusted source addresses may reach management interfaces, on specific ports
 ### Address Assignments
 
 | Device     | Zone | Interface | Address      |
+| ---------- | ---- | --------- | ------------ |
 | ISP Router | Home | LAN       | 172.16.0.254 |
 | OPNsense   | Home | WAN       | 172.16.0.250 |
 | Switch     | Lab  | LAN       | 10.0.0.250   |
@@ -139,7 +140,6 @@ ISP Router (172.16.0.254)
   [static route: 10.0.0.0/16 --> 172.16.0.250]
     │
 OPNsense WAN (172.16.0.250)
-  [firewall policy is enforced here]
     │
 OPNsense LAN (10.0.0.254)
     ├── VLAN10/MGT10 (10.0.10.0/24)
@@ -156,7 +156,8 @@ OPNsense LAN (10.0.0.254)
 Aliases are used to group common hosts or ports, making the generation of firewall rules much easier.
 Rather than assigning a rule per host and per port, alias groups enable a single rule to apply to multiple hosts across multiple ports.
 
-> [!TIP] If a host address is added or changes, only the alias require updated, not individual firewall rules.
+> [!TIP]
+> If a host is added or the address changes, only the alias require updated, not individual firewall rules.
 
 | Name              | Type      | Content                         | Description         |
 | ----------------- | --------- | ------------------------------- | ------------------- |
@@ -169,7 +170,7 @@ Rather than assigning a rule per host and per port, alias groups enable a single
 ### Firewall Rules (WAN Interface)
 
 Inbound rules on the WAN interface restrict home-zone access to specific destinations and ports.
-All other inbound traffic is denied by the implicit default-deny.
+All other inbound traffic is denied by the default deny.
 This protects the lab network from un-trusted devices such as IOT devices (TVs and automated cat toilets).
 
 | Action | Interface | Version | Protocol | Source      | Port | Destination       | Port       |
@@ -209,7 +210,7 @@ VLAN tagging is used to ensure each port carries only the VLANs relevant to the 
 
 - **Port 1:** Uplink trunk to OPNsense carrying all VLANs tagged.
 - **Ports 2-4:** Carry MGT10 untagged to the Proxmox nodes (PVID 10) without requiring the nodes to have `VLAN-aware` enabled on their primary NIC.
-- **Ports 5-7:** Carry SVR20 and DMZ99 tagged, used by nodes with a secondary workload NIC.
+- **Ports 5-7:** Carry tagged workload VLANs, used by nodes with a secondary workload NIC.
 - **Port 8:** Used for access to default VLAN 1 (LAN) in case of accidental lockout due to misconfigured firewall rules.
 
 ### 802.1Q VLAN Membership
