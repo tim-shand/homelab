@@ -1,23 +1,6 @@
 # Configuration & Settings
 
-This document describes the configuration and settings used within the home lab environment.
-
----
-
-Proxmox
-
-Post-install hardening steps (repository configuration, subscription nag removal etc.)
-Cluster creation and node join process
-SDN setup — zone, VNet, and subnet creation, referencing architecture.md for the what and explaining the how here
-ZFS pool creation
-QDevice setup (historical — worth keeping as it's documented on your blog and cross-referenced)
-
-Terraform
-
-Provider setup (bpg/proxmox configuration, authentication)
-The two-applier pattern for SDN management — this is nuanced enough to warrant its own subsection
-When the finalizer applier is and isn't needed
-Workflow — how to plan/apply, state management, any CI/CD pipeline integration
+This document describes the current configuration and settings used within the home lab environment.
 
 ---
 
