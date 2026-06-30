@@ -16,7 +16,7 @@ This ensures VLAN policy is enforced at every layer, rather than relying on any 
 Access from the home zone into the lab is intentionally restricted.
 Only trusted source addresses may reach management interfaces, on specific ports, via explicit allow rules. Everything else is default-deny.
 
-![Home Lab Design](docs/images/homelab_architecture.png)
+![Home Lab Design](images/homelab_architecture.png)
 
 ---
 
