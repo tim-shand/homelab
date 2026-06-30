@@ -21,10 +21,10 @@ Workflow — how to plan/apply, state management, any CI/CD pipeline integration
 
 ---
 
-## Hypervisors (Proxmox)
+## 🏢 Hypervisors (Proxmox)
 
 > [!TIP]
-> Full guide to Proxmox installation and setup can be found [here](https://tshand.com/posts/homelab-03-proxmox-install/#overview).
+> Full guide to Proxmox cluster installation and setup can be found [here](https://tshand.com/posts/homelab-03-proxmox-install/#overview).
 
 ### Disable Enterprise Repositories
 
@@ -34,7 +34,7 @@ Operating system updates for Debian will still be made available for install, ho
 1. Select the Proxmox node from the left-side panel and navigate to `Updates > Repositories`.
 2. Select each of the `Enterprise repositories`, then click `Disable`.
 
-![Screenshot showing the disabling of Proxmox enterprise repositories.](docs/images/proxmox_disable_repos.png)
+![Screenshot showing the disabling of Proxmox enterprise repositories.](images/proxmox_disable_repos.png)
 
 ---
 
