@@ -55,50 +55,6 @@ resource "proxmox_sdn_subnet" "svr20_1" {
   ]
 }
 
-# Production Servers 2 (VLAN30) --------------------------------- #
-resource "proxmox_sdn_vnet" "svr30" {
-  id            = "svr30"
-  zone          = proxmox_sdn_zone_vlan.znvlan.id
-  alias         = "svr30"
-  tag           = 30
-  isolate_ports = false
-  vlan_aware    = false
-  depends_on = [
-    proxmox_sdn_applier.prep
-  ]
-}
-
-resource "proxmox_sdn_subnet" "svr30_1" {
-  cidr            = "10.0.30.0/24"
-  vnet            = proxmox_sdn_vnet.svr30.id
-  gateway         = "10.0.30.254"
-  depends_on = [
-    proxmox_sdn_applier.prep
-  ]
-}
-
-# Lab/Test Workloads (VLAN88) --------------------------------- #
-resource "proxmox_sdn_vnet" "lab88" {
-  id            = "lab88"
-  zone          = proxmox_sdn_zone_vlan.znvlan.id
-  alias         = "lab88"
-  tag           = 88
-  isolate_ports = false
-  vlan_aware    = false
-  depends_on = [
-    proxmox_sdn_applier.prep
-  ]
-}
-
-resource "proxmox_sdn_subnet" "lab88_1" {
-  cidr            = "10.0.88.0/24" # Subnet IP range.
-  vnet            = proxmox_sdn_vnet.lab88.id
-  gateway         = "10.0.88.254"
-  depends_on = [
-    proxmox_sdn_applier.prep
-  ]
-}
-
 # DMZ Network - Internet Only, isolated (VLAN99) --------------------------------- #
 resource "proxmox_sdn_vnet" "dmz99" {
   id            = "dmz99"
@@ -114,7 +70,7 @@ resource "proxmox_sdn_vnet" "dmz99" {
 
 resource "proxmox_sdn_subnet" "dmz99_1" {
   cidr            = "10.0.99.0/24" # Subnet IP range.
-  vnet            = proxmox_sdn_vnet.lab99.id
+  vnet            = proxmox_sdn_vnet.dmz99.id
   gateway         = "10.0.99.254"
   depends_on = [
     proxmox_sdn_applier.prep
@@ -136,10 +92,6 @@ resource "proxmox_sdn_applier" "final" {
       proxmox_sdn_zone_vlan.znvlan,
       proxmox_sdn_vnet.svr20,
       proxmox_sdn_subnet.svr20_1,
-      proxmox_sdn_vnet.svr30,
-      proxmox_sdn_subnet.svr30_1,
-      proxmox_sdn_vnet.lab88,
-      proxmox_sdn_subnet.lab88_1,
       proxmox_sdn_vnet.dmz99,
       proxmox_sdn_subnet.dmz99_1,
     ]
@@ -149,10 +101,6 @@ resource "proxmox_sdn_applier" "final" {
     proxmox_sdn_zone_vlan.znvlan,
     proxmox_sdn_vnet.svr20,
     proxmox_sdn_subnet.svr20_1,
-    proxmox_sdn_vnet.svr30,
-    proxmox_sdn_subnet.svr30_1,
-    proxmox_sdn_vnet.lab88,
-    proxmox_sdn_subnet.lab88_1,
     proxmox_sdn_vnet.dmz99,
     proxmox_sdn_subnet.dmz99_1,
   ]
