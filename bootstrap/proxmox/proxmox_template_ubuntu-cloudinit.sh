@@ -1,4 +1,10 @@
-#! /bin/bash
+#!/usr/bin/env bash
+# Use env to find bash, making the script portable across different system layouts.
+
+set -euo pipefail
+# -e  Exit immediately if any command returns a non-zero status.
+# -u  Treat unset variables as errors rather than empty strings.
+# -o  If any command in a pipe fails, the whole pipe returns failure.
 
 #=====================================================#
 # Utility: Proxmox Prep - Ubuntu Cloud-Init Template
@@ -49,7 +55,7 @@ echo "---------------------------------------------------------------------"
 read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 ### START ###
-# Update apt repositry and install required packages.
+# Update apt repository and install required packages.
 echo "INFO: Updating repository and installing required packages..."
 apt update -y &&  apt install $required_pkgs -y
 

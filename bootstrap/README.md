@@ -6,7 +6,7 @@ With the majority of workloads being managed using Terraform, the home lab shoul
 Bootstrapping scripts are used to create resources that are required _before_ automation pipelines can take over.
 The bootstrap process establishes the minimum infrastructure required for GitLab to take ownership of the environment.
 
-## 1️⃣ Foundation State (Layer 0: Manual, Run Once)
+## 1️⃣ Foundation State (Layer 1: Manual, Run Once)
 
 ### Physical Hardware & Networking
 
@@ -48,5 +48,5 @@ The bootstrap process establishes the minimum infrastructure required for GitLab
 
 ---
 
-## 2️⃣ Steady State (Layer 1: Pipeline Driven)
+## 2️⃣ Steady State (Layer 2: Pipeline Driven)
 

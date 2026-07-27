@@ -11,7 +11,7 @@ Using RBAC role assignments ensures that the Service Principal can only perform 
 
 ---
 
-## Requirements
+## ❔ Requirements
 
 - Azure CLI installed _(if using terminal command option)_.
 - **Entra ID:** Rights to create App Registration and Service Principal (`Application Developer` or higher).
@@ -22,7 +22,7 @@ Using RBAC role assignments ensures that the Service Principal can only perform 
 
 ---
 
-## Option 1: Azure CLI
+## 🅰️ Option 1: Azure CLI
 
 ### Service Principal
 
@@ -68,7 +68,7 @@ az role assignment create --role "Storage Blob Data Contributor" --assignee "$AP
 
 ---
 
-## Option 2: Azure Portal
+## 🅱️ Option 2: Azure Portal
 
 ### Service Principal
 
@@ -100,7 +100,7 @@ az role assignment create --role "Storage Blob Data Contributor" --assignee "$AP
 
 ---
 
-## Next Steps
+## ▶️ Next Steps
 
 - Ensure the App Registration (Service Principal) details, including the Client Secret, are stored securely.
 - This will be needed by GitLab pipelines in future automation.

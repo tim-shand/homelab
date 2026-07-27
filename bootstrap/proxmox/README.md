@@ -30,8 +30,13 @@ This account can then be used with automation pipelines, preparing for future Ia
 
 1. Execute from a device with SSH connectivity to a Proxmox node or nodes within a cluster.
 
-```shell
+```bash
 ssh root@proxmox-node 'bash -s' < scripts/bootstrap-proxmox.sh
 ```
 
 2. Save the token secret from output, storing securely in a password manager or CI/CD pipeline secrets.
+3. Execute the Ubuntu Server template script.
+
+```bash
+ssh root@proxmox-node 'bash -s' < scripts/proxmox_template_ubuntu-cloudinit.sh
+```
