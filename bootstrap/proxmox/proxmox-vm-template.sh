@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/env bash
 # Use env to find bash, making the script portable across different system layouts.
 
 set -euo pipefail
@@ -38,7 +38,6 @@ template_id=9000 # Template ID used in Proxmox, must be unique.
 template_name="ztmp-ubuntu-server-${dist_name}-cloudinit" # Template name used in Proxmox.
 
 # Confirmation of variables and user input to approve.
-clear
 echo "---------------------------------------------------------------------"
 echo "This script will action the following:"
 echo "  - Update apt repository and install required packages."
@@ -46,18 +45,15 @@ echo "  - Create a temporary directory, download Ubuntu cloud-init image."
 echo "  - Modify image file (expand file system, set root password)."
 echo "  - Create Proxmox VM, convert it to template."
 echo
-echo "~~~ IMPORTANT NOTE ~~~"
-echo "Please review the script variables BEFORE proceeding."
-echo "- Distribution: ${dist_name}"
-echo "- Source URL: ${img_url}"
-echo "- Template Name: ${template_name}"
+echo "Distribution: ${dist_name}"
+echo "Source URL: ${img_url}"
+echo "Template Name: ${template_name}"
 echo "---------------------------------------------------------------------"
-read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 ### START ###
 # Update apt repository and install required packages.
 echo "INFO: Updating repository and installing required packages..."
-apt update -y &&  apt install $required_pkgs -y
+apt update -y && apt install $required_pkgs -y
 
 # Create temp directory for image storage.
 if [ ! -d "$tmpdir" ]; then
@@ -68,25 +64,10 @@ else
 fi
 
 # Download the current Ubuntu cloud-init disk image.
-# Check if image file already present, confirm to re-download/overwrite.
-if [ -f "$dstpath/$img_file" ]; then
-    echo "WARN: Image file already present."
-    echo "Download and overwrite existing file? ('N' skips this section)."
-    read -p "Confirm? (Y/N): " ow_image
-    if [[ $ow_image == [yY] || $ow_image == [yY][eE][sS] ]]; then
-        echo "INFO: Downloading image file: $img_file"
-        curl -o $tmpdir/$img_file $img_url
-        echo "INFO: Moving image file to destination ($dstpath/)."
-        mv $tmpdir/$img_file $dstpath/$img_file
-    else
-        echo "INFO: Skipping image file download."
-    fi
-else
-    echo "INFO: Downloading image file: $img_file"
-    curl -o $tmpdir/$img_file $img_url
-    echo "INFO: Moving image file to destination ($dstpath/)."
-    mv $tmpdir/$img_file $dstpath/$img_file
-fi
+echo "INFO: Downloading image file: $img_file"
+curl -o $tmpdir/$img_file $img_url
+echo "INFO: Moving image file to destination ($dstpath/)."
+mv -f $tmpdir/$img_file $dstpath/$img_file
 
 # Run provisioning prep tasks.
 # Expand file system, install guest agent, set root password.

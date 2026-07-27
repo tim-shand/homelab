@@ -1,9 +1,11 @@
-# Bootstrap: Proxmox (Service Account for IaC)
+# Bootstrap: Proxmox
 
-The Proxmox bootstrap process is performed using a single bash script.
+The Proxmox bootstrapping process is performed using two separate single bash scripts.
 
 It is intended to be a **run-once solution**, creating a dedicated service account with API token.
 This account can then be used with automation pipelines, preparing for future IaC deployments.
+
+A VM template is created for the purpose of deploying a GitLab server that will provide automated deployments for the home lab.
 
 - Portable, simple to read, easy to execute.
 - Removes application requirements (no need to install Terraform or Ansible).
@@ -12,14 +14,11 @@ This account can then be used with automation pipelines, preparing for future Ia
 
 ## 🔨 Resources
 
-- **Role:**
-  - Custom role with necessary actions assigned for IaC accounts, using least privilege.
-- **Group:**
-  - Dedicated group for service accounts with custom role assignment.
-- **Service Account:**
-  - Added as a member of the IaC service account group, inheriting the assigned permissions from group. 
-- **API Token:**
-  - Generated for the service account to use when authenticating with Proxmox API.
+- **Role:** Custom role with necessary actions assigned for IaC accounts, using least privilege.
+- **Group:** Dedicated group for service accounts with custom role assignment.
+- **Service Account:** Added as a member of the IaC service account group, inheriting the assigned permissions from group. 
+- **API Token:** Generated for the service account to use when authenticating with Proxmox API.
+- **VM Template:** Used to deploy the GitLab server VM.
 
 ## ❔ Requirements
 
@@ -31,12 +30,12 @@ This account can then be used with automation pipelines, preparing for future Ia
 1. Execute from a device with SSH connectivity to a Proxmox node or nodes within a cluster.
 
 ```bash
-ssh root@proxmox-node 'bash -s' < scripts/bootstrap-proxmox.sh
+ssh root@proxmox-node 'bash -s' < bootstrap/proxmox/proxmox-api-user.sh
 ```
 
 2. Save the token secret from output, storing securely in a password manager or CI/CD pipeline secrets.
 3. Execute the Ubuntu Server template script.
 
 ```bash
-ssh root@proxmox-node 'bash -s' < scripts/proxmox_template_ubuntu-cloudinit.sh
+ssh root@proxmox-node 'bash -s' < bootstrap/proxmox/proxmox-vm-template.sh
 ```

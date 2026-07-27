@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/env bash
 # Use env to find bash, making the script portable across different system layouts.
 
 set -euo pipefail
