@@ -97,3 +97,10 @@ az role assignment create --role "Storage Blob Data Contributor" --assignee "$AP
 8. Select `User, group, or service principal`, followed by `+ Select Members`.
 9. Search for the previously created Service Principal by name and click `Select`.
 10. Click `Review + Assign`. 
+
+---
+
+## Next Steps
+
+- Ensure the App Registration (Service Principal) details, including the Client Secret, are stored securely.
+- This will be needed by GitLab pipelines in future automation.
