@@ -29,7 +29,7 @@ The bootstrap process establishes the minimum infrastructure required for GitLab
 - Install Proxmox VE on each node.
 - Configure cluster, node membership, and storage (ZFS) only from web UI.
   - **DO NOT CONFIGURE SDN:** This is to be managed by Terraform via pipeline.
-- Run [Proxmox bootstrap script](./proxmox/README.md) to setup service account and API access.
+- Run [Proxmox bootstrap scripts](./proxmox/README.md) to setup service account for API access and VM template.
   - Proxmox API token to be saved to Azure Key Vault (or Password Manager).
   - Downloads Ubuntu Server cloud-init image and configures VM template.
 
