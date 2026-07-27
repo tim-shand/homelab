@@ -21,17 +21,22 @@ resource "proxmox_cluster_options" "options" {
 
 # Proxmox: Resource Pools ------------------------------------------- #
 
-resource "proxmox_virtual_environment_pool" "mgt" {
+resource "proxmox_virtual_environment_pool" "management" {
     pool_id  = "management"
     comment  = "Management Resources"
 }
 
-resource "proxmox_virtual_environment_pool" "prd" {
+resource "proxmox_virtual_environment_pool" "production" {
     pool_id  = "production"
-    comment  = "Production Workloads"
+    comment  = "Production"
 }
 
-resource "proxmox_virtual_environment_pool" "dev" {
+resource "proxmox_virtual_environment_pool" "testing" {
+    pool_id  = "testing"
+    comment  = "Testing"
+}
+
+resource "proxmox_virtual_environment_pool" "development" {
     pool_id  = "development"
-    comment  = "Development Workloads"
+    comment  = "Development"
 }

@@ -1,44 +1,52 @@
-# Bootstrap Sequence
+# Initial Setup & Bootstrap Sequence
 
-This process describes the steps required to re-build my home lab from scratch.
-Everything in Layer 0 and Layer 1 is performed once. All subsequent and future infrastructure is managed via GitLab pipelines.
+The process below describes the steps required to re-build the home lab environment from scratch.
+With the majority of workloads being managed using Terraform, the home lab should be as reproducible as possible. 
 
-## Prerequisites (Layer 0: Manual, Run Once)
+Bootstrapping scripts are used to create resources that are required _before_ automation pipelines can take over.
+The bootstrap process establishes the minimum infrastructure required for GitLab to take ownership of the environment.
 
-- [ ] Physical hardware installed and connected.
-- [ ] Managed switch configured for VLANs using tagged and untagged with PVID.
-- [ ] OPNsense installed or configuration imported from backup.
-- [ ] VLANs configured (MGT10, SVR20).
-- [ ] Firewall rules configured, enable trusted WAN and inter-VLAN connectivity (if required).
-- [ ] DNS entries created in OPNsense Unbound (or imported via backup).
-- [ ] Proxmox cluster installed and configured (all three nodes).
-- [ ] Bootstrap script run against Proxmox cluster.
-- [ ] Proxmox API token saved to Azure Key Vault (or Password Manager).
-- [ ] Azure Resource Group, Storage Account and Key Vault created for Terraform remote state.
+## 1️⃣ Foundation State (Layer 0: Manual, Run Once)
 
-## PKI Bootstrap (Layer 1: Manual, Run Once)
+### Physical Hardware & Networking
 
-- [ ] Root CA VM provisioned using Terraform and Ansible.
-  - `terraform -chdir="./bootstrap/pki-rootca/terraform" apply`
-  - `ansible-playbook ./bootstrap/pki-rootca/ansible/setup.yml`
-- [ ] Root CA generated on VM.
-  - `ansible-playbook ./bootstrap/pki-rootca/ansible/generate-ca.yml`
-- [ ] Intermediate CA signed and exported to OPNsense.
-- [ ] Root CA VM shut down (keep offline from now on).
-- [ ] Service certificates issued for all current services.
-- [ ] Certificates deployed to Proxmox nodes
-  - `scripts/deploy-proxmox-cert.sh`
+- Setup physical hardware and networking.
+- Managed switch configured for VLANs using tagged and untagged ports with PVID.
+- Azure Resource Group, Storage Account and Key Vault created for Terraform remote state.
+- OPNsense installed or configuration imported from backup.
 
-## GitLab Bootstrap (Layer 1: Manual, Run Once)
+### OPNsense Firewall
 
-- [ ] Deploy GitLab container using Terraform
-  - `terraform -chdir="./bootstrap/gitlab/terraform" apply -var-file="terraform.tfvars"`
-- [ ] Execute configuration phase using Ansible playbook.
-  - `ansible-playbook ./bootstrap/gitlab/ansible/gitlab.yml`
-- [ ] GitLab mirroring configured to pull from GitHub to on-prem.
-- [ ] GitLab CI variables setup.
-- [ ] Temporary runner registered.
+> [!WARNING]
+> Preference is to import last known config from backup, rather than rebuild.
 
-## Steady State (Layer 2: Pipeline Driven)
+- Confirm VLANs are configured as per [configuration documentation](../docs/configuration.md).
+- Firewall rules configured, enable trusted WAN and inter-VLAN connectivity (if required).
+- DNS entries created in OPNsense Unbound (or imported via backup).
 
-All further changes are made via the GitLab pipeline.
+### Proxmox
+
+- Install Proxmox VE on each node.
+- Configure cluster, node membership, and storage (ZFS) only from web UI.
+  - **DO NOT CONFIGURE SDN:** This is to be managed by Terraform via pipeline.
+- Run [Proxmox bootstrap script](./proxmox/README.md) to setup service account and API access.
+  - Proxmox API token to be saved to Azure Key Vault (or Password Manager).
+  - Downloads Ubuntu Server cloud-init image and configures VM template.
+
+### Azure
+
+> [!NOTE]
+> This is required **BEFORE** any resources are deployed using Terraform or pipelines.
+
+- Deploy App Registration (Service Principal).
+- Deploy Blob Container in existing Resource Group and Storage Account.
+- Refer to [the deployment guide](./azure/README.md) for further details.
+
+### GitLab
+
+
+
+---
+
+## 2️⃣ Steady State (Layer 1: Pipeline Driven)
+

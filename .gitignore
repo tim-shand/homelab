@@ -6,6 +6,7 @@
 *.backup
 *.bak
 *prompt*.md
+.prompts/
 
 # Secrets ----------------------------- #
 *.key
