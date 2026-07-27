@@ -1,10 +1,12 @@
-# Initial Setup & Bootstrap Sequence
+# Bootstrap Sequence & Initial Setup
 
 The process below describes the steps required to re-build the home lab environment from scratch.
 With the majority of workloads being managed using Terraform, the home lab should be as reproducible as possible. 
 
 Bootstrapping scripts are used to create resources that are required _before_ automation pipelines can take over.
 The bootstrap process establishes the minimum infrastructure required for GitLab to take ownership of the environment.
+
+---
 
 ## 1️⃣ Foundation State (Layer 1: Manual, Run Once)
 
