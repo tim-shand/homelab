@@ -9,8 +9,16 @@ Using RBAC role assignments ensures that the Service Principal can only perform 
 > [!NOTE]
 > This is required **BEFORE** any resources are deployed using Terraform or pipelines.
 
+---
+
+## Requirements
+
+- Azure CLI installed _(if using terminal command option)_.
+- **Entra ID:** Rights to create App Registration and Service Principal (`Application Developer` or higher).
+- **Azure RBAC:** Rights to assign roles at the Storage Account scope (`Owner` or `User Access Administrator`).
+
 > [!NOTE]
-> This process uses an _existing_ Azure subscription and resources dedicated to Terraform IaC backend states.
+> The process below uses an _existing_ Azure subscription, Resource Group and Storage Account dedicated to Terraform IaC backend states.
 
 ---
 
@@ -48,18 +56,13 @@ SUBSCRIPTION_ID="<subscription-id>"
 RESOURCE_GROUP="<resource-group-name>"
 STORAGE_ACCOUNT="<storage-account-name>"
 CONTAINER_NAME="<container-name>"
-az storage container create \
-    --account-name "$STORAGE_ACCOUNT" \
-    --name "$CONTAINER_NAME" \
-    --auth-mode login
+az storage container create --account-name "$STORAGE_ACCOUNT" --name "$CONTAINER_NAME" --auth-mode login
 ```
 
 2. Assign RBAC role to Storage Account for Service Principal.
 
 ```bash
-az role assignment create \
-    --role "Storage Blob Data Contributor" \
-    --assignee "$APP_ID" \
+az role assignment create --role "Storage Blob Data Contributor" --assignee "$APP_ID" \
     --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCOUNT"
 ```
 
