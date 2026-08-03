@@ -22,7 +22,7 @@ The Azure bootstrap configuration is manual, therefore should _only_ need to be 
 
 ## ❔ Requirements
 
-- Azure CLI installed _(if using terminal command option)_.
+- Azure CLI installed and authenticated _(if using terminal command option)_.
 - **Entra ID:** Rights to create App Registration and Service Principal (`Application Developer` or higher).
 - **Azure RBAC:** Rights to assign roles at the Storage Account scope (`Owner` or `User Access Administrator`).
 
