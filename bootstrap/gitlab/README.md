@@ -1,0 +1,12 @@
+# Bootstrap: GitLab CE
+
+Bootstrap a GitLab instance within a Proxmox VM to provide a local code repository, GitHub repo mirroring and local execution of pipelines.
+
+## Requirements
+
+## Process
+
+- Manually execute Terraform code using Azure backend to deploy GitLab VM from Ubuntu Proxmox template.
+- Update OPNsense firewall rules are updated to allow `Trusted-WAN` device to connect via SSH to the new GitLab VM.
+- Execute Ansible code to deploy and configure the GitLab service.
+
