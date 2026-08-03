@@ -46,3 +46,5 @@ ssh root@proxmox-node 'bash -s' < bootstrap/proxmox/proxmox-api-user.sh
 ```bash
 ssh root@proxmox-node 'bash -s' < bootstrap/proxmox/proxmox-vm-template.sh
 ```
+
+4. The Ubuntu VM template (ID 9000) will now be listed in the Proxmox interface.
