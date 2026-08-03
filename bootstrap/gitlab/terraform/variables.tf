@@ -1,70 +1,60 @@
-variable "pve_connection" {
-  description = "Proxmox host and service account API token. Used to authenticate to Proxmox."
+# ====================================================================== #
+# Proxmox: Variables
+# Description:
+# - Variable definitions for Proxmox configuration.
+# ====================================================================== #
+
+variable "pve_auth_api_token" {
+  description = "Proxmox API token for authentication, should be stored securely and passed in via environment variable or workflow secrets."
+  type        = string
+  sensitive   = true
+}
+
+variable "pve_nodes" {
+  description = "Map of Proxmox nodes in the cluster, with details for API access and production status."
+  type = map(object({
+    hostname   = string
+    ip_address = string
+    production = bool
+  }))
+}
+
+variable "pve_network" {
+  description = "Map of Proxmox network configurations for the cluster and guest VMs."
+  type = map(object({
+    nic    = string
+    bridge = string
+    mtu    = number
+  }))
+}
+
+variable "ubuntu_dist_name" {
+  description = "Name of Ubuntu distribution to be used for the cloud image. Used to form strings."
+  type        = string
+  default     = "resolute"
+}
+
+variable "datastore_id" {
+  description = "ID of the Proxmox datastore to be used for storing VM disks and cloud images."
+  type        = string
+  default     = "local" # Default datastore ID for Proxmox, can be overridden by user input.
+}
+
+variable "vm_networking" {
+  description = "Network configuration for the GitLab VM."
   type = object({
-    hostname   = string # Proxmox node hostname.
-    ip_address = string # Proxmox node IP address.
-    api_token  = string # Full API token string used for service account. Example: terraform@pve!token=12345-ABCD-1234-ABCD-123456789
+    bridge      = string
+    domain      = string
+    dns_servers = list(string)
+    ipv4 = object({
+      address = string
+      gateway = string
+    })
   })
 }
 
-variable "ssh_public_key" {
-  description = "Public key used for connecting to te container via SSH."
-  type = string
-}
-
-variable "container_image_url" {
-  description = "The LXC template URL to use for the local GitLab container."
-  type = string
-  default = "http://download.proxmox.com/images/system/ubuntu-24.04-standard_24.04-2_amd64.tar.zst"
-}
-
-variable "container_config" {
-  description = "Object of values defining the container configuration settings."
-  type = object({
-    pve_datastore_id  = string
-    vmid              = number
-    hostname          = string
-    os_type           = string
-    cpu = object({
-      architecture = string # Must be one of "amd64", "arm64", "armhf", "i386".
-      cores        = number # Number of cores available to workload.
-    })
-    memory = object({
-      dedicated = number # Amount of dedicated memory in megabytes.
-      swap      = number # Swap size in megabytes.
-    })
-    disk = object({
-      datastore_id  = string
-      size          = number
-    })
-    network = object({
-      name    = string # Name to use for the network interface (eth0).
-      bridge  = string # Proxmox node host bridge (vmbr0, vmbr1).
-      ipv4    = string # Full IPv4 CIDR address. Example: 10.0.0.1/24.
-      gateway = string # IP address of network gateway (10.0.0.254).
-      vlan_id = string # "15"
-      dns_domain = string # "servers.mydomain.com"
-      dns_servers = list(string) # ["1.1.1.1","8.8.8.8"]
-    })
-  })
-  validation {
-    condition = contains(["amd64", "arm64", "armhf", "i386"],var.container_config.cpu.architecture)
-    error_message = "CPU architecture must be one of: amd64, arm64, armhf, i386."
-  }
-  validation {
-    condition = var.container_config.cpu.cores >= 1
-    error_message = "CPU core must be greater than or equal to 1."
-  }
-  validation {
-    condition = var.container_config.memory.dedicated >= 2048
-    error_message = "Dedicated memory for container should be greater than or equal to 2 GB."
-  }
-  validation {
-    condition = var.container_config.memory.swap >= 512
-    error_message = "Swap size should be greater than or equal to 512 MB."
-  }
-  validation {
-    condition = var.container_config.disk.size >= 40
-    error_message = "Disk size should be greater than or equal to 40 GB."
-  }
+variable "default_user" {
+  description = "Default user for the VM, used for cloud-init configuration."
+  type        = string
+  default     = "linuxadmin"
 }
