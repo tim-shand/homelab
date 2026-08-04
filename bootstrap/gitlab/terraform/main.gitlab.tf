@@ -22,14 +22,14 @@ resource "tls_private_key" "gitlab" {
 # Export the Private Key to a local file.
 resource "local_sensitive_file" "gitlab_private_key" {
   content         = tls_private_key.gitlab.private_key_openssh
-  filename        = "${path.module}/../ssh_keys/gitlab"
+  filename        = "${path.module}/../ssh_keys/gitlab-ssh"
   file_permission = "0600"
 }
 
 # Export the Public Key to a local file.
 resource "local_file" "gitlab_public_key" {
   content         = tls_private_key.gitlab.public_key_openssh
-  filename        = "${path.module}/../ssh_keys/gitlab.pub"
+  filename        = "${path.module}/../ssh_keys/gitlab-ssh.pub"
   file_permission = "0644"
 }
 
