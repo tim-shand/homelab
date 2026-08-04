@@ -1,24 +1,33 @@
 # Bootstrap: Azure Service Principal + Terraform Backend
 
-The Azure configuration should only be performed **once**, therefore the setup process is **manual**.
-
-As Terraform will be configured to use Azure Blob Storage for remote state, it needs a method of authenticating to Azure from within a pipeline.
-The Service Principal identity provides a way to automate the authentication process.
-Using RBAC role assignments ensures that the Service Principal can only perform data operations for a specific Storage Account.
+The Azure bootstrap configuration is manual, therefore should _only_ need to be performed **once**.
 
 > [!NOTE]
 > This is required **BEFORE** any resources are deployed using Terraform or pipelines.
+
+## 🌳 Resources
+
+**Azure Blob Storage**
+
+- Used for remote Terraform state file storage.
+- Enables file locking, which prevents concurrent writes to the data.
+- Ensures only one workflow or execution can use the state file at a time to prevent corruption.
+
+**Service Principal (App Registration)**
+
+- Provides a dedicated identity for authentication to Azure from within automation pipelines.
+- Uses RBAC role assignments to limit data operations to a specific Storage Account.
 
 ---
 
 ## ❔ Requirements
 
-- Azure CLI installed _(if using terminal command option)_.
+- Azure CLI installed and authenticated _(if using terminal command option)_.
 - **Entra ID:** Rights to create App Registration and Service Principal (`Application Developer` or higher).
 - **Azure RBAC:** Rights to assign roles at the Storage Account scope (`Owner` or `User Access Administrator`).
 
 > [!NOTE]
-> The process below uses an _existing_ Azure subscription, Resource Group and Storage Account dedicated to Terraform IaC backend states.
+> The process below uses an _existing_ Azure subscription, Resource Group and Storage Account already dedicated to Terraform IaC backend states.
 
 ---
 

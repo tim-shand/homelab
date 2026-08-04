@@ -3,6 +3,7 @@
 The Proxmox bootstrapping process is performed using two separate single bash scripts.
 
 It is intended to be a **run-once solution**, creating a dedicated service account with API token.
+
 This account can then be used with automation pipelines, preparing for future IaC deployments.
 
 A VM template is created for the purpose of deploying a GitLab server that will provide automated deployments for the home lab.
@@ -12,6 +13,8 @@ A VM template is created for the purpose of deploying a GitLab server that will 
 - No state file to manage or store post deployment.
 - Uses Proxmox native terminal command `pveum` to create resources.
 
+---
+
 ## 🔨 Resources
 
 - **Role:** Custom role with necessary actions assigned for IaC accounts, using least privilege.
@@ -20,10 +23,14 @@ A VM template is created for the purpose of deploying a GitLab server that will 
 - **API Token:** Generated for the service account to use when authenticating with Proxmox API.
 - **VM Template:** Used to deploy the GitLab server VM.
 
+---
+
 ## ❔ Requirements
 
 - [x] Root account credentials to the Proxmox environment.
 - [x] SSH access to a target Proxmox node, either singular or in a cluster.
+
+---
 
 ## ▶️ Usage
 
@@ -39,3 +46,5 @@ ssh root@proxmox-node 'bash -s' < bootstrap/proxmox/proxmox-api-user.sh
 ```bash
 ssh root@proxmox-node 'bash -s' < bootstrap/proxmox/proxmox-vm-template.sh
 ```
+
+4. The Ubuntu VM template (ID 9000) will now be listed in the Proxmox interface.
