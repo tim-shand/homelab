@@ -24,14 +24,19 @@ variable "pve_network" {
   type = map(object({
     nic    = string
     bridge = string
-    mtu    = number
   }))
 }
 
-variable "ubuntu_dist_name" {
-  description = "Name of Ubuntu distribution to be used for the cloud image. Used to form strings."
-  type        = string
-  default     = "resolute"
+# variable "ubuntu_dist_name" {
+#   description = "Name of Ubuntu distribution to be used for the cloud image. Used to form strings."
+#   type        = string
+#   default     = "resolute"
+# }
+
+variable "template_ubuntu_id" {
+  description = "ID number of the Ubuntu cloud image template created during Proxmox bootstrap."
+  type = string
+  default = "9000"
 }
 
 variable "datastore_id" {
@@ -43,18 +48,15 @@ variable "datastore_id" {
 variable "vm_networking" {
   description = "Network configuration for the GitLab VM."
   type = object({
-    bridge      = string
-    domain      = string
-    dns_servers = list(string)
-    ipv4 = object({
-      address = string
-      gateway = string
-    })
+    domain       = string
+    dns_servers  = list(string)
+    ipv4_address = string
+    ipv4_gateway = string
   })
 }
 
 variable "default_user" {
   description = "Default user for the VM, used for cloud-init configuration."
   type        = string
-  default     = "linuxadmin"
+  default     = "adm_homelab" # Default user for the VM, can be overridden by user input.
 }

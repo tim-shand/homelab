@@ -2,6 +2,12 @@
 
 Bootstrap a GitLab instance within a Proxmox VM to provide a local code repository, GitHub repo mirroring and local execution of pipelines.
 
+## Strategy
+
+- Terraform to provision the VM in Proxmox.
+- Ansible to configure the GitLab instance once VM is deployed.
+- Mirror GitHub repository (source of truth) to the local GitLab instance.
+
 ## Requirements
 
 ## Process
