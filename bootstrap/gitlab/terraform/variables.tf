@@ -27,12 +27,6 @@ variable "pve_network" {
   }))
 }
 
-# variable "ubuntu_dist_name" {
-#   description = "Name of Ubuntu distribution to be used for the cloud image. Used to form strings."
-#   type        = string
-#   default     = "resolute"
-# }
-
 variable "template_ubuntu_id" {
   description = "ID number of the Ubuntu cloud image template created during Proxmox bootstrap."
   type = string

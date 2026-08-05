@@ -27,16 +27,6 @@ resource "local_file" "gitlab_public_key" {
   file_permission = "0644"
 }
 
-# # Download Ubuntu Cloud Image ------------------------------------------- #
-# # Ubuntu cloud images are in qcow2 format, but stored with .img extension, so can be directly uploaded to Proxmox.
-# resource "proxmox_download_file" "ubuntu_cloud_image" {
-#   content_type = "import"                        # Image file type for importing into Proxmox.
-#   datastore_id = "local"                         # Use the local datastore for storing the downloaded cloud image.
-#   node_name    = var.pve_nodes["node1"].hostname # Use the first node in the Proxmox cluster for downloading the cloud image.
-#   url          = "https://cloud-images.ubuntu.com/${var.ubuntu_dist_name}/current/${var.ubuntu_dist_name}-server-cloudimg-amd64.img"
-#   file_name    = "TEST-ubuntu-server-${var.ubuntu_dist_name}-cloudimg-amd64.img"
-# }
-
 # Generate random password for the default user ------------------------------------------- #
 # https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password
 resource "random_password" "gitlab" {
