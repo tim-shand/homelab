@@ -8,3 +8,9 @@ This directory is used to contain both **PRIVATE** and **PUBLIC** key files.
 
 > [!WARNING]
 > During a Terraform `DESTROY` deployment, the SSH key files will be **removed** from this directory.
+
+**Move SSH private key to user profile:**
+
+```bash
+cp gitlab-ssh ~/.ssh/gitlab-ssh
+```
