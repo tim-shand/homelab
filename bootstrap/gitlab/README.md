@@ -43,6 +43,12 @@ terraform -chdir="./terraform" init -upgrade
 terraform -chdir="./terraform" apply -var-file="../../../variables/global-proxmox.tfvars"
 ```
 
+7. **(Optional):** Display default user password.
+
+```bash
+terraform -chdir="./terraform" output -raw gitlab_default_user_password
+```
+
 > To DO
 
 7. Execute Ansible code to deploy and configure the GitLab service.

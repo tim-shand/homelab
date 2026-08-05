@@ -14,10 +14,11 @@ output "gitlab_public_key" {
 }
 
 # Output the random password for the default user on the GitLab VM.
+# terraform -chdir="./terraform" output -raw gitlab_default_user_password
 output "gitlab_default_user_password" {
   description = "Randomly generated password for the default user on the GitLab VM, used for authentication and access."
   value       = random_password.gitlab.result
-  sensitive   = false
+  sensitive   = true
 }
 
 # VM Information -------------------------------------------- #
