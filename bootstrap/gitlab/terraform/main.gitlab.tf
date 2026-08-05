@@ -76,6 +76,7 @@ resource "proxmox_virtual_environment_vm" "gitlab" {
   }
   network_device {
     bridge = var.pve_network.guest.bridge # Get from global variables. Use the specified "guest" bridge for the VM network device.
+    vlan_id = "20" # VLAN ID for the VM network device, used for network segmentation. No SDN configured yet.
   }
   # Cloud-init Configuration
   # https://registry.terraform.io/providers/bpg/proxmox/latest/docs/guides/cloud-init
