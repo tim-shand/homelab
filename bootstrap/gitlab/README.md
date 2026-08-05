@@ -4,14 +4,14 @@ Bootstrap a GitLab instance within a Proxmox VM to provide a local code reposito
 
 ## 🧭 Strategy
 
-- Terraform to provision the SSH key-pair and VM in Proxmox.
+- Terraform to provision the SSH key-pair and a new VM in Proxmox from template.
 - Ansible to configure the GitLab instance once VM is deployed.
 - Mirroring for GitHub repository (source of truth) to the local GitLab instance.
 
 ## ❓ Requirements
 
-- Terraform installed locally.
-- Ansible installed locally.
+- [x] Terraform installed locally.
+- [x] Ansible installed locally.
 - **Optional**: Azure CLI installed and authenticated (if using Azure backend).
 
 ## 🌳 Resources
@@ -39,11 +39,11 @@ terraform -chdir="./terraform" init -upgrade
 6. Deploy Terraform to provision resources, referencing the top-level global variables directory.
 
 ```bash
-# Deploy Terraform code to provision resources.
+# Deploy Terraform code to provision resources, referencing the top-level global variables file.
 terraform -chdir="./terraform" apply -var-file="../../../variables/global-proxmox.tfvars"
 ```
 
-7. Copy SSH keys to local user profile for password-less SSH access to the VM.
+7. Copy generated SSH keys to local user profile for password-less SSH access to the VM.
 
 ```bash
 cp -f ssh_keys/gitlab-ssh ~/.ssh/gitlab-ssh
@@ -56,7 +56,15 @@ cp -f ssh_keys/gitlab-ssh.pub ~/.ssh/gitlab-ssh.pub
 terraform -chdir="./terraform" output -raw gitlab_default_user_password
 ```
 
-> To DO
+9. Update OPNsense firewall rules to allow `Trusted-WAN` device to connect via SSH and HTTP to the new GitLab VM.
 
-7. Execute Ansible code to deploy and configure the GitLab service.
-8. Update OPNsense firewall rules to allow `Trusted-WAN` device to connect via SSH and HTTP to the new GitLab VM.
+| Name                               | Interface | Action | Direction |
+| ---------------------------------- | --------- | ------ | --------- |
+| Allow_WAN-Trusted_SVR20-GitLab_MGT | WAN       | Pass   | In        |
+
+| Version | Protocol | Source      | Source Port | Destination      | Destination Port |
+| ------- | -------- | ----------- | ----------- | ---------------- | ---------------- |
+| IPv4    | TCP/UDP  | WAN_Trusted | Any         | SVR_Hosts_GitLab | Ports_Mgmt       |
+
+10. Execute Ansible code to deploy and configure the GitLab service.
+

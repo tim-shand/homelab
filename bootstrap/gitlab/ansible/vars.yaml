@@ -1,0 +1,13 @@
+---
+# GitLab Config
+required_packages:
+  - curl
+  - openssh-server
+  - nano
+ufw_enabled: true
+ufw_logging: on
+ufw_rules:
+  - { rule: allow, port: 22, proto: tcp }
+  - { rule: allow, port: 80, proto: tcp }
+  - { rule: allow, port: 443, proto: tcp }
+external_url: "http://10.0.20.10"

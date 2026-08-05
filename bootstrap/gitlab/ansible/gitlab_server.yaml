@@ -1,0 +1,63 @@
+---
+- name: Bootstrap GitLab CE Installation
+  hosts: gitlab # Target the GitLab server defined in the inventory file.
+  vars_files:
+    - vars.yaml
+  become: true # Use privilege escalation to run tasks as root.
+  tasks:
+    # Update and upgrade all packages on the server.
+    - name: Update Packages
+      ansible.builtin.apt:
+        update_cache: true # Update the package cache before upgrading.
+        upgrade: dist # Upgrade all packages to the latest version.
+        cache_valid_time: 3600 # Skips update if run in the last hour.
+
+    - name: Install Required Packages
+      ansible.builtin.apt:
+        name: "{{ item }}" # Install each package in the required_packages list.
+        state: present # Ensure the packages are installed.
+      loop: "{{ required_packages }}" # Loop through the list of required packages defined in defaults/main.yaml.
+
+    # UFW: Enable the firewall (disabled by default).
+    - name: UFW Enable
+      community.general.ufw:
+        state: enabled
+        policy: allow
+
+    # UFW: Enable UFW logging to monitor firewall activity.
+    - name: UFW Logging
+      community.general.ufw:
+        logging: "{{ ufw_logging }}" # Enable or disable UFW logging based on the variable defined in defaults/main.yaml.
+
+    # UFW: Allow required connections to the server.
+    - name: UFW Rules
+      community.general.ufw:
+        rule: "{{ item.rule }}"
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+      loop: "{{ ufw_rules }}" # Loop through the list of UFW rules defined in defaults/main.yaml.
+
+    # Install GitLab CE using the official Omnibus package.
+    - name: Add GitLab CE Repository
+      ansible.builtin.shell: |
+        curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
+      poll: 5 # Poll the command every 5 seconds to check for completion.
+
+    # Install GitLab CE using the official Omnibus package.
+    # Source: https://docs.gitlab.com/install/package/ubuntu/?tab=Community+Edition
+    - name: Install GitLab CE
+      ansible.builtin.shell: |
+        EXTERNAL_URL="{{ external_url }}" apt install gitlab-ce -y
+      async: 600 # Max time allowed in seconds
+      poll: 5 # Poll the command every 5 seconds to check for completion.
+
+    # Display the content of the temporary credential file.
+    # GitLab generates a random password and email address for the root administrator account stored in /etc/gitlab/initial_root_password for 24 hours.
+    # After 24 hours, this file is automatically removed for security reasons.
+    - name: Get Temporary GitLab Credentials
+      ansible.builtin.command: cat /etc/gitlab/initial_root_password
+      register: gitlab_file_output
+
+    - name: Display Temporary GitLab Credentials
+      ansible.builtin.debug:
+        msg: "{{ gitlab_file_output.stdout_lines }}"
