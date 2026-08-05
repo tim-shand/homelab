@@ -52,5 +52,5 @@ variable "vm_networking" {
 variable "default_user" {
   description = "Default user for the VM, used for cloud-init configuration."
   type        = string
-  default     = "adm_homelab" # Default user for the VM, can be overridden by user input.
+  default     = "homelabadmin" # Default user for the VM, can be overridden by user input.
 }
