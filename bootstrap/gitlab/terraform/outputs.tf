@@ -13,12 +13,12 @@ output "gitlab_public_key" {
   value       = tls_private_key.gitlab.public_key_openssh
 }
 
-# # Output the random password for the default user on the GitLab VM.
-# output "gitlab_default_user_password" {
-#   description = "Randomly generated password for the default user on the GitLab VM, used for authentication and access."
-#   value       = random_password.gitlab.result
-#   sensitive   = false
-# }
+# Output the random password for the default user on the GitLab VM.
+output "gitlab_default_user_password" {
+  description = "Randomly generated password for the default user on the GitLab VM, used for authentication and access."
+  value       = random_password.gitlab.result
+  sensitive   = false
+}
 
 # VM Information -------------------------------------------- #
 

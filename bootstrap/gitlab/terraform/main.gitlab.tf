@@ -4,12 +4,6 @@
 # - Creates new VM from cloning template from Proxmox bootstrapping process.
 # =========================================================================== #
 
-# Data: Get local file SSH public key.
-# !!! No longer used - replaced by TLS private key generation for GitLab VM.
-# data "local_file" "ssh_public_key" {
-#   filename = "../${var.local_ssh_public_key}" # Pull local SSH key and use for auth to VM.
-# }
-
 # Generate PEM and OpenSSH formatted private key ------------------------------------------- #
 # Access the keys using `tls_private_key.this.public_key_openssh` or `tls_private_key.this.public_key_pem`
 # https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key
