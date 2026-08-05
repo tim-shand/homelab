@@ -43,7 +43,14 @@ terraform -chdir="./terraform" init -upgrade
 terraform -chdir="./terraform" apply -var-file="../../../variables/global-proxmox.tfvars"
 ```
 
-7. **(Optional):** Display default user password.
+7. Copy SSH keys to local user profile for password-less SSH access to the VM.
+
+```bash
+cp -f ssh_keys/gitlab-ssh ~/.ssh/gitlab-ssh
+cp -f ssh_keys/gitlab-ssh.pub ~/.ssh/gitlab-ssh.pub
+```
+
+8. **(Optional):** Display default user password.
 
 ```bash
 terraform -chdir="./terraform" output -raw gitlab_default_user_password

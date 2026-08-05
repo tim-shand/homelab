@@ -12,5 +12,6 @@ This directory is used to contain both **PRIVATE** and **PUBLIC** key files.
 **Move SSH private key to user profile:**
 
 ```bash
-cp gitlab-ssh ~/.ssh/gitlab-ssh
+cp -f gitlab-ssh ~/.ssh/gitlab-ssh
+cp -f gitlab-ssh.pub ~/.ssh/gitlab-ssh.pub
 ```
