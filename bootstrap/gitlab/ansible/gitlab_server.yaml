@@ -1,5 +1,5 @@
 ---
-- name: Bootstrap GitLab CE Installation
+- name: Bootstrap GitLab Installation
   hosts: gitlab # Target the GitLab server defined in the inventory file.
   vars_files:
     - vars.yaml
@@ -37,19 +37,25 @@
         proto: "{{ item.proto }}"
       loop: "{{ ufw_rules }}" # Loop through the list of UFW rules defined in defaults/main.yaml.
 
-    # Install GitLab CE using the official Omnibus package.
-    - name: Add GitLab CE Repository
+    # Install GitLab using the official Omnibus package.
+    - name: Add GitLab Repository
       ansible.builtin.shell: |
-        curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
+        curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
       poll: 5 # Poll the command every 5 seconds to check for completion.
 
     # Install GitLab CE using the official Omnibus package.
     # Source: https://docs.gitlab.com/install/package/ubuntu/?tab=Community+Edition
-    - name: Install GitLab CE
-      ansible.builtin.shell: |
-        EXTERNAL_URL="{{ external_url }}" apt install gitlab-ce -y
-      async: 600 # Max time allowed in seconds
-      poll: 5 # Poll the command every 5 seconds to check for completion.
+    # - name: Install GitLab CE
+    #   ansible.builtin.shell: |
+    #     EXTERNAL_URL="{{ external_url }}" apt install gitlab-ce -y
+    #   async: 600 # Max time allowed in seconds
+    #   poll: 5 # Poll the command every 5 seconds to check for completion.
+    - name: Install GitLab
+      ansible.builtin.apt:
+        name: gitlab-ce
+        state: present # Ensure the packages are installed.
+      environment:
+        EXTERNAL_URL: "https://{{ inventory_hostname }}"
 
     # Display the content of the temporary credential file.
     # GitLab generates a random password and email address for the root administrator account stored in /etc/gitlab/initial_root_password for 24 hours.

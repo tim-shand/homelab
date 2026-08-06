@@ -46,8 +46,7 @@ terraform -chdir="./terraform" apply -var-file="../../../variables/global-proxmo
 7. Copy generated SSH keys to local user profile for password-less SSH access to the VM.
 
 ```bash
-cp -f ssh_keys/gitlab-ssh ~/.ssh/gitlab-ssh
-cp -f ssh_keys/gitlab-ssh.pub ~/.ssh/gitlab-ssh.pub
+cp -f ssh_keys/gitlab-ssh ~/.ssh/gitlab-ssh && cp -f ssh_keys/gitlab-ssh.pub ~/.ssh/gitlab-ssh.pub
 ```
 
 8. **(Optional):** Display default user password.
@@ -68,3 +67,19 @@ terraform -chdir="./terraform" output -raw gitlab_default_user_password
 
 10. Execute Ansible code to deploy and configure the GitLab service.
 
+```bash
+ansible-playbook -i inventory.ini -u homelabadmin gitlab_server.yaml -vv
+```
+
+> [!NOTE]
+> If the bootstrapping process is re-run, it is possible that host key verification may fail.
+> An SSH `Host key verification failed` error occurs when the public identity key presented by the remote server does not match the cryptographic key fingerprint the local computer previously saved for that specific address.
+> For example, this can happen when a VM is deployed, connected to via SSH, then the VM is destroyed and redeployed.
+> There will be mismatch between what the local host expects the host key to be based on an entry in the `~/.ssh/known_hosts` file.
+
+11. **(Optional):** Purge the previously stored host key from known hosts and add the new host key.
+
+```bash
+ssh-keygen -R 10.0.20.10
+ssh-keyscan -H 10.0.20.10 >> ~/.ssh/known_hosts
+```
