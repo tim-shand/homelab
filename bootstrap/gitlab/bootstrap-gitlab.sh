@@ -26,7 +26,7 @@ DIR_TFVARS_GLOBAL="../../../variables/global-proxmox.tfvars"
 DIR_ANSIBLE="./ansible"
 REQUIRED_APPS=("terraform" "ansible" "az")
 REQUIRED_FILES_TERRAFORM=("backend.tf" "terraform.tfvars" "${DIR_TFVARS_GLOBAL}")
-REQUIRED_FILES_ANSIBLE=("inventory.ini" "vars.yaml")
+REQUIRED_FILES_ANSIBLE=("vars.yaml")
 # Define colour variables.
 RED="\e[31m"
 GREEN="\e[32m"
@@ -73,7 +73,7 @@ run_tf() {
     local cmd="$1"
     shift
     if terraform -chdir="$DIR_TERRAFORM" "$cmd" "$@"; then
-        printf "${GREEN}${PASS} PASS:${NC} Terraform ${cmd} succeeded.\n"
+        printf "${GREEN}${PASS} PASS:${NC} Terraform ${cmd} succeeded.\n" &> /dev/null
     else
         local return_code=$?
         printf "${RED}${FAIL} ERROR:${NC} Terraform ${cmd} failed (exit code ${return_code}).\n"
@@ -116,6 +116,7 @@ printf "\n${CYAN}* Performing pre-flight checks...${NC}\n"
 preflight_checks
 
 # Setup Terraform (using function, no need to pass working dir).
+printf "\n${CYAN}* Configuring Terraform...${NC}\n"
 run_tf init -upgrade
 
 # Final warning for destroy mode.
@@ -131,23 +132,37 @@ if [ "$DESTROY" = true ]; then
             * ) echo "Please answer yes or no.";;
         esac
     done
+
     # Execute Terraform destroy run.
     run_tf destroy -var-file="${DIR_TFVARS_GLOBAL}"
 else
-    # Execute Terraform destroy run.
+    # Execute Terraform --------------------------------------------------------- #
     run_tf fmt
     run_tf validate
     run_tf apply -var-file="${DIR_TFVARS_GLOBAL}"
 
     # Allow time for the new VM to come online.
-    sleep 15
+    sleep 1 # Change to 15 in prod.
 
     # Pass the VMs IP address from Terraform to Ansible.
-    VM_IP=$(run_tf output ipv4_address) # Pipe output of command into variable.
-    VM_UN=$(run_tf output -raw default_user) # Pipe output of command into variable.
-    VM_PW=$(run_tf output -raw default_pass) # Pipe output of command into variable.
-    
+    TF_VM_IP=$(run_tf output ipv4_address) # Pipe output of command into variable.
+    TF_VM_UN=$(run_tf output default_user)
+    VM_IP="${TF_VM_IP//\"}" # Clean up quotes from string.
+    VM_UN="${TF_VM_UN//\"}" # Clean up quotes from string.
 
-    # Execute Ansible playbook to install GitLab.
-    #ansible-playbook -i $VM_IP, $DIR_ANSIBLE/testing.yml -e "ansible_user=your_username ansible_password=your_password"
+    # SSH --------------------------------------------------------- #
+    # Purge the previously stored host key from known hosts and add the new host key.
+    ssh-keygen -R $VM_IP &> /dev/null
+    ssh-keyscan -H $VM_IP >> ~/.ssh/known_hosts
+
+    # Copy generated SSH keys to local user profile for password-less SSH access to the VM.
+    cp -f $DIR_SSH_KEYS/gitlab-ssh ~/.ssh/gitlab-ssh
+    cp -f $DIR_SSH_KEYS/gitlab-ssh.pub ~/.ssh/gitlab-ssh.pub
+
+    # Ansible --------------------------------------------------------- #
+    printf "\n${CYAN}* Executing Ansible playbook...${NC}\n"
+
+    # Write the VM IP address to the Ansible inventory file.
+    printf "[gitlab]\n10.0.20.10\n" > "$DIR_ANSIBLE/inventory.ini"
+    ansible-playbook -i "${DIR_ANSIBLE}/inventory.ini" -u "${VM_UN}" "${DIR_ANSIBLE}/testing.yaml"
 fi
