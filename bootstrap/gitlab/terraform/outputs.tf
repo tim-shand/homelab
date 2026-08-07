@@ -33,3 +33,15 @@ output "gitlab_vm" {
     ipv4_gateway = proxmox_virtual_environment_vm.gitlab.initialization[0].ip_config[0].ipv4[0].gateway
   }
 }
+
+output "default_user" {
+  description = "String value of the default user."
+  value       = proxmox_virtual_environment_vm.gitlab.initialization[0].user_account[0].username
+  sensitive   = false
+}
+
+output "default_pass" {
+  description = "String value of the default user password (sensitive)."
+  value       = proxmox_virtual_environment_vm.gitlab.initialization[0].user_account[0].password
+  sensitive   = true
+}
