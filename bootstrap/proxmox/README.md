@@ -37,14 +37,14 @@ A VM template is created for the purpose of deploying a GitLab server that will 
 1. Execute from a device with SSH connectivity to a Proxmox node or nodes within a cluster.
 
 ```bash
-ssh root@proxmox-node 'bash -s' < bootstrap/proxmox/proxmox-api-user.sh
+ssh root@proxmox-node 'bash -s' < ./proxmox-api-user.sh
 ```
 
 2. Save the token secret from output, storing securely in a password manager or CI/CD pipeline secrets.
 3. Execute the Ubuntu Server template script.
 
 ```bash
-ssh root@proxmox-node 'bash -s' < bootstrap/proxmox/proxmox-vm-template.sh
+ssh root@proxmox-node 'bash -s' < ./proxmox-templates-ubuntu.sh
 ```
 
 4. The Ubuntu VM template (ID 9000) will now be listed in the Proxmox interface.
