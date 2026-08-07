@@ -81,6 +81,7 @@ resource "proxmox_virtual_environment_vm" "gitlab" {
   # Cloud-init Configuration
   # https://registry.terraform.io/providers/bpg/proxmox/latest/docs/guides/cloud-init
   initialization {
+    upgrade = false # Disable auto-update for packages on first boot. This can lock up Apt and prevent Ansible installing GitLab.
     datastore_id = var.datastore_id # Use the specified datastore for storing the cloud-init configuration.
     ip_config {
       ipv4 {
