@@ -143,8 +143,11 @@ else
     sleep 15
 
     # Pass the VMs IP address from Terraform to Ansible.
-    ANSIBLE_TARGET=$(run_tf output gitlab_vm.ipv4_address) # Pipe output of command into variable.
+    VM_IP=$(run_tf output gitlab_vm.ipv4_address) # Pipe output of command into variable.
+    VM_UN=$(run_tf output -raw default_user) # Pipe output of command into variable.
+    VM_PW=$(run_tf output -raw default_pass) # Pipe output of command into variable.
+    
 
     # Execute Ansible playbook to install GitLab.
-    ansible-playbook -i $ANSIBLE_TARGET, $DIR_ANSIBLE/testing.yml -e "ansible_user=your_username ansible_password=your_password"
+    #ansible-playbook -i $VM_IP, $DIR_ANSIBLE/testing.yml -e "ansible_user=your_username ansible_password=your_password"
 fi
