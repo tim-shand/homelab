@@ -39,7 +39,7 @@ resource "random_password" "gitlab" {
 resource "proxmox_virtual_environment_vm" "gitlab" {
   clone {
     vm_id = var.template_ubuntu_id # ID number of the Ubuntu cloud image template created during Proxmox bootstrap.
-    full = true # Full clone, not linked to template as a base image.
+    full  = true                   # Full clone, not linked to template as a base image.
   }
   name        = "svr-mgt-gitlab-prd"
   description = "Management: GitLab CE Server"
@@ -49,7 +49,7 @@ resource "proxmox_virtual_environment_vm" "gitlab" {
   }
   tpm_state {
     datastore_id = var.datastore_id
-    version = "v2.0"
+    version      = "v2.0"
   }
   node_name       = var.pve_nodes["node1"].hostname # Use the first node in the Proxmox cluster for creating the VM.
   started         = true                            # VM should be started after creation.
@@ -69,14 +69,14 @@ resource "proxmox_virtual_environment_vm" "gitlab" {
     type         = "4m" # Disk type for EFI disk.
   }
   disk {
-    datastore_id = var.datastore_id                            # Use the specified datastore for storing the VM disk.
-    interface    = "scsi0"                                     # Use SCSI interface for the VM disk for better performance.
-    discard      = "on"                                        # Passes TRIM/UNMAP commands through so the host can reclaim space deleted inside the guest OS.
+    datastore_id = var.datastore_id # Use the specified datastore for storing the VM disk.
+    interface    = "scsi0"          # Use SCSI interface for the VM disk for better performance.
+    discard      = "on"             # Passes TRIM/UNMAP commands through so the host can reclaim space deleted inside the guest OS.
     size         = 32
   }
   network_device {
-    bridge = var.pve_network.guest.bridge # Get from global variables. Use the specified "guest" bridge for the VM network device.
-    vlan_id = "20" # VLAN ID for the VM network device, used for network segmentation. No SDN configured yet.
+    bridge  = var.pve_network.guest.bridge # Get from global variables. Use the specified "guest" bridge for the VM network device.
+    vlan_id = "20"                         # VLAN ID for the VM network device, used for network segmentation. No SDN configured yet.
   }
   # Cloud-init Configuration
   # https://registry.terraform.io/providers/bpg/proxmox/latest/docs/guides/cloud-init
@@ -95,7 +95,7 @@ resource "proxmox_virtual_environment_vm" "gitlab" {
     user_account {
       username = var.default_user
       password = random_password.gitlab.result
-      keys     = [
+      keys = [
         trimspace(tls_private_key.gitlab.public_key_openssh)
       ]
     }

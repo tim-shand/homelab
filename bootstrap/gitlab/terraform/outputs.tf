@@ -25,7 +25,7 @@ output "gitlab_default_user_password" {
 
 output "gitlab_vm" {
   description = "Network configuration for the GitLab VM, including domain, DNS servers, IPv4 address, and gateway."
-  value       = {
+  value = {
     name         = proxmox_virtual_environment_vm.gitlab.name
     dns_domain   = proxmox_virtual_environment_vm.gitlab.initialization[0].dns[0].domain
     dns_servers  = proxmox_virtual_environment_vm.gitlab.initialization[0].dns[0].servers

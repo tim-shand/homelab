@@ -29,8 +29,8 @@ variable "pve_network" {
 
 variable "template_ubuntu_id" {
   description = "ID number of the Ubuntu cloud image template created during Proxmox bootstrap."
-  type = string
-  default = "9000"
+  type        = string
+  default     = "9000"
 }
 
 variable "datastore_id" {
