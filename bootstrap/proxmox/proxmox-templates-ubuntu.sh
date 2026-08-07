@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Use env to find bash, making the script portable across different system layouts.
+# Use env to find bash, making the script portable across different systems.
 
 set -e # Exit immediately if any command returns a non-zero status.
 
