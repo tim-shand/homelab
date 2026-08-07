@@ -143,7 +143,7 @@ else
     sleep 15
 
     # Pass the VMs IP address from Terraform to Ansible.
-    VM_IP=$(run_tf output gitlab_vm.ipv4_address) # Pipe output of command into variable.
+    VM_IP=$(run_tf output ipv4_address) # Pipe output of command into variable.
     VM_UN=$(run_tf output -raw default_user) # Pipe output of command into variable.
     VM_PW=$(run_tf output -raw default_pass) # Pipe output of command into variable.
     
