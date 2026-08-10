@@ -50,16 +50,7 @@
         EXTERNAL_URL="{{ external_url }}" apt install gitlab-ce -y
       async: 600 # Max time allowed in seconds
       poll: 5 # Poll the command every 5 seconds to check for completion.
-    # - name: Install GitLab
-    #   ansible.builtin.apt:
-    #     name: gitlab-ce
-    #     state: present # Ensure the packages are installed.
-    #   environment:
-    #     EXTERNAL_URL: "https://{{ inventory_hostname }}"
 
-    # Display the content of the temporary credential file.
-    # GitLab generates a random password and email address for the root administrator account stored in /etc/gitlab/initial_root_password for 24 hours.
-    # After 24 hours, this file is automatically removed for security reasons.
     - name: Get Temporary GitLab Credentials
       ansible.builtin.command: cat /etc/gitlab/initial_root_password
       register: gitlab_file_output

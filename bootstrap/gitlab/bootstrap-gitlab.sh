@@ -164,5 +164,10 @@ else
 
     # Write the VM IP address to the Ansible inventory file.
     printf "[gitlab]\n10.0.20.10\n" > "$DIR_ANSIBLE/inventory.ini"
-    ansible-playbook -i "${DIR_ANSIBLE}/inventory.ini" -u "${VM_UN}" "${DIR_ANSIBLE}/testing.yaml"
+    ansible-playbook -i "${DIR_ANSIBLE}/inventory.ini" -u "${VM_UN}" "${DIR_ANSIBLE}/gitlab_server.yaml"
+
+    echo "----------------"
+    printf "${CYAN}*** COMPLETE ***${NC}\n"
+    echo "----------------"
+
 fi
