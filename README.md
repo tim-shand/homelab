@@ -56,6 +56,7 @@ A three-node Proxmox cluster runs virtualised workloads, with Proxmox Software-D
 | -------------------- | ------------------------------------------------------- |
 | PFsense/OPNsense VMs | Internal firewall testing and lab network experiments.  |
 | Management/Jump Host | Access point into lab management interfaces.            |
+| GitLab CE            | Version control, repo mirroring, on-prem runners.        |
 | Misc utility VMs     | Testing, sand boxing, and evaluating new tech.          |
 
 ---
@@ -65,6 +66,15 @@ A three-node Proxmox cluster runs virtualised workloads, with Proxmox Software-D
 - **[Terraform](https://www.terraform.io/):** Provider agnostic IaC tool for deploying and managing resources declaratively.
 - **Azure Blob Storage:** Used to store remote state files for Terraform deployments.
 - **Bash/PowerShell:** Bootstrapping scripts and miscellaneous automation utilities.
+
+---
+
+## 👢 Bootstrapping
+
+Using bootstrap scripts allows the home lab to be easily re-deployed in the event of total failure.
+Utilising a combination of Bash, Terraform and Ansible, essential workloads can be redeployed and configured.
+
+See the [bootstrap](./bootstrap/) directory for guidance on the correct sequence of steps.
 
 ---
 
