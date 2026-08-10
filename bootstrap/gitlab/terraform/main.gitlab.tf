@@ -4,12 +4,6 @@
 # - Creates new VM from cloning template from Proxmox bootstrapping process.
 # =========================================================================== #
 
-# Data: Get local file SSH public key.
-# !!! No longer used - replaced by TLS private key generation for GitLab VM.
-# data "local_file" "ssh_public_key" {
-#   filename = "../${var.local_ssh_public_key}" # Pull local SSH key and use for auth to VM.
-# }
-
 # Generate PEM and OpenSSH formatted private key ------------------------------------------- #
 # Access the keys using `tls_private_key.this.public_key_openssh` or `tls_private_key.this.public_key_pem`
 # https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key
@@ -33,16 +27,6 @@ resource "local_file" "gitlab_public_key" {
   file_permission = "0644"
 }
 
-# # Download Ubuntu Cloud Image ------------------------------------------- #
-# # Ubuntu cloud images are in qcow2 format, but stored with .img extension, so can be directly uploaded to Proxmox.
-# resource "proxmox_download_file" "ubuntu_cloud_image" {
-#   content_type = "import"                        # Image file type for importing into Proxmox.
-#   datastore_id = "local"                         # Use the local datastore for storing the downloaded cloud image.
-#   node_name    = var.pve_nodes["node1"].hostname # Use the first node in the Proxmox cluster for downloading the cloud image.
-#   url          = "https://cloud-images.ubuntu.com/${var.ubuntu_dist_name}/current/${var.ubuntu_dist_name}-server-cloudimg-amd64.img"
-#   file_name    = "TEST-ubuntu-server-${var.ubuntu_dist_name}-cloudimg-amd64.img"
-# }
-
 # Generate random password for the default user ------------------------------------------- #
 # https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password
 resource "random_password" "gitlab" {
@@ -55,7 +39,7 @@ resource "random_password" "gitlab" {
 resource "proxmox_virtual_environment_vm" "gitlab" {
   clone {
     vm_id = var.template_ubuntu_id # ID number of the Ubuntu cloud image template created during Proxmox bootstrap.
-    full = true # Full clone, not linked to template as a base image.
+    full  = true                   # Full clone, not linked to template as a base image.
   }
   name        = "svr-mgt-gitlab-prd"
   description = "Management: GitLab CE Server"
@@ -65,7 +49,7 @@ resource "proxmox_virtual_environment_vm" "gitlab" {
   }
   tpm_state {
     datastore_id = var.datastore_id
-    version = "v2.0"
+    version      = "v2.0"
   }
   node_name       = var.pve_nodes["node1"].hostname # Use the first node in the Proxmox cluster for creating the VM.
   started         = true                            # VM should be started after creation.
@@ -85,17 +69,19 @@ resource "proxmox_virtual_environment_vm" "gitlab" {
     type         = "4m" # Disk type for EFI disk.
   }
   disk {
-    datastore_id = var.datastore_id                            # Use the specified datastore for storing the VM disk.
-    interface    = "scsi0"                                     # Use SCSI interface for the VM disk for better performance.
-    discard      = "on"                                        # Passes TRIM/UNMAP commands through so the host can reclaim space deleted inside the guest OS.
+    datastore_id = var.datastore_id # Use the specified datastore for storing the VM disk.
+    interface    = "scsi0"          # Use SCSI interface for the VM disk for better performance.
+    discard      = "on"             # Passes TRIM/UNMAP commands through so the host can reclaim space deleted inside the guest OS.
     size         = 32
   }
   network_device {
-    bridge = var.pve_network.guest.bridge # Get from global variables. Use the specified "guest" bridge for the VM network device.
+    bridge  = var.pve_network.guest.bridge # Get from global variables. Use the specified "guest" bridge for the VM network device.
+    vlan_id = "20"                         # VLAN ID for the VM network device, used for network segmentation. No SDN configured yet.
   }
   # Cloud-init Configuration
   # https://registry.terraform.io/providers/bpg/proxmox/latest/docs/guides/cloud-init
   initialization {
+    upgrade      = false            # Disable auto-update for packages on first boot. This can lock up Apt and prevent Ansible installing GitLab.
     datastore_id = var.datastore_id # Use the specified datastore for storing the cloud-init configuration.
     ip_config {
       ipv4 {
@@ -110,7 +96,7 @@ resource "proxmox_virtual_environment_vm" "gitlab" {
     user_account {
       username = var.default_user
       password = random_password.gitlab.result
-      keys     = [
+      keys = [
         trimspace(tls_private_key.gitlab.public_key_openssh)
       ]
     }
