@@ -49,5 +49,5 @@ Bootstrap a GitLab instance within a Proxmox VM to provide a local code reposito
 8. **OPTIONAL:** Execute the bootstrapping script with flag `-d` to completely remove the resources and GitLab instance.
 
 ```bash
-./bootstrap-gitlab.sh -d
+./bootstrap-gitlab.sh --destroy
 ```
