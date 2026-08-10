@@ -31,7 +31,7 @@ I aim to utilise as much existing hardware as possible by recycling second hand 
 | Hypervisor      | Proxmox VE (3-node cluster)              |
 | Firewall/Router | OPNsense                                 |
 | Networking      | TP-Link managed switch, 802.1Q VLANs     |
-| IaC             | Terraform, Ansible                       |
+| IaC/Config      | Terraform, Ansible                       |
 | Scripting       | Bash, PowerShell                         |
 | Storage         | ZFS pools, NFS, Azure Blob (state files) |
 
