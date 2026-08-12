@@ -29,7 +29,7 @@ TEMPLATE_ID_BASE=9000 # Starting template ID for Proxmox.
 REQUIRED_PACKAGES="git curl libguestfs-tools" # List of required packages to install on host executing this script.
 DST_PATH=/var/lib/vz/template/iso # Final destination path for image file.
 EXP_FS="32G" # String value for desired file system size during expansion.
-DEFAULT_PW="changeme123!" # Default root password for VM.
+#DEFAULT_PW="changeme123!" # Default root password for VM.
 COUNTER=0 # Counter used to iterate the VM ID.
 
 # ------------------------------------------------------- #
@@ -45,7 +45,7 @@ download_os_image(){
         qemu-img resize "$IMG_FILE" "$EXP_FS" &> /dev/null
         echo "- Installing Qemu Guest agent..."
         virt-customize -a $IMG_FILE --install qemu-guest-agent &> /dev/null
-        virt-customize -a $IMG_FILE --root-password password:$DEFAULT_PW &> /dev/null
+        #virt-customize -a $IMG_FILE --root-password password:$DEFAULT_PW &> /dev/null
         echo "INFO: Customizations complete."
         echo "INFO: Moving image file to Proxmox image directory ($DST_PATH/)."
         mv -f "$IMG_FILE" "$DST_PATH/$IMG_FILE" &> /dev/null
