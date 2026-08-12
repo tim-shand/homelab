@@ -1,0 +1,12 @@
+# --------------------------------------------------------- #
+# Master Playbook
+# --------------------------------------------------------- #
+
+- name: Apply Common Configuration
+  hosts: all
+  ignore_unreachable: true # Skip hosts that are not ping-able.
+  gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
+  become: true # Enables privilege escalation (sudo).
+
+  roles:
+    - common
