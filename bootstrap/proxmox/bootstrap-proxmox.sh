@@ -17,9 +17,6 @@ set -euo pipefail
 #   - Generates SSH key-pair for Ansible service account.
 #   - Creates a new Proxmox user group for IaC service accounts.
 #   - Creates dedicated service accounts (Terraform, Ansible) in Proxmox with API tokens.
-# - VM Templates:
-#   - Downloads Ubuntu cloud image based on provided distro code name.
-#   - Creates a VM template from downloaded image file.
 # USAGE:
 # - Execute locally from system with SSH access to Proxmox hosts.
 # ./bootstrap-proxmox.sh
@@ -132,7 +129,6 @@ proxmox_create_local_account(){
     chmod 440 "${SUDOERS_FILE}" # root can read, group can read, no write for anyone, no execute, and no permissions at all for "other".
     visudo -cf "${SUDOERS_FILE}" # Catches syntax errors in the file content.
 }
-
 
 # Function: Execute remote commands on a single Proxmox node, passing in function and parameters.
 exec_proxmox(){
