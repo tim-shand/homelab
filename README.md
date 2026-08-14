@@ -74,7 +74,13 @@ A three-node Proxmox cluster runs virtualised workloads, with Proxmox Software-D
 Using bootstrap scripts allows the home lab to be easily re-deployed in the event of total failure.
 Utilising a combination of Bash, Terraform and Ansible, essential workloads can be redeployed and configured.
 
-See the [bootstrap](./bootstrap/) directory for guidance on the correct sequence of steps.
+See the [Bootstrap](./bootstrap/) directory for guidance on the correct sequence of steps.
+
+[**Proxmox**](./bootstrap/proxmox)
+
+- Dedicated Proxmox service accounts for Ansible and Terraform with tokens for authentication into via API.
+- Local service account for Ansible provisioned on each node on the cluster for host-level configuration.
+- SSH keys generated for passwordless authentication during pipeline execution.
 
 ---
 
