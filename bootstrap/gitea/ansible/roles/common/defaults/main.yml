@@ -1,0 +1,9 @@
+# Default Variables ---------------------------------- #
+# Defines default values that apply to all systems or can be overridden easily.
+# Lowest in Ansible’s variable precedence.
+
+---
+required_packages:
+  - curl
+  - openssh-server
+  - nano

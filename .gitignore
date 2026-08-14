@@ -13,6 +13,7 @@
 *.env
 *.env.*
 **/ssh_keys/*-ssh*
+*.ssh*
 
 # Variables----------------------------- #
 terraform.tfvars

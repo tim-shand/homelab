@@ -1,0 +1,10 @@
+---
+- name: TESTING
+  hosts: git
+  tasks:
+    - name: Ping Git Server
+      ansible.builtin.ping:
+
+    - name: Print Message
+      ansible.builtin.debug:
+        msg: Test complete!

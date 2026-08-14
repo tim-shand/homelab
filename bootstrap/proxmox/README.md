@@ -1,50 +1,87 @@
-# Bootstrap: Proxmox
+# 🥾 Bootstrap: Proxmox (Ansible + Terraform)
 
-The Proxmox bootstrapping process is performed using two separate single bash scripts.
+This process provisions the necessary resources and components to manage Proxmox using automation pipelines.
+The goal is to produce a bootstrapping process that is solid and repeatable.
 
-It is intended to be a **run-once solution**, creating a dedicated service account with API token.
+Using separate dedicated service accounts for both configuration and infrastructure provides "separation of duties", and a clear boundary between the role of each deployment stage (deploy VM infra vs configure VM system).
 
-This account can then be used with automation pipelines, preparing for future IaC deployments.
+**Ansible**
 
-A VM template is created for the purpose of deploying a GitLab server that will provide automated deployments for the home lab.
+A local service account for Ansible is required on each Proxmox node to perform host-level configuration operations.
+This includes installing and updating packages, and making operating system changes.
+Using a dedicated service account avoids using the heavy privilaged `root` account, which is only used for the initial bootstrapping.
 
-- Portable, simple to read, easy to execute.
-- Removes application requirements (no need to install Terraform or Ansible).
-- No state file to manage or store post deployment.
-- Uses Proxmox native terminal command `pveum` to create resources.
+**Terraform**
 
----
-
-## 🔨 Resources
-
-- **Role:** Custom role with necessary actions assigned for IaC accounts, using least privilege.
-- **Group:** Dedicated group for service accounts with custom role assignment.
-- **Service Account:** Added as a member of the IaC service account group, inheriting the assigned permissions from group. 
-- **API Token:** Generated for the service account to use when authenticating with Proxmox API.
-- **VM Template:** Used to deploy the GitLab server VM.
+Unlike the Ansible account, the Terraform service account is provisioned within the Proxmox instance only.
+This means that it _does not_ have the ability to login to the operating system layer, as this is not required for the tasks it will perform.
+The role of the Terraform service account is to deploy resources within the Proxmox instance.
 
 ---
 
-## ❔ Requirements
+## 🌳 Resources
 
-- [x] Root account credentials to the Proxmox environment.
-- [x] SSH access to a target Proxmox node, either singular or in a cluster.
+- **SSH Key-Pair:** Provides passwordless SSH login access to resources managed by Ansible.
+- **Ansible Service Account (Local):** Used to manage and apply configuration to the Proxmox nodes and workloads at host level.
+- **Terraform Service Account (API):** Authenticates to the Proxmox API to deploy and manage infrastructure (VMs, containers etc).
+- **Proxmox User Group:** Enables service accounts to inherit assigned permissions and role within Proxmox.
 
 ---
 
-## ▶️ Usage
+## 💡 Requirements
 
-1. Execute from a device with SSH connectivity to a Proxmox node or nodes within a cluster.
+- [x] Ansible installed locally on the system performing bootstrap process (workstation).
+- [x] Proxmox cluster installed with initial configuration completed.
+- [x] SSH Connectivity to all Proxmox nodes (`TCP/22`).
+
+---
+
+## 📙 Preparation Steps
+
+- [x] Remove stale SSH host keys if rebuild has occurred to avoid SSH connection issues.
+  - If the same IPs were used before the rebuild, the file `~/.ssh/known_hosts` will have stale host keys and SSH will refuse to connect. 
+  - Execute: `ssh-keygen -R <node_ip>`
+- [x] Confirm SSH access to the `root` account on all Proxmox nodes.
+- [x] Update the Ansible inventory file (`inventory.ini`) if hostnames or IP addressing have changed.
+
+---
+
+## ▶️ Usage Process
+
+**1. Execute Proxmox bootstrapping script:**
+
+- Generates a dedicated `ed25519` SSH key-pair for Ansible service account in working directory.
+- **For each Proxmox node:**
+  - Create local service account for Ansible.
+  - Inject SSH public key into `~/.ssh/authorized_keys` for the Ansible service account.
+    - This enables Ansible to apply configuration at host level.
+- Creates Proxmox service account group and assigns required permissions.
+- Creates Proxmox service account users with API token access.
 
 ```bash
-ssh root@proxmox-node 'bash -s' < ./proxmox-api-user.sh
+./bootstrap-proxmox.sh
 ```
 
-2. Save the token secret from output, storing securely in a password manager or CI/CD pipeline secrets.
-3. Execute the Ubuntu Server template script.
+**2. Execute Proxmox template bootstrapping script:**
+
+- Downloads Ubuntu Server cloud-init image and configures VM template.
+- VM template (Ubuntu) is required for Git server bootstrapping.
 
 ```bash
-ssh root@proxmox-node 'bash -s' < ./proxmox-templates-ubuntu.sh
+./bootstrap-proxmox-templates.sh
 ```
 
-4. The Ubuntu VM template (ID 9000) will now be listed in the Proxmox interface.
+---
+
+## 🅾️ OPTIONAL: Local Service Account Removal
+
+To delete the `svc-ansible` user and remove configuration, login to each node and execute the following:
+
+```bash
+# Ensure user processes are stopped if running.
+loginctl terminate-user svc-ansible
+# -r: Instructs the system to remove the user home directory and mail spool.
+userdel -r svc-ansible
+# Remove user entry from sudoers config.
+rm -f /etc/sudoers.d/svc-ansible
+```
