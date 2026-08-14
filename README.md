@@ -56,7 +56,7 @@ A three-node Proxmox cluster runs virtualised workloads, with Proxmox Software-D
 | -------------------- | ------------------------------------------------------- |
 | PFsense/OPNsense VMs | Internal firewall testing and lab network experiments.  |
 | Management/Jump Host | Access point into lab management interfaces.            |
-| GitLab CE            | Version control, repo mirroring, on-prem runners.        |
+| Git Server (Gitea)   | Version control, repo mirroring, on-prem CI/CD runners. |
 | Misc utility VMs     | Testing, sand boxing, and evaluating new tech.          |
 
 ---
@@ -64,23 +64,29 @@ A three-node Proxmox cluster runs virtualised workloads, with Proxmox Software-D
 ## 🛠️ Tools & Utilities
 
 - **[Terraform](https://www.terraform.io/):** Provider agnostic IaC tool for deploying and managing resources declaratively.
+- **[Ansible](https://docs.ansible.com):** Configuration as Code tool for apply post-deployment settings and configuration.
 - **Azure Blob Storage:** Used to store remote state files for Terraform deployments.
 - **Bash/PowerShell:** Bootstrapping scripts and miscellaneous automation utilities.
 
 ---
 
-## 👢 Bootstrapping
+## 🥾 Bootstrapping
 
-Using bootstrap scripts allows the home lab to be easily re-deployed in the event of total failure.
-Utilising a combination of Bash, Terraform and Ansible, essential workloads can be redeployed and configured.
+Preparing bootstrap scripts allows the environment to be easily re-deployed in the event of total failure.
+Utilising a combination of Bash, Terraform and Ansible, essential workloads and infrastructure can be redeployed and configured.
 
-See the [Bootstrap](./bootstrap/) directory for guidance on the correct sequence of steps.
+> [!TIP]
+> See the [Bootstrap](./bootstrap/) directory for guidance on the correct sequence of bootstrap steps.
 
-[**Proxmox**](./bootstrap/proxmox)
+**[Proxmox](./bootstrap/proxmox)**
 
 - Dedicated Proxmox service accounts for Ansible and Terraform with tokens for authentication into via API.
 - Local service account for Ansible provisioned on each node on the cluster for host-level configuration.
 - SSH keys generated for passwordless authentication during pipeline execution.
+
+**[Git Server](./bootstrap/gitea)**
+
+_Coming Soon_
 
 ---
 
