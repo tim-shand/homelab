@@ -71,6 +71,14 @@ The role of the Terraform service account is to deploy resources within the Prox
 ./bootstrap-ubuntu-template.sh
 ```
 
+**3. Move SSH keys to `files/ssh-keys` directory:**
+
+- Enables central storage location of commonly used keys.
+
+```bash
+mv svc-ansible.ssh* ../../files/ssh-keys
+```
+
 ---
 
 ## 🅾️ OPTIONAL: Local Service Account Removal
