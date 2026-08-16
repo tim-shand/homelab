@@ -19,7 +19,7 @@ set -euo pipefail
 # VARIABLES
 # ------------------------------------------------------- #
 
-DIR_SSH_KEYS="../../../files/ssh_keys"
+DIR_SSH_KEYS="../../files/ssh_keys"
 DIR_TERRAFORM="./terraform"
 DIR_TFVARS_GLOBAL="../../../variables/global-proxmox.tfvars"
 DIR_ANSIBLE="./ansible"
@@ -149,8 +149,8 @@ else
 
     # Ansible --------------------------------------------------------- #
     log_info "Executing Ansible playbook..."
-    ansible all -i "${VM_IP}," -u "${VM_UN}" --private-key="../../../files/ssh_keys/${VM_UN}.ssh" -m ping
-    #ansible-playbook -i "${DIR_ANSIBLE}/inventory.ini" -u "${VM_UN}" "${DIR_ANSIBLE}/gitvm_server.yml"
+    ansible all -i "${VM_IP}," -u "${VM_UN}" --private-key="${DIR_SSH_KEYS}/${VM_UN}.ssh" -m ping
+    #ansible-playbook -i "${DIR_ANSIBLE}/inventory.ini" -u "${VM_UN}" --private-key="${DIR_SSH_KEYS}/${VM_UN}.ssh" "${DIR_ANSIBLE}/gitvm_server.yml"
 
     echo
     echo -e "${BLUE}# =======${NC} COMPLETE!!! ${BLUE}======= #${NC}"
