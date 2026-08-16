@@ -63,5 +63,5 @@ variable "vm_networking" {
 variable "default_user" {
   description = "Default user for the VM, used for cloud-init configuration."
   type        = string
-  default     = "homelabadmin" # Default user for the VM, can be overridden by user input.
+  default     = "svc-ansible" # Default user for the VM, can be overridden by user input.
 }
