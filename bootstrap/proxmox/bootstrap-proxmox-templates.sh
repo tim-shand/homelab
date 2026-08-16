@@ -23,60 +23,95 @@ set -e # Exit immediately if any command returns a non-zero status.
 # VARIABLES
 # ------------------------------------------------------- #
 
-# List of Ubuntu distributions to loop and create templates for.
-UBUNTU_DIST_NAMES=("noble" "resolute") # Ubuntu distribution code names.
-TEMPLATE_ID_BASE=9000 # Starting template ID for Proxmox.
-REQUIRED_PACKAGES="git curl libguestfs-tools" # List of required packages to install on host executing this script.
-DST_PATH=/var/lib/vz/template/iso # Final destination path for image file.
-EXP_FS="32G" # String value for desired file system size during expansion.
-#DEFAULT_PW="changeme123!" # Default root password for VM.
-COUNTER=0 # Counter used to iterate the VM ID.
+# Proxmox Nodes
+PROXMOX_NODES=("10.0.10.1" "10.0.10.2" "10.0.10.3") # List of Proxmox node IPs to create template on.
+PROXMOX_USER="root" # User account for accessing Proxmox.
+
+# OS image source.
+DIST_NAME="resolute"
+
+# Template details.
+TEMPLATE_ID=9000 # Starting template ID for Proxmox.
+TEMPLATE_NAME="ztmp-ubuntu-server-${DIST_NAME}" # Template name used in Proxmox.
+DEFAULT_PW="ChangeMe123!" # Default root password for VM.
+
+# Define colour variables.
+RED="\e[31m"
+YELLOW="\e[33m"
+GREEN="\e[32m"
+BLUE="\e[36m"
+NC="\e[0m"
+PASS="\u2713"
+FAIL="\u2717"
+SKIP="\u2212"
 
 # ------------------------------------------------------- #
 # FUNCTIONS
 # ------------------------------------------------------- #
 
-download_os_image(){
-    curl -fL -o "$IMG_FILE" "$IMG_URL" # Download Image using Curl (-f = fail on HTTP errors, -L follow redirects).
-    # Run provisioning prep tasks: Expand file system, install guest agent, set root password.
-    if [ -f "$IMG_FILE" ]; then
-        echo "INFO: Image file present. Begin modifications."
-        echo "- Expanding file system ($EXP_FS)..."
-        qemu-img resize "$IMG_FILE" "$EXP_FS" &> /dev/null
-        echo "- Installing Qemu Guest agent..."
-        virt-customize -a $IMG_FILE --install qemu-guest-agent &> /dev/null
-        #virt-customize -a $IMG_FILE --root-password password:$DEFAULT_PW &> /dev/null
-        echo "INFO: Customizations complete."
-        echo "INFO: Moving image file to Proxmox image directory ($DST_PATH/)."
-        mv -f "$IMG_FILE" "$DST_PATH/$IMG_FILE" &> /dev/null
-    else
-        echo "ERROR: Image file is not present. Abort."
-        return 1
-    fi
+# Function: Terminal logging to add some visual pizazz.
+log_info() { echo -e "${BLUE}[*] $1 ${NC}"; }
+log_fail() { echo -e "${RED}[${FAIL}] $1 ${NC}"; }
+log_skip() { echo -e "${YELLOW}[${SKIP}] $1 ${NC}"; }
+log_pass() { echo -e "${GREEN}[${PASS}] $1 ${NC}"; }
+
+# Function: Execute remote commands on a single Proxmox node, passing in function and parameters.
+exec_proxmox(){
+    local RC=0 # Return code var.
+    local FUNC="$1" # Pass in function to execute remotely.
+    local PARAMS="$2" # Pass in the function parameters.
+    # Use `declare -f` to serialize the function into a string to pass it to the remote server.
+    ssh "${PROXMOX_USER}@${PROXMOX_NODES[0]}" \
+        "$(declare -f ${FUNC}); ${FUNC} ${PARAMS}" || RC=$?
+    return "${RC}"
 }
 
-build_vm_template(){
-    if [ -f "$DST_PATH/$IMG_FILE" ]; then
-        echo "INFO: Creating VM for template..."
-        VM_ID=$((TEMPLATE_ID_BASE + COUNTER))
-        qm create $VM_ID --name "$TEMPLATE_NAME" \
+# Function: Download and prepare OS image.
+prep_ubuntu_image(){
+    local DIST="$1"
+    local TEMPLATE_ID="$2"
+    local DEFAULT_PW="$3"
+    local IMG_FILE="${DIST}-server-cloudimg-amd64.img" # Image name.
+    local IMG_URL="https://cloud-images.ubuntu.com/${DIST}/current/${IMG_FILE}" # Image source URL.
+    local TEMPLATE_NAME="ztmp-ubuntu-server-${DIST}" # Template name used in Proxmox.
+    local EXP_FS="32G"
+    local REQUIRED_PACKAGES="curl libguestfs-tools" # List of required packages to install on host executing this script.
+    local DST_PATH="/var/lib/vz/template/iso" # Final destination path for image file.
+
+    apt update -y && apt install "${REQUIRED_PACKAGES}" -y &> /dev/null # Update Proxmox host apt repository and install required packages.
+    curl -fL -o "${IMG_FILE}" "${IMG_URL}" # Download Image using Curl (-f = fail on HTTP errors, -L follow redirects).
+
+    # Run provisioning prep tasks: Expand file system, install guest agent, set root password.
+    if [ ! -f "${IMG_FILE}" ]; then
+        echo "ERROR: Image file is not present. Abort."
+        return 1
+    else
+        echo "- Image file present. Begin modifications."
+        echo "- Expanding file system (${EXP_FS})..."
+        qemu-img resize "${IMG_FILE}" "${EXP_FS}" &> /dev/null
+        echo "- Installing Qemu Guest agent..."
+        virt-customize -a "${IMG_FILE}" --install qemu-guest-agent &> /dev/null
+        virt-customize -a "${IMG_FILE}" --root-password password:"${DEFAULT_PW}" &> /dev/null
+        echo "- Customizations complete."
+        echo "- Moving image file to Proxmox image directory (${DST_PATH}/)."
+        mv -f "${IMG_FILE}" "${DST_PATH}/${IMG_FILE}" &> /dev/null
+
+        # Build VM Template.
+        qm create "${TEMPLATE_ID}" --name "${TEMPLATE_NAME}" \
             --ostype l26 --agent 1 --cpu host --sockets 1 --cores 2 --memory 1024 --balloon 0 \
             --bios seabios --boot order=scsi0 --scsihw virtio-scsi-pci \
-            --scsi0 local-lvm:0,import-from="$DST_PATH/$IMG_FILE",backup=0,cache=writeback,discard=on \
+            --scsi0 local-lvm:0,import-from="${DST_PATH}/${IMG_FILE}",backup=0,cache=writeback,discard=on \
             --scsi1 local-lvm:cloudinit --vga virtio --net0 virtio,bridge=vmbr0
-        if qm status $VM_ID | grep -q "status:"; then
-            echo "INFO: Converting VM to template..."
-            if qm template "$VM_ID"; then
-                echo "Template conversion successful."
-            else
-                echo "Template conversion failed."
-            fi
+
+        # Check VM creation status.
+        if ! qm status "${TEMPLATE_ID}" | grep -q "status:"; then
+            return 1 # Failed
         else
-            echo "ERROR: Failed to provision VM template. Abort."
+            echo "- Converting VM to template..."
+            if ! qm template "${TEMPLATE_ID}"; then
+                return 1 # Failed
+            fi
         fi
-    else
-        echo "ERROR: Image file is not present in destination. Abort."
-        return 1
     fi
 }
 
@@ -84,28 +119,23 @@ build_vm_template(){
 # MAIN
 # ------------------------------------------------------- #
 
-# Update Proxmox host apt repository and install required packages.
-echo "INFO: Updating repository and installing required packages..."
-apt update -y && apt install $REQUIRED_PACKAGES -y &> /dev/null
+echo -e "${BLUE}"
+echo -e "# ======================================= #${NC}"
+echo -e "         Proxmox Template Script ${BLUE}"
+echo -e "# ======================================= #${NC}"
+echo
+log_info "Proxmox Cluster Node: ${PROXMOX_NODES[0]}"
+echo
 
-# Loop through each distro codename to create Proxmox template.
-for DIST in "${UBUNTU_DIST_NAMES[@]}"; do
-    echo "INFO: Processing distribution: $DIST"
-    echo "Iteration: COUNTER=$COUNTER DIST=$DIST"
+# Download Ubuntu cloud image.
+log_info "Downloading distribution (${DIST_NAME})..."
+if ! exec_proxmox prep_ubuntu_image "${DIST_NAME} ${TEMPLATE_ID} ${DEFAULT_PW}"; then
+    log_fail "Failed to configure OS image for '${DIST_NAME}'. Abort."
+    exit 1
+else
+    log_pass "Successfully configured OS image for '${DIST_NAME}'."
+fi
 
-    IMG_FILE="${DIST}-server-cloudimg-amd64.img" # Image name.
-    IMG_URL="https://cloud-images.ubuntu.com/${DIST}/current/${IMG_FILE}" # Image source URL.
-    TEMPLATE_NAME="ztmp-ubuntu-server-${DIST}" # Template name used in Proxmox.
-
-    echo "INFO: Downloading image file: $IMG_URL"
-    download_os_image
-
-    sleep 5
-
-    echo "INFO: Building Proxmox VM template..."
-    build_vm_template || continue
-
-    COUNTER=$((COUNTER + 1))
-done
-
-echo "--------- COMPLETE ---------"
+echo
+echo -e "${BLUE}# =======${NC} COMPLETE!!! ${BLUE}======= #${NC}"
+echo
