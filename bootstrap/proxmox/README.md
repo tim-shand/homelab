@@ -76,7 +76,7 @@ The role of the Terraform service account is to deploy resources within the Prox
 - Enables central storage location of commonly used keys.
 
 ```bash
-mv svc-ansible.ssh* ../../files/ssh-keys
+mv svc-ansible.ssh* ../../files/ssh_keys
 ```
 
 ---
