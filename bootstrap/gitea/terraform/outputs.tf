@@ -1,25 +1,25 @@
 # Auth Outputs -------------------------------------------- #
 
-# Output the SSH private key for the Gitea VM.
-output "gitvm_private_key" {
-  description = "SSH private key for the VM, used for authentication and access."
-  value       = tls_private_key.gitvm.private_key_openssh
-  sensitive   = true
-}
+# # Output the SSH private key for the Gitea VM.
+# output "gitvm_private_key" {
+#   description = "SSH private key for the VM, used for authentication and access."
+#   value       = tls_private_key.gitvm.private_key_openssh
+#   sensitive   = true
+# }
 
-# Output the SSH public key for the Gitea VM.
-output "gitvm_public_key" {
-  description = "SSH public key for the VM, used for authentication and access."
-  value       = tls_private_key.gitvm.public_key_openssh
-}
+# # Output the SSH public key for the Gitea VM.
+# output "gitvm_public_key" {
+#   description = "SSH public key for the VM, used for authentication and access."
+#   value       = tls_private_key.gitvm.public_key_openssh
+# }
 
-# Output the random password for the default user on the Gitea VM.
-# terraform -chdir="./terraform" output -raw gitvm_default_user_password
-output "gitvm_default_user_password" {
-  description = "Randomly generated password for the default user."
-  value       = random_password.gitvm.result
-  sensitive   = true
-}
+# # Output the random password for the default user on the Gitea VM.
+# # terraform -chdir="./terraform" output -raw gitvm_default_user_password
+# output "gitvm_default_user_password" {
+#   description = "Randomly generated password for the default user."
+#   value       = random_password.gitvm.result
+#   sensitive   = true
+# }
 
 # VM Information -------------------------------------------- #
 
