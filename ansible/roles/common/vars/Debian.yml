@@ -1,0 +1,4 @@
+---
+dist_packages:
+  - ufw
+  - build-essential

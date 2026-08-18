@@ -42,11 +42,11 @@ variable "datastore_id" {
 variable "vm_specs" {
   description = "Map of details used to provision the VM."
   type = object({
-    name = string
+    name        = string
     description = string
-    tags = list(string)
-    vm_cores = number
-    vm_memory = number
+    tags        = list(string)
+    vm_cores    = number
+    vm_memory   = number
   })
 }
 
@@ -63,5 +63,11 @@ variable "vm_networking" {
 variable "default_user" {
   description = "Default user for the VM, used for cloud-init configuration."
   type        = string
-  default     = "homelabadmin" # Default user for the VM, can be overridden by user input.
+  default     = "svc-ansible" # Default user for the VM, can be overridden by user input.
+}
+
+variable "ssh_key_path" {
+  description = "Path to central SSH key directory."
+  type        = string
+  default     = "../../../files/ssh_keys"
 }

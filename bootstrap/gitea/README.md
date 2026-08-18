@@ -37,17 +37,18 @@ Bootstrap a Gitea instance within a Proxmox VM to provide a local code repositor
 2. Rename the example files to remove the text`-example` from the file names.
 3. Update the `backend.tf` file to reference real Azure resources for remote state storage.
 4. Update the `terraform.tfvars` file with desired variable values for the environment.
+5. Modify the Gitea configuration files in root Ansible directory `../../../ansible/roles/gitea/defaults/main.yml` with desired values.
 
 **Deployment**
 
-5. Execute the bootstrapping script to deploy the Proxmox VM and execute Ansible playbook.
+6. Execute the bootstrapping script to deploy the Proxmox VM and execute Ansible playbook.
 
 ```bash
 ./bootstrap-gitvm.sh
 ```
 
-6. Wait for Terraform to deploy the VM, and Ansible to configure the VM.
-7. Update OPNsense firewall rules to allow `Trusted-WAN` device to connect via SSH and HTTP to the new VM.
+7. Wait for Terraform to deploy the VM, and allow Ansible to install and configure Gitea.
+8. Update OPNsense firewall rules to allow `Trusted-WAN` devices to connect via SSH and TCP/8080 to the new VM.
 
 | Name                             | Interface | Action | Direction |
 | -------------------------------- | --------- | ------ | --------- |
@@ -59,7 +60,11 @@ Bootstrap a Gitea instance within a Proxmox VM to provide a local code repositor
 | IPv4    | TCP/UDP  | WAN_Trusted | Any         | SVR_Hosts_Git | Ports_Mgmt       |
 | IPv4    | TCP/UDP  | WAN_Trusted | Any         | SVR_Hosts_Git | Ports_Web        |
 
-8. **OPTIONAL:** Execute the bootstrapping script with `--destroy` flag to completely remove the resources.
+9. Access the Gitea web console using the IP address on port 8080 (or as per configuration).
+
+**Removal**
+
+Execute the bootstrapping script with `--destroy` flag to completely remove the resources.
 
 ```bash
 ./bootstrap-gitvm.sh --destroy

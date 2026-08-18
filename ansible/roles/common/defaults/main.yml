@@ -1,0 +1,7 @@
+---
+common_packages:
+  - git
+  - nano
+  - curl
+  - wget
+  - htop

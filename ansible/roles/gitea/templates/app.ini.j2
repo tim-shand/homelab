@@ -1,0 +1,25 @@
+APP_NAME = Gitea
+RUN_MODE = prod
+RUN_USER = {{ gitea_user }}
+
+[server]
+DOMAIN           = {{ gitea_domain }}
+HTTP_ADDR        = 0.0.0.0
+HTTP_PORT        = {{ gitea_http_port }}
+ROOT_URL         = http://{{ gitea_domain }}:{{ gitea_http_port }}/
+DISABLE_SSH      = false
+START_SSH_SERVER = true
+SSH_PORT         = {{ gitea_ssh_port }}
+SSH_LISTEN_PORT  = {{ gitea_ssh_port }}
+
+[database]
+DB_TYPE = sqlite3
+PATH    = {{ gitea_data_dir }}/data/gitea.db
+
+[repository]
+ROOT = {{ gitea_data_dir }}/data/gitea-repositories
+
+[log]
+MODE      = file
+LEVEL     = Info
+ROOT_PATH = {{ gitea_data_dir }}/log

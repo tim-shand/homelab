@@ -9,7 +9,7 @@ Using separate dedicated service accounts for both configuration and infrastruct
 
 A local service account for Ansible is required on each Proxmox node to perform host-level configuration operations.
 This includes installing and updating packages, and making operating system changes.
-Using a dedicated service account avoids using the heavy privilaged `root` account, which is only used for the initial bootstrapping.
+Using a dedicated service account avoids using the heavy privileged `root` account, which is only used for the initial bootstrapping.
 
 **Terraform**
 
@@ -68,7 +68,15 @@ The role of the Terraform service account is to deploy resources within the Prox
 - VM template (Ubuntu) is required for Git server bootstrapping.
 
 ```bash
-./bootstrap-proxmox-templates.sh
+./bootstrap-ubuntu-template.sh
+```
+
+**3. Move SSH keys to `files/ssh-keys` directory:**
+
+- Enables central storage location of commonly used keys.
+
+```bash
+mv svc-ansible.ssh* ../../files/ssh_keys
 ```
 
 ---

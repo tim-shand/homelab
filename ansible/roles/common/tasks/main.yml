@@ -1,0 +1,35 @@
+# TASKS --------------------------------------- #
+
+# LOAD VARS --------------------------------------- #
+# Load OS-based variables using 'OS Family' name to read relevant file.
+# Deprecated Version: `include_vars: "{{ ansible_os_family }}.yml"`
+- name: Load_OS_Variables
+  include_vars: "{{ ansible_facts['os_family'] }}.yml"
+
+# UPDATE PACKAGE CACHE --------------------------------------- #
+# Update package cache and upgrade installed packages.
+- name: Update Package Cache (Debian-based Systems)
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Update Package Cache (RHEL-based Systems)
+  ansible.builtin.dnf:
+    update_cache: true
+  when: ansible_facts['os_family'] == "RedHat"
+
+# INSTALL PACKAGES --------------------------------------- #
+# Install common packages (defaults\main.yml).
+- name: Install Common Packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ common_packages }}"
+
+# Install distribution specific packages (vars\os_family.yml).
+- name: Install Distribution Packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ dist_packages }}"
