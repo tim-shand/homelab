@@ -1,0 +1,7 @@
+---
+- name: Install and Configure Gitea Server
+  hosts: all
+  become: true
+  gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
+  roles:
+    - common
