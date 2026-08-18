@@ -52,7 +52,7 @@
     dest: "{{ gitea_config_dir }}/app.ini"
     owner: root
     group: "{{ gitea_group }}"
-    mode: "0640"
+    mode: "0660"
   notify: restart gitea
 
 - name: Deploy Gitea systemd unit

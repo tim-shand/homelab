@@ -5,3 +5,4 @@
   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
   roles:
     - common
+    - gitea
