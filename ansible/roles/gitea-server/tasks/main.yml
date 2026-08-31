@@ -1,0 +1,131 @@
+---
+# ROLE: Gitea Server -------------------------------------- #
+# https://docs.gitea.com/installation/install-from-binary/
+
+- name: Create Gitea system group
+  ansible.builtin.group:
+    name: "{{ gitea_group }}"
+    system: true
+
+- name: Create user to run Gitea
+  ansible.builtin.user:
+    name: "{{ gitea_user }}"
+    group: "{{ gitea_group }}"
+    home: "{{ gitea_home }}"
+    shell: /bin/bash
+    system: true
+    create_home: true
+
+- name: Create required directory structure
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ gitea_user }}"
+    group: "{{ gitea_group }}"
+    mode: "0750"
+  loop:
+    - "{{ gitea_data_dir }}"
+    - "{{ gitea_data_dir }}/custom"
+    - "{{ gitea_data_dir }}/log"
+    - "{{ gitea_data_dir }}/data"
+
+- name: Create gitea config directory
+  ansible.builtin.file:
+    path: "{{ gitea_config_dir }}"
+    state: directory
+    owner: root
+    group: "{{ gitea_group }}"
+    mode: "0770"
+
+- name: Download Gitea binary file
+  ansible.builtin.get_url:
+    url: "https://dl.gitea.com/gitea/{{ gitea_version }}/gitea-{{ gitea_version }}-linux-amd64"
+    dest: "{{ gitea_binary_path }}"
+    checksum: "sha256:https://dl.gitea.com/gitea/{{ gitea_version }}/gitea-{{ gitea_version }}-linux-amd64.sha256"
+    owner: root
+    group: root
+    mode: "0755"
+  notify: restart gitea
+
+- name: Deploy Gitea configuration
+  ansible.builtin.template:
+    src: app.ini.j2
+    dest: "{{ gitea_config_dir }}/app.ini"
+    owner: root
+    group: "{{ gitea_group }}"
+    mode: "0660"
+  notify: restart gitea
+
+- name: Deploy Gitea systemd unit
+  ansible.builtin.template:
+    src: gitea.service.j2
+    dest: /etc/systemd/system/gitea.service
+    mode: "0644"
+  notify:
+    - reload systemd
+    - restart gitea
+
+- name: Enable and start Gitea
+  ansible.builtin.systemd:
+    name: gitea
+    enabled: true
+    state: started
+    daemon_reload: true
+
+# ROLE: Gitea Server -------------------------------------- #
+
+# Install Docker to use runners in containers locally.
+- name: Install Docker
+  ansible.builtin.package:
+    name: docker.io
+    state: present
+
+- name: Download Gitea Runner Binary
+  ansible.builtin.get_url:
+  url: "https://dl.gitea.com/gitea-runner/{{ gitea_runner_version }}/gitea-runner-{{ gitea_runner_version }}-linux-amd64"
+  dest: "{{ gitea_binary_path }}"
+  checksum: "https://dl.gitea.com/gitea-runner/{{ gitea_runner_version }}/gitea-runner-{{ gitea_runner_version }}-linux-amd64.sha256"
+  owner: root
+  group: root
+  mode: "0755"
+
+# Run as a systemd service.
+# Create an unprivileged user, install the binary, and register the runner as that user so the .runner file ends up in the service’s working directory.
+- name: Create Gitea Runner User
+  ansible.builtin.user:
+    name: "{{ gitea_runner_user }}"
+    group: "{{ gitea_runner_user }}"
+    append: yes
+    home: "{{ gitea_home }}"
+    shell: /bin/bash
+    system: true
+    create_home: true
+
+- name: Add Gitea-Runner User to Docker Group
+  ansible.builtin.user:
+    name: "{{ gitea_runner_user }}"
+    group: docker
+    append: yes
+
+- name: Install Gitea Runner
+  ansible.builtin.command: install -m 0755 "gitea-runner-{{ gitea_runner_version }}-linux-amd64" /usr/local/bin/gitea-runner
+
+# Generate Gitea runner configuration as the gitea-runner user account.
+- name: Generate Gitea Runner Configuration
+  become: true
+  become_user: "{{ gitea_runner_user }}"
+  ansible.builtin.command: gitea-runner generate-config | sudo tee /etc/gitea-runner/config.yaml >/dev/null
+
+- name: Register Gitea Runner Configuration
+  become: true
+  become_user: "{{ gitea_runner_user }}"
+  ansible.builtin.command: cd /var/lib/gitea-runner && gitea-runner register -c /etc/gitea-runner/config.yaml
+
+- name: Deploy Gitea-Runner systemd unit
+  ansible.builtin.template:
+    src: gitea-runner.service.j2
+    dest: /etc/systemd/system/gitea-runner.service
+    mode: "0644"
+  notify:
+    - reload systemd
+    - restart gitea-runner
