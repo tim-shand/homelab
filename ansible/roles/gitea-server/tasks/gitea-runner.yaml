@@ -31,6 +31,15 @@
     groups: docker
     append: yes
 
+# Create Gitea-Runner Config Directory
+- name: Create Gitea-Runner Config Directory
+  ansible.builtin.file:
+    path: /etc/gitea-runner
+    state: directory
+    mode: "0775"
+    owner: "{{ runner_group }}"
+    group: "{{ runner_group }}"
+
 - name: Download Gitea-Runner Binary
   ansible.builtin.get_url:
     url: "https://dl.gitea.com/gitea-runner/{{ runner_version }}/gitea-runner-{{ runner_version }}-linux-amd64"
@@ -42,15 +51,6 @@
 
 - name: Install Gitea-Runner
   ansible.builtin.shell: install -m 0755 "/opt/gitea-runner-{{ runner_version }}-linux-amd64" /usr/local/bin/gitea-runner
-
-# Create Gitea-Runner Config Directory
-- name: Create Gitea-Runner Config Directory
-  ansible.builtin.file:
-    path: /etc/gitea-runner
-    state: directory
-    mode: "0775"
-    owner: root
-    group: "{{ runner_group }}"
 
 # Generate Gitea runner configuration as the gitea-runner user account.
 # The 'shell' module is required instead of 'command' because of the '>'.
@@ -75,6 +75,7 @@
   become: true
   become_user: "{{ runner_user }}"
   ansible.builtin.shell: |
+    chown -R gitea-runner:gitea-runner /var/lib/gitea-runner
     cd /var/lib/gitea-runner
     gitea-runner register -c /etc/gitea-runner/config.yaml --no-interactive --instance {{ runner_instance }} --name {{ runner_name }} --token {{ runner_token.stdout }}
   when:

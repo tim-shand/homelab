@@ -20,5 +20,5 @@ runner_user: "gitea-runner"
 runner_group: "gitea-runner"
 runner_home: /var/lib/gitea-runner
 runner_binary_path: /usr/local/bin/gitea-runner
-runner_name: "gitea-runner-dev"
-runner_instance: "localhost"
+runner_name: "gitea-runner-local"
+runner_instance: "http://localhost:8080"

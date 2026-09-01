@@ -11,8 +11,8 @@ Requires=docker.service
 Type=simple
 ExecStart=/usr/local/bin/gitea-runner daemon --config /etc/gitea-runner/config.yaml
 WorkingDirectory=/var/lib/gitea-runner
-User={{ gitea_runner_user }}
-Group={{ gitea_runner_user }}
+User={{ runner_user }}
+Group={{ runner_user }}
 Restart=on-failure
 RestartSec=5s
 # Allow running jobs to finish before the runner is stopped. Keep this in sync
