@@ -1,9 +1,9 @@
 # 🥾 Home Lab: Bootstrap Sequence & Initial Setup
 
-The process below describes the steps required to re-build the home lab environment from scratch.
+The process below describes the steps required to re-build the home lab environment from scratch.  
 With the majority of workloads being managed using Terraform and Ansible, the home lab should be as reproducible as possible. 
 
-Bootstrapping scripts are used to create resources that are required _before_ automation pipelines can take over.
+Bootstrapping scripts are used to create resources that are required _before_ automation pipelines can take over.  
 The bootstrap process establishes the minimum infrastructure required for Git-based workflows to over management of the environment.
 
 _There are three phases involved:_
@@ -54,7 +54,8 @@ _There are three phases involved:_
 ### 1. Azure
 
 > [!NOTE]
-> This project utilises an existing Azure tenant and resources. Configuration is required **BEFORE** any project resources can be deployed as it provides the remote state backend storage for Terraform.
+> This project utilises an existing Azure tenant and resources. 
+> Configuration is required **BEFORE** any project resources can be deployed as it provides the remote state backend storage for Terraform.
 
 - Deploy App Registration (Service Principal) to provide authentication in workflows.
 - Deploy Blob Container in existing Resource Group and Storage Account.
@@ -80,9 +81,9 @@ _There are three phases involved:_
 ### 3. Gitea
 
 - Execute the [Gitea bootstrapping script](./gitea/) to setup server automatically.
-- Deploys a new VM in Proxmox using previously created VM template.
-- Downloads, installs and configures Gitea on the VM.
-- Configures a local Gitea Runner on the VM for executing workflows.
+  - Deploys a new VM in Proxmox using previously created VM template.
+  - Downloads, installs and configures Gitea on the VM.
+  - Configures a local Gitea Runner on the VM for executing workflows.
 
 > [!NOTE]
 > This process requires manual configuration of the GitHub --> Gitea repo mirroring.
@@ -94,3 +95,5 @@ From within the Gitea web interface:
 3. Enable the option **This repository will be a mirror**.
 4. Select the migration items to bring across.
 5. Select **Migrate Repository** to save the configuration.
+
+---
