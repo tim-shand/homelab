@@ -84,3 +84,13 @@ _There are three phases involved:_
 - Downloads, installs and configures Gitea on the VM.
 - Configures a local Gitea Runner on the VM for executing workflows.
 
+> [!NOTE]
+> This process requires manual configuration of the GitHub --> Gitea repo mirroring.
+
+From within the Gitea web interface:
+
+1. Select **New Migration** in the **Create** menu on the top right.
+2. Enter the GitHub repository URL.
+3. Enable the option **This repository will be a mirror**.
+4. Select the migration items to bring across.
+5. Select **Migrate Repository** to save the configuration.
