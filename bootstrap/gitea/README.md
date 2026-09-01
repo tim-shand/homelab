@@ -1,14 +1,14 @@
-# Bootstrap: Gitea
+# Bootstrap: Gitea Server and Runner
 
 Bootstrap a Gitea instance within a Proxmox VM to provide a local code repository, repo mirroring and local runner for execution of pipelines.
 
 ## 🧭 Strategy
 
-- Terraform to provision the SSH key-pair and a new VM in Proxmox from existing template.
-- Azure blob storage for remote Terraform backend.
+- Terraform to deploy a VM in Proxmox from an existing template.
+- Azure blob storage providing remote Terraform backend state storage.
 - Ansible to install and configure Gitea on new VM.
-- Configure repo mirroring for GitHub `homelab` repository (source of truth) to the local Gitea instance.
-- Configure local runner to execute pipelines to deploy the environment.
+- Configure local runner to execute workflows to deploy the environment.
+- Configure repo mirroring for `homelab` GitHub repository (source of truth) to the local Gitea instance.
 
 ---
 
@@ -16,7 +16,7 @@ Bootstrap a Gitea instance within a Proxmox VM to provide a local code repositor
 
 - [x] Terraform installed locally.
 - [x] Ansible installed locally.
-- [x] SSH key-pair for Ansible account (created during Proxmox bootstrapping).
+- [x] SSH key-pair for Ansible account (created during Proxmox bootstrapping process).
   - Stored under `/files/ssh_keys`
 - [x] **Optional**: Azure CLI installed and authenticated (if using Azure Terraform backend).
 
