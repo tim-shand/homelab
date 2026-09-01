@@ -7,7 +7,8 @@ Bootstrap a Gitea instance within a Proxmox VM to provide a local code repositor
 - Terraform to provision the SSH key-pair and a new VM in Proxmox from existing template.
 - Azure blob storage for remote Terraform backend.
 - Ansible to install and configure Gitea on new VM.
-- Configure repo mirroring for GitHub repository (source of truth) to the local Gitea instance.
+- Configure repo mirroring for GitHub `homelab` repository (source of truth) to the local Gitea instance.
+- Configure local runner to execute pipelines to deploy the environment.
 
 ---
 
@@ -15,7 +16,9 @@ Bootstrap a Gitea instance within a Proxmox VM to provide a local code repositor
 
 - [x] Terraform installed locally.
 - [x] Ansible installed locally.
-- [x] **Optional**: Azure CLI installed and authenticated (when using Azure backend).
+- [x] SSH key-pair for Ansible account (created during Proxmox bootstrapping).
+  - Stored under `/files/ssh_keys`
+- [x] **Optional**: Azure CLI installed and authenticated (if using Azure Terraform backend).
 
 ---
 
@@ -23,9 +26,8 @@ Bootstrap a Gitea instance within a Proxmox VM to provide a local code repositor
 
 | Name            | Purpose                                             |
 | --------------- | --------------------------------------------------- |
-| Proxmox VM      | VM to run the Gitea instance                        |
-| SSH Key Pair    | Used for password-less SSH authentication to the VM |
-| Gitea Instance  | Gitea instance running on the Proxmox VM            |
+| Proxmox VM      | VM deployed to run the Gitea instance.              |
+| Gitea Instance  | Gitea instance running on the Proxmox VM.           |
 
 ---
 
@@ -60,11 +62,12 @@ Bootstrap a Gitea instance within a Proxmox VM to provide a local code repositor
 | IPv4    | TCP/UDP  | WAN_Trusted | Any         | SVR_Hosts_Git | Ports_Mgmt       |
 | IPv4    | TCP/UDP  | WAN_Trusted | Any         | SVR_Hosts_Git | Ports_Web        |
 
-9. Access the Gitea web console using the IP address on port 8080 (or as per configuration).
+9. Access the Gitea web console using the VMs IP address on port 8080 (or as per Gitea configuration file).
 
 **Removal**
 
-Execute the bootstrapping script with `--destroy` flag to completely remove the resources.
+> [!WARNING]
+> Executing the bootstrapping script with the `--destroy` flag will completely remove all Gitea resources.
 
 ```bash
 ./bootstrap-gitvm.sh --destroy

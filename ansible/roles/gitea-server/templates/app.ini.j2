@@ -19,6 +19,9 @@ PATH    = {{ gitea_data_dir }}/data/gitea.db
 [repository]
 ROOT = {{ gitea_data_dir }}/data/gitea-repositories
 
+[security]
+INSTALL_LOCK = true
+
 [log]
 MODE      = file
 LEVEL     = Info

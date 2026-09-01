@@ -7,3 +7,8 @@
   ansible.builtin.systemd:
     name: gitea
     state: restarted
+
+- name: restart gitea-runner
+  ansible.builtin.systemd:
+    name: gitea-runner
+    state: restarted

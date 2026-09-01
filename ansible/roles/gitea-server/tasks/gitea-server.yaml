@@ -1,12 +1,15 @@
 ---
+# ================================================== #
+# Configure Gitea Server
 # https://docs.gitea.com/installation/install-from-binary/
+# ================================================== #
 
-- name: Create Gitea system group
+- name: Create Gitea System Group
   ansible.builtin.group:
     name: "{{ gitea_group }}"
     system: true
 
-- name: Create user to run Gitea
+- name: Create Gitea User
   ansible.builtin.user:
     name: "{{ gitea_user }}"
     group: "{{ gitea_group }}"
@@ -15,7 +18,7 @@
     system: true
     create_home: true
 
-- name: Create required directory structure
+- name: Create Directory Structure
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -28,7 +31,7 @@
     - "{{ gitea_data_dir }}/log"
     - "{{ gitea_data_dir }}/data"
 
-- name: Create gitea config directory
+- name: Create Gitea Config Directory
   ansible.builtin.file:
     path: "{{ gitea_config_dir }}"
     state: directory
@@ -36,7 +39,7 @@
     group: "{{ gitea_group }}"
     mode: "0770"
 
-- name: Download Gitea binary file
+- name: Download Gitea Binary File
   ansible.builtin.get_url:
     url: "https://dl.gitea.com/gitea/{{ gitea_version }}/gitea-{{ gitea_version }}-linux-amd64"
     dest: "{{ gitea_binary_path }}"
@@ -44,9 +47,9 @@
     owner: root
     group: root
     mode: "0755"
-  notify: restart gitea
+  #notify: restart gitea
 
-- name: Deploy Gitea configuration
+- name: Deploy Gitea Configuration
   ansible.builtin.template:
     src: app.ini.j2
     dest: "{{ gitea_config_dir }}/app.ini"
@@ -55,7 +58,7 @@
     mode: "0660"
   notify: restart gitea
 
-- name: Deploy Gitea systemd unit
+- name: Deploy Gitea systemd Unit
   ansible.builtin.template:
     src: gitea.service.j2
     dest: /etc/systemd/system/gitea.service
@@ -64,9 +67,17 @@
     - reload systemd
     - restart gitea
 
-- name: Enable and start Gitea
+- name: Enable and Start Gitea
   ansible.builtin.systemd:
     name: gitea
     enabled: true
     state: started
     daemon_reload: true
+
+# Create default Gitea admin, as we are bypassing the web config page with INSTALL_LOCK=TRUE in app.ini file.
+# Using 'failed_when: false' to ignore errors if user already exists.
+- name: Create Default Admin
+  become: true
+  become_user: "{{ gitea_user }}"
+  ansible.builtin.shell: gitea --config {{ gitea_config_dir }}/app.ini admin user create --admin --username {{ gitea_admin_un }} --password {{ gitea_admin_pw }} --email {{ gitea_admin_em }}
+  failed_when: false
