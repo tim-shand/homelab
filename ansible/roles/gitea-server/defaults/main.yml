@@ -10,8 +10,15 @@ gitea_binary_path: /usr/local/bin/gitea
 gitea_domain: "git.tshand.net"
 gitea_http_port: 8080
 gitea_ssh_port: 2222 # Gitea SSH server for git operations, kept on separate port from default.
+gitea_admin_un: "gitadmin"
+gitea_admin_pw: "changeme123"
+gitea_admin_em: "gitadmin@localhost"
 
 # Gitea Runner
-gitea_runner_version: "3.3.1"
-gitea_runner_user: "gitea-runner"
-gitea_runner_home: /home/gitea-runner
+runner_version: "3.3.1"
+runner_user: "gitea-runner"
+runner_group: "gitea-runner"
+runner_home: /var/lib/gitea-runner
+runner_binary_path: /usr/local/bin/gitea-runner
+runner_name: "gitea-runner-dev"
+runner_instance: "localhost"
