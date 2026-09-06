@@ -27,3 +27,16 @@ variable "pve_network" {
         mtu = number
     }))
 }
+
+# variable "pve_pools" {
+#     description = "Object of Proxmox cluster pools."
+#     type = object({
+#         name= string
+#         comment = string
+#     })
+# }
+
+variable "pve_pools" {
+    description = "Map of Proxmox cluster pools."
+    type = map(string)
+}

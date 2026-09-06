@@ -1,0 +1,46 @@
+name: "Infrastructure: Proxmox Cluster"
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Deployment Action: Plan, Apply, Destroy"
+        required: true
+        default: plan
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+  pull_request:
+    paths:
+      - ".gitea/workflows/infra-proxmox.yaml"
+      - "variables/global-proxmox.tfvars"
+      - "terraform/infrastructure/proxmox/**"
+    branches:
+      - main
+
+jobs:
+  # PLAN ------------------------------------------------------- #
+  plan:
+    uses: ./.gitea/workflows/sub-terraform-plan.yaml
+    with: # Inputs passed to template job.
+      stack_name: infra-proxmox
+      working_directory: ./terraform/infrastructure/proxmox
+      run_mode: ${{ inputs.action }}
+    secrets: # Secrets must be declared separately from inputs and passed explicitly.
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+
+  # APPLY / DESTROY -------------------------------------------- #
+  apply:
+    needs: plan # REQUIRES the plan job to succeed before running.
+    if: github.event.inputs.action == 'apply' || github.event.inputs.action == 'destroy'
+    uses: ./.github/workflows/terraform-apply.yml
+    with: # Inputs passed to template job.
+      stack_name: infra-proxmox
+      working_directory: ./terraform/infrastructure/proxmox
+      run_mode: ${{ inputs.action }}
+    secrets: # Secrets must be declared separately from inputs and passed explicitly.
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}

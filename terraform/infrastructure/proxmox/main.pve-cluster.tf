@@ -21,22 +21,8 @@ resource "proxmox_cluster_options" "options" {
 
 # Proxmox: Resource Pools ------------------------------------------- #
 
-resource "proxmox_virtual_environment_pool" "management" {
-    pool_id  = "management"
-    comment  = "Management Resources"
-}
-
-resource "proxmox_virtual_environment_pool" "production" {
-    pool_id  = "production"
-    comment  = "Production"
-}
-
-resource "proxmox_virtual_environment_pool" "testing" {
-    pool_id  = "testing"
-    comment  = "Testing"
-}
-
-resource "proxmox_virtual_environment_pool" "development" {
-    pool_id  = "development"
-    comment  = "Development"
+resource "proxmox_virtual_environment_pool" "main" {
+    for_each = var.pve_pools
+    pool_id  = each.key
+    comment  = each.value
 }

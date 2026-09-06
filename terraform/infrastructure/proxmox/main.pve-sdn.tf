@@ -33,6 +33,28 @@ resource "proxmox_sdn_zone_vlan" "znvlan" {
 
 # SDN: VNets ================================================================== #
 
+# Management (VLAN10) --------------------------------- #
+resource "proxmox_sdn_vnet" "mgt10" {
+  id            = "mgt10"                           # Max 8 characters, no symbols.
+  zone          = proxmox_sdn_zone_vlan.znvlan.id   # Zone ID from above.
+  alias         = "mgt10"                           # VNet alias, used for identification and management in Proxmox UI.
+  tag           = 10                                # VLAN tag for VNet, used for traffic isolation and segmentation.
+  isolate_ports = false                             # True/False: Guests can only send traffic to non-isolated bridge-ports (the bridge itself).
+  vlan_aware    = false                             # Disable for VNet level tagging. Enables vlan-aware on interface, requiring configuration in the guest. 
+  depends_on = [
+    proxmox_sdn_applier.prep
+  ]
+}
+
+resource "proxmox_sdn_subnet" "mgt10_1" {
+  cidr            = "10.0.10.0/24"              # Subnet IP range.
+  vnet            = proxmox_sdn_vnet.mgt10.id   # VNet ID for target/parent VNet.
+  gateway         = "10.0.10.254"               # Network gateway address.
+  depends_on = [
+    proxmox_sdn_applier.prep # Runs first, applies any pre-existing pending state (manual, interrupted, failed).
+  ]
+}
+
 # Production Servers 1 (VLAN20) --------------------------------- #
 resource "proxmox_sdn_vnet" "svr20" {
   id            = "svr20"                           # Max 8 characters, no symbols.
@@ -90,6 +112,8 @@ resource "proxmox_sdn_applier" "final" {
     replace_triggered_by = [
       proxmox_sdn_zone_simple.znintnl,
       proxmox_sdn_zone_vlan.znvlan,
+      proxmox_sdn_vnet.mgt10,
+      proxmox_sdn_subnet.mgt10_1,
       proxmox_sdn_vnet.svr20,
       proxmox_sdn_subnet.svr20_1,
       proxmox_sdn_vnet.dmz99,
@@ -99,6 +123,8 @@ resource "proxmox_sdn_applier" "final" {
   depends_on = [
     proxmox_sdn_zone_simple.znintnl,
     proxmox_sdn_zone_vlan.znvlan,
+    proxmox_sdn_vnet.mgt10,
+    proxmox_sdn_subnet.mgt10_1,
     proxmox_sdn_vnet.svr20,
     proxmox_sdn_subnet.svr20_1,
     proxmox_sdn_vnet.dmz99,
