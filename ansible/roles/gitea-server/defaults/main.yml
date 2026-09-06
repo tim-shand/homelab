@@ -21,4 +21,4 @@ runner_group: "gitea-runner"
 runner_home: /var/lib/gitea-runner
 runner_binary_path: /usr/local/bin/gitea-runner
 runner_name: "gitea-runner-local"
-runner_instance: "http://localhost:8080"
+runner_instance: "http://10.0.20.10:8080"
