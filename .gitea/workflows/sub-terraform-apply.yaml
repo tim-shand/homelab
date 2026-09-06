@@ -1,4 +1,4 @@
-name: "Terraform: Plan"
+name: "Terraform: Apply" # Display name shown in the GitHub Actions UI.
 
 on: # Define workflow triggers.
   workflow_call: # Allows this workflow to be called by a parent workflow.
@@ -24,10 +24,11 @@ on: # Define workflow triggers.
         required: true # Proxmox API token, used for Proxmox authentication.
 
 jobs:
-  plan:
-    name: "Terraform: Plan" # Display name for this job in the UI.
-    runs-on: ubuntu-latest # Use the latest Ubuntu runner.
-    timeout-minutes: 30 # Fail the entire job if it exceeds this duration.
+  apply:
+    name: "Terraform: Apply" # Display name for this job in the UI.
+    runs-on: ubuntu-latest # Use the latest GitHub-hosted Ubuntu runner.
+    timeout-minutes: 45 # Fail the entire job if it exceeds this duration.
+    environment: ${{ inputs.stack_name }} # Use stack name matching GitHub environment.
     defaults:
       run:
         working-directory: ${{ inputs.working_directory }} # All 'run' steps execute from this directory by default.
@@ -39,7 +40,6 @@ jobs:
 
       # Azure Authentication  ----------------------------------- #
       # Used to access and store Terraform remote backend state files.
-      #ARM_USE_OIDC: true # Force Terraform AzureRM provider to authenticate via OIDC.
       ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }} # Azure tenant ID, get from repo variable.
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure Service Principal ID, sourced from repo secret.
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }} # Azure Service Principal secret, sourced from repo secret.
@@ -61,7 +61,6 @@ jobs:
       - uses: hashicorp/setup-terraform@v4 # Install Terraform CLI on the runner.
         with:
           terraform_version: ${{ inputs.TF_VERSION }} # Pin to the version defined in the parent workflow.
-          terraform_wrapper: false # Disable the Terraform wrapper script to avoid issues with certain commands (-detailed-output).
 
       - name: "Terraform: Initialize"
         timeout-minutes: 5 # Fail this step if it exceeds 'x' minutes.
@@ -73,27 +72,13 @@ jobs:
            -backend-config="key=$TF_BACKEND_KEY" \
            -backend-config="use_azuread_auth=true"
 
-      - name: "Terraform: Validate"
-        timeout-minutes: 5 # Fail this step if it exceeds 'x' minutes.
-        run: terraform validate # Terraform and syntax check.
-
-      - name: "Terraform: Plan"
-        id: plan # Assign an ID to this step for referencing outputs.
-        timeout-minutes: 10 # Fail this step if it exceeds 'x' minutes.
-        env:
-          PLAN_FILE: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan"
-        run: |
-          terraform plan $RUN_MODE \
-            -out="$PLAN_FILE" \
-            -var-file="$TF_VARS_DIR/global-proxmox.tfvars" \
-            -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
-            -var="pve_auth_api_token=${{ secrets.PVE_AUTH_API_TOKEN }}"
-
-      - name: "Upload Plan Artifact"
-        uses: actions/upload-artifact@v7 # Upload Terraform plan file produced during the job for use by apply step.
-        env:
-          PLAN_FILE: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan"
+      - name: "Download Plan Artifact"
+        uses: actions/download-artifact@v7
         with:
-          name: "${{ env.PLAN_FILE }}"
-          path: "${{ inputs.working_directory }}/${{ env.PLAN_FILE }}"
-          retention-days: 1
+          name: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan" # Artifact name.
+          path: "${{ inputs.working_directory }}" # Path to the saved plan file produced in the plan step.
+
+      - name: "Terraform: Apply"
+        env:
+          PLAN_FILE: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan"
+        run: terraform apply --auto-approve "$PLAN_FILE"
