@@ -9,8 +9,8 @@
 # SDN: Zones ================================================================== #
 
 # Internal Zone --------------------------------- #
-resource "proxmox_sdn_zone_simple" "znintnl" {
-  id        = "znvlan" # Max 8 characters, no symbols.
+resource "proxmox_sdn_zone_simple" "znintl" {
+  id        = "znintl" # Max 8 characters, no symbols.
   #nodes     = local.pve_nodes_production # Comment out to add to all nodes in cluster.
   mtu       = 1500     # Default 1550 for VLAN zones.
   ipam      = "pve"    # Use Proxmox IPAM.
@@ -110,7 +110,7 @@ resource "proxmox_sdn_applier" "prep" {}
 resource "proxmox_sdn_applier" "final" {
   lifecycle {
     replace_triggered_by = [
-      proxmox_sdn_zone_simple.znintnl,
+      proxmox_sdn_zone_simple.znintl,
       proxmox_sdn_zone_vlan.znvlan,
       proxmox_sdn_vnet.mgt10,
       proxmox_sdn_subnet.mgt10_1,
@@ -121,7 +121,7 @@ resource "proxmox_sdn_applier" "final" {
     ]
   }
   depends_on = [
-    proxmox_sdn_zone_simple.znintnl,
+    proxmox_sdn_zone_simple.znintl,
     proxmox_sdn_zone_vlan.znvlan,
     proxmox_sdn_vnet.mgt10,
     proxmox_sdn_subnet.mgt10_1,
