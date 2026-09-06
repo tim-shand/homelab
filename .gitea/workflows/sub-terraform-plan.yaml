@@ -50,7 +50,7 @@ jobs:
       TF_BACKEND_KEY: "${{ inputs.stack_name }}.tfstate" # Filename of the state file within the container for the stack.
 
       # Terraform Variable Files ----------------------------------- #
-      TF_VARS_DIR: "../../variables" # Relative path from working_directory to the variables folder.
+      TF_VARS_DIR: "../../../variables" # Relative path from working_directory to the variables folder.
       TF_VARS_FILE: "${{ inputs.stack_name }}.tfvars" # Stack-specific filename, passed in from the parent workflow.
 
     steps:
