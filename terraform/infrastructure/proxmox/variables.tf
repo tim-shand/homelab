@@ -24,7 +24,7 @@ variable "pve_network" {
     type = map(object({
         nic = string
         bridge = string
-        mtu = number
+        #mtu = number
     }))
 }
 
