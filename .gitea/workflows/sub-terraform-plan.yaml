@@ -20,6 +20,8 @@ on: # Define workflow triggers.
         required: true # Azure Service Principal ID for authentication.
       ARM_CLIENT_SECRET:
         required: true # Azure Service Principal Client Secret authentication.
+      PVE_AUTH_API_TOKEN:
+        required: true # Proxmox API token, used for Proxmox authentication.
 
 jobs:
   plan:
@@ -84,7 +86,8 @@ jobs:
           terraform plan $RUN_MODE \
             -out="$PLAN_FILE" \
             -var-file="$TF_VARS_DIR/global-proxmox.tfvars" \
-            -var-file="$TF_VARS_DIR/$TF_VARS_FILE"
+            -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
+            -var="pve_auth_api_token=${{ secrets.PVE_AUTH_API_TOKEN }}"
 
       - name: "Upload Plan Artifact"
         uses: actions/upload-artifact@v7 # Upload Terraform plan file produced during the job for use by apply step.
