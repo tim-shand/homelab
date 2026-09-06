@@ -45,7 +45,7 @@ jobs:
       TF_BACKEND_RG: ${{ vars.TF_BACKEND_RESOURCE_GROUP }} # Azure Resource Group containing the backend Storage Account.
       TF_BACKEND_SA: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }} # Azure Storage Account used for Terraform remote states.
       TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_STORAGE_CONTAINER }} # Blob container within the Storage Account holding state files.
-      TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY }} # Filename of the state file within the container for the stack.
+      TF_BACKEND_KEY: ${{ inputs.stack_name }} # Filename of the state file within the container for the stack.
       TF_VARS_DIR: "../../variables" # Relative path from working_directory to the variables folder.
       TF_VARS_FILE: "${{ inputs.stack_name }}.tfvars" # Stack-specific filename, passed in from the parent workflow.
 
