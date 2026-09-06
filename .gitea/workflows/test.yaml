@@ -21,7 +21,7 @@ jobs:
       - run: echo "This job is running on a ${{ runner.os }} server"
       - run: echo "Repository = ${{ gitea.repository }} | Branch = ${{ gitea.ref }}"
       - run: echo "The job status is ${{ job.status }}"
-      - run: echo "Target Environment = '{{ inputs:environment }}'"
+      - run: echo "Target Environment = {{ inputs:environment }}"
 
       - name: Checkout Repo
         uses: actions/checkout@v4
