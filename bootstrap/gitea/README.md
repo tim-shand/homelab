@@ -28,6 +28,7 @@ Bootstrap a Gitea instance within a Proxmox VM to provide a local code repositor
 | --------------- | --------------------------------------------------- |
 | Proxmox VM      | VM deployed to run the Gitea instance.              |
 | Gitea Instance  | Gitea instance running on the Proxmox VM.           |
+| Gitea Runner    | LOcally installed actions runner for CI/CD.         |
 
 ---
 
