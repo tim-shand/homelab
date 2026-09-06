@@ -1,0 +1,92 @@
+name: "Terraform: Plan"
+
+on: # Define workflow triggers.
+  workflow_call: # Allows this workflow to be called by a parent workflow.
+    inputs: # Define input parameters accepted from the calling workflow.
+      working_directory: # Path to the Terraform root module (passed in from parent workflow).
+        type: string
+        required: true
+      stack_name: # String used with plan and variable file naming.
+        type: string
+        required: true
+      run_mode: # Pass in 'run_mode' to use as parameter in plan command (plan -destroy).
+        type: string
+        required: true
+    secrets:
+      ARM_CLIENT_ID: # Secrets must be declared separately from inputs.
+        required: true # Azure Service Principal ID for authentication.
+      ARM_CLIENT_SECRET:
+        required: true # Azure Service Principal Client Secret authentication.
+
+jobs:
+  plan:
+    name: "Terraform: Plan" # Display name for this job in the UI.
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner.
+    timeout-minutes: 30 # Fail the entire job if it exceeds this duration.
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }} # All 'run' steps execute from this directory by default.
+
+    env:
+      # General ----------------------------------- #
+      STACK_NAME: ${{ inputs.stack_name }} # Current stack name used for plan file and artifact naming.
+      RUN_MODE: ${{ inputs.run_mode == 'destroy' && '-destroy' || '' }} # If run_mode is 'destroy', set RUN_MODE to '-destroy' for Terraform plan command.
+
+      # Azure Authentication  ----------------------------------- #
+      # Used to access and store Terraform remote backend state files.
+      #ARM_USE_OIDC: true # Force Terraform AzureRM provider to authenticate via OIDC.
+      ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }} # Azure tenant ID, get from repo variable.
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure Service Principal ID, sourced from repo secret.
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }} # Azure Service Principal secret, sourced from repo secret.
+      ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }} # Subscription containing the Terraform backend Storage Account.
+
+      # Terraform Backend Config ----------------------------------- #
+      TF_VERSION: ${{ vars.TF_VERSION }} # Terraform version to install, from repo variable.
+      TF_BACKEND_RG: ${{ vars.TF_BACKEND_RESOURCE_GROUP }} # Azure Resource Group containing the backend Storage Account.
+      TF_BACKEND_SA: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }} # Azure Storage Account used for Terraform remote states.
+      TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_STORAGE_CONTAINER }} # Blob container within the Storage Account holding state files.
+      TF_BACKEND_KEY: ${{ vars.TF_BACKEND_KEY }} # Filename of the state file within the container for the stack.
+      TF_VARS_DIR: "../../variables" # Relative path from working_directory to the variables folder.
+      TF_VARS_FILE: "${{ inputs.stack_name }}.tfvars" # Stack-specific filename, passed in from the parent workflow.
+
+    steps:
+      - uses: actions/checkout@v7 # Clone the repository onto the runner.
+
+      - uses: hashicorp/setup-terraform@v4 # Install Terraform CLI on the runner.
+        with:
+          terraform_version: ${{ vars.TF_VERSION }} # Pin to the version defined in the GitHub environment variable.
+          terraform_wrapper: false # Disable the Terraform wrapper script to avoid issues with certain commands (-detailed-output).
+
+      - name: "Terraform: Initialize"
+        timeout-minutes: 5 # Fail this step if it exceeds 'x' minutes.
+        run: |
+          terraform init \
+           -backend-config="resource_group_name=$TF_BACKEND_RG" \
+           -backend-config="storage_account_name=$TF_BACKEND_SA" \
+           -backend-config="container_name=$TF_BACKEND_CONTAINER" \
+           -backend-config="key=$TF_BACKEND_KEY" \
+           -backend-config="use_azuread_auth=true"
+
+      - name: "Terraform: Validate"
+        timeout-minutes: 5 # Fail this step if it exceeds 'x' minutes.
+        run: terraform validate # Terraform and syntax check.
+
+      - name: "Terraform: Plan"
+        id: plan # Assign an ID to this step for referencing outputs.
+        timeout-minutes: 10 # Fail this step if it exceeds 'x' minutes.
+        env:
+          PLAN_FILE: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan"
+        run: |
+          terraform plan $RUN_MODE \
+            -out="$PLAN_FILE" \
+            -var-file="$TF_VARS_DIR/global-proxmox.tfvars" \
+            -var-file="$TF_VARS_DIR/$TF_VARS_FILE"
+
+      - name: "Upload Plan Artifact"
+        uses: actions/upload-artifact@v7 # Upload Terraform plan file produced during the job for use by apply step.
+        env:
+          PLAN_FILE: "${{ inputs.stack_name }}_${{ inputs.run_mode }}.plan"
+        with:
+          name: "${{ env.PLAN_FILE }}"
+          path: "${{ inputs.working_directory }}/${{ env.PLAN_FILE }}"
+          retention-days: 1

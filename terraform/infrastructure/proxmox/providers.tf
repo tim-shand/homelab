@@ -10,6 +10,7 @@ terraform {
       version = "~> 0.109.0"
     }
   }
+  backend "azurerm" {} # Leave empty, to be inserted during for workflow.
 }
 
 # Configuration for Proxmox provider, using variables for flexibility and security.
