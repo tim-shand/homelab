@@ -1,13 +1,14 @@
-# 🏠 Personal Home Lab
+# 🏠 Private Cloud Micro Datacenter (Personal Home Lab)
 
-Welcome! This repo documents my personal home lab.
+Welcome! This project contains the documentation and codebase for my personal home lab.
+
 A self-hosted private cloud environment used for hands-on learning, infrastructure experimentation, and developing my skill set.
 
-As a big fan of small tech, a primary requirement is to maintain a small physical footprint.
+As a big fan of small tech, a primary requirement is to maintain a small physical footprint.  
 I aim to utilise as much existing hardware as possible by recycling second hand gear to give it a new life in my lab.
 
 > [!TIP]
-> Guides and articles about how this lab was built can be found on my [website](https://tshand.com/tags/homelab/).
+> Visit my [website](https://tshand.com/tags/homelab/) for further in-depth articles on how this project is built.
 
 ![Current home lab hardware.](docs/images/homelab_current_01.jpg)
 
@@ -43,8 +44,7 @@ The lab sits behind a dedicated OPNsense firewall, isolated from the home networ
 A three-node Proxmox cluster runs virtualised workloads, with Proxmox Software-Defined Networking (SDN) used to manage VLAN assignment at the hypervisor level.
 
 > [!NOTE]
-> Full topology, VLAN tables, and firewall design:
-> [Architecture](docs/architecture.md)
+> Full topology, VLAN tables, and firewall design can be found [here](docs/architecture.md).
 
 ![Home Lab Design](docs/images/homelab_architecture.png)
 
@@ -52,12 +52,12 @@ A three-node Proxmox cluster runs virtualised workloads, with Proxmox Software-D
 
 ## 🧩 Workloads
 
-| Workload             | Purpose                                                 |
-| -------------------- | ------------------------------------------------------- |
-| PFsense/OPNsense VMs | Internal firewall testing and lab network experiments.  |
-| Management/Jump Host | Access point into lab management interfaces.            |
-| Git Server (Gitea)   | Version control, repo mirroring, on-prem CI/CD runners. |
-| Misc utility VMs     | Testing, sand boxing, and evaluating new tech.          |
+| Workload                 | Purpose                                                 |
+| ------------------------ | ------------------------------------------------------- |
+| Git Server (Gitea)       | Version control, repo mirroring, on-prem CI/CD runners. |
+| Management/Jump Host     | Server providing access into lab environment.           |
+| Docker Hosts             | Provide containerised application and services.         |
+| Monitoring/Observability | Zabbix for infrastructure and server monitoring.        |
 
 ---
 
@@ -73,7 +73,7 @@ A three-node Proxmox cluster runs virtualised workloads, with Proxmox Software-D
 ## 🥾 Bootstrapping
 
 Preparing bootstrap scripts allows the environment to be easily re-deployed in the event of total failure.
-Utilising a combination of Bash, Terraform and Ansible, essential workloads and infrastructure can be redeployed and configured.
+Utilising a combination of Bash, Terraform and Ansible, essential workloads and infrastructure can be redeployed and configured easily.
 
 > [!TIP]
 > See the [Bootstrap](./bootstrap/) directory for guidance on the correct sequence of bootstrap steps.
@@ -86,7 +86,9 @@ Utilising a combination of Bash, Terraform and Ansible, essential workloads and 
 
 **[Git Server](./bootstrap/gitea)**
 
-_Coming Soon_
+- Bash script calls Terraform to provision Proxmox VM from template.
+- Deploys and configures Gitea post-deployment using Ansible role.
+- Installs local runner to enable workflow execution required to deploy lab infrastructure.
 
 ---
 
@@ -109,3 +111,5 @@ Refer to the [docs](docs/) directory for more information covering operations, c
 | [Hardware](/docs/hardware.md)             | Device specs, upgrades, expansion.            |
 | [Configuration](/docs/configuration.md)   | Proxmox, OPNsense, switch config, automation. |
 | [Issues Register](/docs/issues/README.md) | Register for issues and solutions.            |
+
+---
