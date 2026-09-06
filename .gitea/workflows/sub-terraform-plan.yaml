@@ -12,6 +12,9 @@ on: # Define workflow triggers.
       run_mode: # Pass in 'run_mode' to use as parameter in plan command (plan -destroy).
         type: string
         required: true
+      terraform_version: # String value for required Terraform version to install.
+        type: string
+        required: true
     secrets:
       ARM_CLIENT_ID: # Secrets must be declared separately from inputs.
         required: true # Azure Service Principal ID for authentication.
@@ -41,11 +44,12 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }} # Subscription containing the Terraform backend Storage Account.
 
       # Terraform Backend Config ----------------------------------- #
-      TF_VERSION: ${{ vars.TF_VERSION }} # Terraform version to install, from repo variable.
       TF_BACKEND_RG: ${{ vars.TF_BACKEND_RESOURCE_GROUP }} # Azure Resource Group containing the backend Storage Account.
       TF_BACKEND_SA: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT }} # Azure Storage Account used for Terraform remote states.
       TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_STORAGE_CONTAINER }} # Blob container within the Storage Account holding state files.
-      TF_BACKEND_KEY: ${{ inputs.stack_name }} # Filename of the state file within the container for the stack.
+      TF_BACKEND_KEY: "${{ inputs.stack_name }}.tfstate" # Filename of the state file within the container for the stack.
+
+      # Terraform Variable Files ----------------------------------- #
       TF_VARS_DIR: "../../variables" # Relative path from working_directory to the variables folder.
       TF_VARS_FILE: "${{ inputs.stack_name }}.tfvars" # Stack-specific filename, passed in from the parent workflow.
 
@@ -54,7 +58,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v4 # Install Terraform CLI on the runner.
         with:
-          terraform_version: ${{ vars.TF_VERSION }} # Pin to the version defined in the GitHub environment variable.
+          terraform_version: ${{ inputs.TF_VERSION }} # Pin to the version defined in the GitHub environment variable.
           terraform_wrapper: false # Disable the Terraform wrapper script to avoid issues with certain commands (-detailed-output).
 
       - name: "Terraform: Initialize"
