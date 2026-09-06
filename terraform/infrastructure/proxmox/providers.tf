@@ -3,11 +3,11 @@
 # ==================================================== #
 
 terraform {
-  required_version = "~> 1.15.5"
+  required_version = "~> 1.16.0"
   required_providers {
     proxmox = {
       source = "bpg/proxmox"
-      version = "~> 0.109.0"
+      version = "~> 0.112.0"
     }
   }
   backend "azurerm" {} # Leave empty, to be inserted during for workflow.
