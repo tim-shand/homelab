@@ -12,13 +12,21 @@ on:
           - plan
           - apply
           - destroy
-  pull_request:
+  push:
+    branches:
+      - main
     paths:
       - ".gitea/workflows/infra-proxmox.yaml"
       - "variables/global-proxmox.tfvars"
       - "terraform/infrastructure/proxmox/**"
+  pull_request:
     branches:
       - main
+    paths:
+      - ".gitea/workflows/infra-proxmox.yaml"
+      - "variables/global-proxmox.tfvars"
+      - "variables/global-proxmox.tfvars"
+      - "terraform/infrastructure/proxmox/**"
 
 jobs:
   # PLAN ------------------------------------------------------- #
@@ -37,7 +45,7 @@ jobs:
   # APPLY / DESTROY -------------------------------------------- #
   apply:
     needs: plan # REQUIRES the plan job to succeed before running.
-    if: github.event.inputs.action == 'apply' || github.event.inputs.action == 'destroy'
+    if: gitea.event.inputs.action == 'apply' || gitea.event.inputs.action == 'destroy'
     uses: ./.gitea/workflows/sub-terraform-apply.yaml
     with: # Inputs passed to template job.
       stack_name: infra-proxmox
