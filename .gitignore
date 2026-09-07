@@ -2,6 +2,7 @@
 
 # General ----------------------------- #
 .notes.md
+.notes.*.md
 *.bkp
 *.backup
 *.bak
