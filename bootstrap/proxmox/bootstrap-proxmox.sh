@@ -34,10 +34,13 @@ PROXMOX_USER="root"
 GROUP_NAME="priv-iac-service-accounts" # Name of Proxmox group for service accounts.
 GROUP_COMMENT="Privileged: IaC Service Accounts" # Description shown in the Proxmox UI.
 GROUP_ROLE="Administrator" # Name of the built-in role to use for group permissions.
-USER_TERRAFORM="svc-terraform@pve" # User account used to generate the API user in Proxmox.
+
+USER_TERRAFORM="svc-terraform@pve" # User account used to generate the Terraform API user in Proxmox.
 USER_TERRAFORM_COMMENT="Service Account: Terraform"
 USER_ANSIBLE="svc-ansible@pam" # User account name for Ansible. Also used to generate SSH key file names.
 USER_ANSIBLE_COMMENT="Service Account: Ansible"
+USER_PACKER="svc-packer@pve" # User account name for Packer.
+USER_PACKER_COMMENT="Service Account: Packer"
 
 # Define colour variables.
 RED="\e[31m"
@@ -205,7 +208,7 @@ echo
 # Configure Proxmox service account group, accounts and API tokens.
 log_info "Connecting to first node in Proxmox cluster (${PROXMOX_NODES[0]})..."
 if ! exec_proxmox proxmox_config_service_accounts \
-    "'${GROUP_NAME}' '${GROUP_COMMENT}' '${GROUP_ROLE}' '${USER_TERRAFORM}' '${USER_ANSIBLE}'"; then
+    "'${GROUP_NAME}' '${GROUP_COMMENT}' '${GROUP_ROLE}' '${USER_TERRAFORM}' '${USER_ANSIBLE}' '${USER_PACKER}'"; then
     log_fail "Failed service account configuration in Proxmox."
     exit 1
 else
