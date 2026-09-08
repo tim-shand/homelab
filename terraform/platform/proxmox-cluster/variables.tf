@@ -4,37 +4,42 @@
 # - Variable definitions for Proxmox configuration.
 # ====================================================================== #
 
-variable "pve_auth_api_token" {
-    description = "Proxmox API token for authentication, should be stored securely and passed in via environment variable or workflow secrets."
-    type = string
-    sensitive = true
+# variable "pve_auth_api_token" {
+#     description = "Proxmox API token for authentication, should be stored securely and passed in via environment variable or workflow secrets."
+#     type = string
+#     sensitive = true
+# }
+
+variable "pve_api_terraform_user" {
+  description = "Proxmox API service account for Terraform."
+  type    = string
+}
+
+variable "pve_api_terraform_token" {
+  description = "Proxmox API token for authentication, should be stored securely and passed in via environment variable or workflow secrets."
+  type      = string
+  sensitive = true
 }
 
 variable "pve_nodes" {
-    description = "Map of Proxmox nodes in the cluster, with details for API access and production status."
+    description = "Map of objects defining Proxmox nodes in the cluster."
     type = map(object({
+        node_name   = string
         hostname    = string
-        ip_address  = string
         production  = bool
+        network = object({
+            ip_address = string
+            cluster = object({
+                interface = string
+                bridge = string
+            })
+            guest = object({
+                interface = string
+                bridge = string
+            })
+        })
     }))
 }
-
-variable "pve_network" {
-    description = "Map of Proxmox network configurations for the cluster and guest VMs."
-    type = map(object({
-        nic = string
-        bridge = string
-        #mtu = number
-    }))
-}
-
-# variable "pve_pools" {
-#     description = "Object of Proxmox cluster pools."
-#     type = object({
-#         name= string
-#         comment = string
-#     })
-# }
 
 variable "pve_pools" {
     description = "Map of Proxmox cluster pools."

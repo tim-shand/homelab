@@ -55,7 +55,7 @@ resource "proxmox_sdn_subnet" "mgt10_1" {
   ]
 }
 
-# Production Servers 1 (VLAN20) --------------------------------- #
+# Production Servers (VLAN20) --------------------------------- #
 resource "proxmox_sdn_vnet" "svr20" {
   id            = "svr20"                           # Max 8 characters, no symbols.
   zone          = proxmox_sdn_zone_vlan.znvlan.id   # Zone ID from above.
