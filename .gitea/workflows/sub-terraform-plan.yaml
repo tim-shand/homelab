@@ -87,7 +87,7 @@ jobs:
         run: |
           terraform plan $RUN_MODE \
             -out="$PLAN_FILE" \
-            -var-file="$TF_VARS_DIR/global-proxmox.tfvars" \
+            -var-file="$TF_VARS_DIR/global-proxmox.tfvars.json" \
             -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
             -var="pve_api_terraform_token=${{ secrets.PVE_API_TERRAFORM_TOKEN }}"
 
