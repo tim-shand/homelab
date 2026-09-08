@@ -1,7 +1,20 @@
 ---
+# COMMON PACKAGES --------------------------------------------------- #
+# Define package names to be installed (common across distributions).
 common_packages:
   - git
   - nano
   - curl
   - wget
   - htop
+
+# SSH KEY FILES  --------------------------------------------------- #
+# Path to SSH key file directory.
+ssh_key_path: "../../../files/ssh_keys"
+
+# SERVICE ACCOUNTS --------------------------------------------------- #
+# List service accounts to be configured, including group memberships.
+service_accounts_local:
+  - name: "svc-ansible"
+    groups: "sudo"
+    state: "present" # present / absent
