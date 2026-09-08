@@ -25,8 +25,8 @@ locals {
 
 source "proxmox-iso" "proxmox-ubuntu-server" {
     # Proxmox Config ------------------------------------------------------ #
-    node        = "${var.pve_node}"
-    proxmox_url = "https://${var.pve_node}:8006/api2/json"
+    node        = "${var.pve_nodes["inf-pve-01-prd"].node_name}"
+    proxmox_url = "https://${var.pve_nodes["inf-pve-01-prd"].hostname}:8006/api2/json"
     username    = "${var.pve_api_packer_user}" # Proxmox Authentication: API Username
     token       = "${var.pve_api_packer_token}" # Proxmox Authentication: API Token
     insecure_skip_tls_verify = true # Skip TLS Verification for Proxmox with no certificates.
@@ -71,7 +71,7 @@ source "proxmox-iso" "proxmox-ubuntu-server" {
     # VM Network Settings
     network_adapters {
         model    = "virtio"
-        bridge   = "${var.vm_bridge}"
+        bridge   = "${var.pve_nodes["inf-pve-01-prd"].network.guest.bridge}"
         vlan_tag = "${var.vm_vlan_tag}"
         firewall = "false"
     }
