@@ -34,3 +34,11 @@ pve_network = {
     bridge      = "vmbr1"
   }
 }
+
+# Proxmox Cluster: Pools ------------------------------------------- #
+pve_pools = {
+    pool-prd = "Production"
+    pool-stg = "Staging"
+    pool-dev = "Development"
+    pool-tst = "testing"
+}

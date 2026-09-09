@@ -2,6 +2,7 @@
 
 # General ----------------------------- #
 .notes.md
+.notes.*.md
 *.bkp
 *.backup
 *.bak
@@ -15,6 +16,7 @@
 **/ssh_keys/*-ssh*
 *.ssh*
 !*.pub
+*.pwd
 
 # Variables----------------------------- #
 terraform.tfvars

@@ -15,12 +15,14 @@ on: # Define workflow triggers.
       terraform_version: # String value for required Terraform version to install.
         type: string
         required: true
-    secrets:
-      ARM_CLIENT_ID: # Secrets must be declared separately from inputs.
+    secrets: # Secrets must be declared separately from inputs.
+      ARM_TENANT_ID:
+        required: true # Azure tenant ID for backend resources.
+      ARM_CLIENT_ID:
         required: true # Azure Service Principal ID for authentication.
       ARM_CLIENT_SECRET:
         required: true # Azure Service Principal Client Secret authentication.
-      PVE_AUTH_API_TOKEN:
+      PVE_API_TERRAFORM_TOKEN:
         required: true # Proxmox API token, used for Proxmox authentication.
 
 jobs:
@@ -40,7 +42,7 @@ jobs:
       # Azure Authentication  ----------------------------------- #
       # Used to access and store Terraform remote backend state files.
       #ARM_USE_OIDC: true # Force Terraform AzureRM provider to authenticate via OIDC.
-      ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }} # Azure tenant ID, get from repo variable.
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }} # Azure tenant ID, get from repo variable.
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }} # Azure Service Principal ID, sourced from repo secret.
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }} # Azure Service Principal secret, sourced from repo secret.
       ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }} # Subscription containing the Terraform backend Storage Account.
@@ -85,9 +87,9 @@ jobs:
         run: |
           terraform plan $RUN_MODE \
             -out="$PLAN_FILE" \
-            -var-file="$TF_VARS_DIR/global-proxmox.tfvars" \
+            -var-file="$TF_VARS_DIR/global-proxmox.tfvars.json" \
             -var-file="$TF_VARS_DIR/$TF_VARS_FILE" \
-            -var="pve_auth_api_token=${{ secrets.PVE_AUTH_API_TOKEN }}"
+            -var="pve_api_terraform_token=${{ secrets.PVE_API_TERRAFORM_TOKEN }}"
 
       - name: "Upload Plan Artifact"
         uses: actions/upload-artifact@v7 # Upload Terraform plan file produced during the job for use by apply step.

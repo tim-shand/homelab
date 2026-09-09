@@ -18,15 +18,14 @@ on:
     paths:
       - ".gitea/workflows/infra-proxmox.yaml"
       - "variables/global-proxmox.tfvars"
-      - "terraform/infrastructure/proxmox/**"
+      - "terraform/platform/proxmox-cluster/**"
   pull_request:
     branches:
       - main
     paths:
       - ".gitea/workflows/infra-proxmox.yaml"
       - "variables/global-proxmox.tfvars"
-      - "variables/global-proxmox.tfvars"
-      - "terraform/infrastructure/proxmox/**"
+      - "terraform/platform/proxmox-cluster/**"
 
 jobs:
   # PLAN ------------------------------------------------------- #
@@ -34,13 +33,14 @@ jobs:
     uses: ./.gitea/workflows/sub-terraform-plan.yaml
     with: # Inputs passed to template job.
       stack_name: infra-proxmox
-      working_directory: ./terraform/infrastructure/proxmox
+      working_directory: ./terraform/platform/proxmox-cluster
       run_mode: ${{ inputs.action }}
       terraform_version: "1.16.1"
     secrets: # Secrets must be declared separately from inputs and passed explicitly.
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      PVE_AUTH_API_TOKEN: ${{ secrets.PVE_AUTH_API_TOKEN }}
+      PVE_API_TERRAFORM_TOKEN: ${{ secrets.PVE_API_TERRAFORM_TOKEN }}
 
   # APPLY / DESTROY -------------------------------------------- #
   apply:
@@ -49,10 +49,11 @@ jobs:
     uses: ./.gitea/workflows/sub-terraform-apply.yaml
     with: # Inputs passed to template job.
       stack_name: infra-proxmox
-      working_directory: ./terraform/infrastructure/proxmox
+      working_directory: ./terraform/platform/proxmox-cluster
       run_mode: ${{ inputs.action }}
       terraform_version: "1.16.1"
     secrets: # Secrets must be declared separately from inputs and passed explicitly.
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      PVE_AUTH_API_TOKEN: ${{ secrets.PVE_AUTH_API_TOKEN }}
+      PVE_API_TERRAFORM_TOKEN: ${{ secrets.PVE_API_TERRAFORM_TOKEN }}
