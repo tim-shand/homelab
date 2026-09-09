@@ -4,8 +4,7 @@ The process below describes the steps required to re-build the home lab environm
 With the majority of workloads being managed using Terraform and Ansible, the home lab should be as reproducible as possible. 
 
 Bootstrapping tasks are used to configure resources required _before_ automation workflows can take over management.  
-
-_There are three phases involved:_
+There are three phases involved:
 
 **Phase 1: Foundation**
 
