@@ -1,7 +1,7 @@
 # 🥾 Bootstrap: Proxmox (Ansible + Terraform)
 
 > [!WARNING]
-> **Warning:** This process has been replaced by a dedicated Ansible playbook. This process is no longer in use.
+> This process has been replaced by a dedicated Ansible playbook. This process is no longer in use.
 
 This process provisions the necessary resources and components to manage Proxmox using automation pipelines.
 The goal is to produce a bootstrapping process that is solid and repeatable.
