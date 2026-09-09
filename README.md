@@ -1,10 +1,10 @@
-# 🏠 Private Cloud Micro Datacenter (Personal Home Lab)
+# 🏠 Private Cloud Mini-Datacenter (Home Lab)
 
 Welcome! This project contains the documentation and codebase for my personal home lab.
 
 A self-hosted private cloud environment used for hands-on learning, infrastructure experimentation, and developing my skill set.
 
-As a big fan of small tech, a primary requirement is to maintain a small physical footprint.  
+As a big fan of small tech, a primary requirement is to maintain a small physical footprint.
 I aim to utilise as much existing hardware as possible by recycling second hand gear to give it a new life in my lab.
 
 > [!TIP]
