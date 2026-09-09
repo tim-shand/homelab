@@ -30,9 +30,9 @@ I aim to utilise as much existing hardware as possible by recycling second hand 
 | Layer           | Technology                               |
 | --------------- | ---------------------------------------- |
 | Hypervisor      | Proxmox VE (3-node cluster)              |
-| Firewall/Router | OPNsense                                 |
-| Networking      | TP-Link managed switch, 802.1Q VLANs     |
-| IaC/Config      | Terraform, Ansible                       |
+| Firewall/Router | OPNsense + 802.1Q VLANs                  |
+| Networking      | TP-Link managed switch, Proxmox SDN      |
+| Automation      | Terraform, Ansible, Gitea Actions        |
 | Scripting       | Bash, PowerShell                         |
 | Storage         | ZFS pools, NFS, Azure Blob (state files) |
 
@@ -137,22 +137,13 @@ The Proxmox cluster resides on three refurbished mini-PCs running [Proxmox VE](h
 
 ---
 
-## 🛠️ Tools & Utilities
-
-- **[Terraform](https://www.terraform.io/):** Provider agnostic IaC tool for deploying and managing resources declaratively.
-- **[Ansible](https://docs.ansible.com):** Configuration as Code tool for apply post-deployment settings and configuration.
-- **Azure Blob Storage:** Used to store remote state files for Terraform deployments.
-- **Bash/PowerShell:** Bootstrapping scripts and miscellaneous automation utilities.
-
----
-
-## 🥾 Bootstrapping
+## 🥾 Bootstrapping Process
 
 Preparing bootstrap scripts allows the environment to be easily re-deployed in the event of total failure.
 Utilising a combination of Bash, Terraform and Ansible, essential workloads and infrastructure can be redeployed and configured easily.
 
 > [!TIP]
-> See the [Bootstrap](./bootstrap/) directory for guidance on the correct sequence of bootstrap steps.
+> See the [Bootstrap](./bootstrap/) directory for more details on sequence of tasks.
 
 **Proxmox**
 
@@ -165,6 +156,15 @@ Utilising a combination of Bash, Terraform and Ansible, essential workloads and 
 - Proxmox VM deployed from VM template.
 - Install and configure Gitea post-deployment using Ansible role.
 - Configure local runner to enable workflow execution, required to deploy lab infrastructure.
+
+---
+
+## 🛠️ Tools & Utilities
+
+- **[Terraform](https://www.terraform.io/):** Provider agnostic IaC tool for deploying and managing resources declaratively.
+- **[Ansible](https://docs.ansible.com):** Configuration as Code tool for apply post-deployment settings and configuration.
+- **Azure Blob Storage:** Used to store remote state files for Terraform deployments.
+- **Bash/PowerShell:** Bootstrapping scripts and miscellaneous automation utilities.
 
 ---
 
