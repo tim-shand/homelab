@@ -50,7 +50,83 @@ A three-node Proxmox cluster runs virtualised workloads, with Proxmox Software-D
 
 ---
 
-## 🧩 Workloads
+## 🖥️ Hardware & Components
+
+### Hypervisors
+
+The Proxmox cluster resides on three refurbished mini-PCs running [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) as the virtualisation layer. Proxmox was chosen for the hypervisor due to being free (zero-cost) and open source, with extensive vendor and user documentation available.
+
+**Lenovo Thinkcentre P330 Tiny (x2)**
+
+- Small physical footprint _(known as "1-litre PCs")_.
+- Accessible price point, these average around NZD$350 in local used markets.
+- Dual M.2 NVMe slots for easy storage expansion.
+- PCIe expansion slot for an additional network adapter, graphics card, or increasing storage capabilities.
+  - **Note:** Requires a specific PCIe riser, part number #01AJ940.
+- M.2 WiFi card slot can be [replaced with an Ethernet adapter](https://tshand.com/posts/homelab-08-update/), providing additional networking capabilities.
+
+**Lenovo Thinkcentre M700 Tiny (x1)**
+
+- Same physical size of the P330 Tiny, fits in well with existing hardware.
+- Cheaper price point of around NZD$180.
+- Limited to older 6th-Gen Intel Core processors.
+- Single M.2 NVMe slot available for storage expansion.
+- M.2 WiFi card slot for expanding network capabilities with additional network card.
+- Third node to replace old Raspberry Pi [QDevice](https://tshand.com/posts/homelab-04-proxmox-cluster-qdevice/).
+
+**Compute:**
+
+| Name           | Make/Model                   | CPU                              | Memory              |
+| -------------- | ---------------------------- | -------------------------------- | ------------------- |
+| inf-pve-01-prd | Lenovo ThinkCentre P330 Tiny | Intel i5-9500  (6C/6T, 3.0 GHz)  | 16 GB DDR4 (2x 8GB) |
+| inf-pve-02-prd | Lenovo ThinkCentre P330 Tiny | Intel i5-9500  (6C/6T, 3.0 GHz)  | 16 GB DDR4 (2x 8GB) |
+| inf-pve-03-dev | Lenovo ThinkCentre M700 Tiny | Intel i5-6400T (4C/4T, 2.2 GHz)  | 8 GB DDR4 (1x 8GB)  |
+
+**Storage:**
+
+| Name           | Drive 1 (SATA) | Drive 2 (NVMe) | Drive 3 (NVMe)   |
+| -------------- | -------------- | -------------- | ---------------- |
+| inf-pve-01-prd | Empty          | 256 GB (OS)    | 1 TB (Data: ZFS) |
+| inf-pve-02-prd | Empty          | 256 GB (OS)    | 1 TB (Data: ZFS) |
+| inf-pve-03-dev | 256 GB (OS)    | Empty          | N/A              |
+
+**Networking:**
+
+| Name           | NIC 1 (Onboard)        | NIC 2 (M.2 Slot)      |
+| -------------- | ---------------------- | --------------------- |
+| inf-pve-01-prd | Intel I219-LM (rev 10) | Intel I226-V (rev 04) |
+| inf-pve-02-prd | Intel I219-LM (rev 10) | Intel I226-V (rev 04) |
+| inf-pve-03-dev | Intel I219-V (rev 31)  | Empty                 |
+
+### Networking
+
+**Firewall (OPNsense)**
+
+- A Lenovo M700 is configured and running [OPNsense](https://opnsense.org/get-started/).  
+- Dedicated as a physical firewall appliance, also provides routing, VLAN, DNS and DHCP functionality.
+- **Compute:** Intel i5-6400T (4C/4T, 2.2 GHz), 8 GB DDR4 (1x 8GB)
+- **Storage:** 256 GB SSD
+- **Networking:**
+  - NIC 1 (Onboard): Intel I219-V (rev 31)
+  - NIC 2 (M.2 Slot): Intel I226-V (rev 04)
+
+**Core Switch (TP Link TL-SG108PE)**
+
+- Basic 8 port "smart" managed gigabit switch, supporting VLANs (802.1Q and port based).
+- Capable of PoE (Power over Ethernet), although this is not being used currently, and has been disabled.
+
+### Additional Devices
+
+**Raspberry Pi 1B+ (Decommissioned)**
+
+- Very old Raspberry Pi model, running Debian 13 Trixie (barely).
+  - Requires using the 32-bit Debian architecture and sticking a CLI-only (headless) environment.
+- Was running as a QDevice, maintaining Proxmox cluster quorum (required for two-node clusters).
+- Replaced by the Lenovo M700 and awaiting a new purpose as environment monitoring agent.
+
+---
+
+## 🧩 Workloads & Apps
 
 | Workload                 | Purpose                                                 |
 | ------------------------ | ------------------------------------------------------- |
@@ -78,17 +154,17 @@ Utilising a combination of Bash, Terraform and Ansible, essential workloads and 
 > [!TIP]
 > See the [Bootstrap](./bootstrap/) directory for guidance on the correct sequence of bootstrap steps.
 
-**[Proxmox](./bootstrap/proxmox)**
+**Proxmox**
 
 - Dedicated Proxmox service accounts for Ansible and Terraform with tokens for authentication into via API.
 - Local service account for Ansible provisioned on each node on the cluster for host-level configuration.
-- SSH keys generated for passwordless authentication during pipeline execution.
+- SSH keys for passwordless authentication during workflow execution.
 
-**[Git Server](./bootstrap/gitea)**
+**Git Server**
 
-- Bash script calls Terraform to provision Proxmox VM from template.
-- Deploys and configures Gitea post-deployment using Ansible role.
-- Installs local runner to enable workflow execution required to deploy lab infrastructure.
+- Proxmox VM deployed from VM template.
+- Install and configure Gitea post-deployment using Ansible role.
+- Configure local runner to enable workflow execution, required to deploy lab infrastructure.
 
 ---
 
@@ -97,7 +173,7 @@ Utilising a combination of Bash, Terraform and Ansible, essential workloads and 
 Issues are recorded and held within the [Issues](./docs/issues/) directory as individual files. 
 When the issue is accepted, mitigated or resolved, the file is moved to the resolved directory.
 
-See the [Issues Register](/docs/issues/README.md) for details on active and resolved issues.
+_See the [Issues Register](/docs/issues/README.md) for details on active and resolved issues._
 
 ---
 
