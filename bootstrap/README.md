@@ -63,9 +63,9 @@ _There are three phases involved:_
 
 ### 2. Proxmox VE
 
+This process provides the baseline configuration to get started.
 Proxmox is configured using an Ansible playbook to apply the initial configuration needed to manage the cluster.
 The playbook uses the `root` user account to create and configure service accounts that will be later used within automation workflows.
-This process provides the baseline configuration to get started.
 
 **Service Accounts:**
 
