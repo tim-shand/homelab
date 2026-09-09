@@ -63,20 +63,36 @@ _There are three phases involved:_
 
 ### 2. Proxmox VE
 
-- Run [Proxmox bootstrap scripts](./proxmox/) to configure VM template and setup service account for API access.
+Proxmox is configured using an Ansible playbook to apply the initial configuration needed to manage the cluster.
+The playbook uses the `root` user account to create and configure service accounts that will be later used within automation workflows.
+This process provides the baseline configuration to get started.
 
-**Accounts:**
+**Service Accounts:**
 
 - Creates dedicated service account group in Proxmox and assigns required permissions by role.
-- Creates **Terraform** service account in Proxmox for API access.
-  - Proxmox API token to be _manually_ saved to Azure Key Vault or Password Manager.
-- Creates **Ansible** service account locally on each Proxmox node in the cluster (defined by variable).
+- Creates **Terraform** and **Ansible** Proxmox users with API access.
+  - Enables automated authentication during workflow operations.
+- Creates Ansible service account **locally** on each Proxmox node.
+  - Adds SSH public key to `authorized_users` file.
+  - Configures passwordless `sudo` permissions for automated operations.
   - Required to perform administrative tasks at the OS layer (install/upgrade packages etc).
 
 **VM Template:**
   
-- Downloads Ubuntu Server cloud-init image and configures a VM template.
-- Distribution determined by variable value.
+- Downloads Ubuntu Server cloud-init image.
+- Installs guest agent and other required packages.
+- Configures default root password.
+- Converts the VM into VM template.
+
+**Usage:**
+
+1. Update the variables in the playbook `ansible/playbooks/bootstrap-proxmox.yml`.
+2. Run the Ansible playbook to bootstrap Proxmox.
+
+```bash
+cd ansible
+ansible-playbook -i inventory/main.ini playbooks/bootstrap-proxmox.yml --ask-pass
+```
 
 ### 3. Gitea
 
