@@ -1,7 +1,7 @@
 # Bootstrap: GitLab CE
 
 > [!WARNING]
-> **Warning:** GitLab is no longer in use. It has been decommissioned and replaced by Gitea. This process is no longer in use.
+> GitLab is no longer in use. It has been decommissioned and replaced by Gitea. This process is no longer in use.
 
 Bootstrap a GitLab instance within a Proxmox VM to provide a local code repository, GitHub repo mirroring and local execution of pipelines.
 
