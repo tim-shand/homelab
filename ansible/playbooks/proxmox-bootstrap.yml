@@ -6,31 +6,37 @@
 # ======================================================================================== #
 
 ---
-- name: "Bootstrap: Proxmox Nodes"
-  hosts: proxmox_all
+# Initial Setup: Install updates, required packages, configure Ansible service account.
+- name: "Proxmox: Initial Setup (All Nodes)"
+  hosts: proxmox_all # All Proxmox nodes.
   become: true
   remote_user: root # Requires `--ask-pass` flag during command execution.
   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
   roles:
     - common
+  tasks:
+    # Install required packages on all Proxmox nodes.
+    - name: Install Required Packages
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - curl
+        - libguestfs-tools
+        - jq
 
+# Bootstrap: Proxmox - Groups, service accounts, API tokens.
 - name: "Bootstrap: Proxmox Accounts and Access"
-  hosts: proxmox_primary
+  hosts: proxmox_primary # Only a single Proxmox node required.
   become: true
   remote_user: root # Requires `--ask-pass` flag during command execution.
   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
-  # roles:
-  #   - proxmox-bootstrap
 
   vars:
-    # SSH Key Path ----------------------------------------- #
-    ssh_key_path: "../../../../../files/ssh_keys"
-
     # Proxmox Groups ----------------------------------------- #
     pve_group_admin_users:
       name: "priv-pve-administrators"
       comment: "Privileged: Proxmox Administrators"
-
     pve_group_service_accounts:
       name: "priv-svc-automation"
       comment: "Privileged: Automation Service Accounts"
@@ -71,7 +77,7 @@
       ansible.builtin.shell: |
         pveum user token delete "{{ item.name }}" "{{ api_token_name}}" &> /dev/null
         sleep 2
-        pveum user token add "{{ item.name }}" "{{ api_token_name}}" --comment "API Token: {{ now(fmt='%Y%m%d_%H%M%S') }}" --privsep 0
+        pveum user token add "{{ item.name }}" "{{ api_token_name}}" --comment "API Token: {{ now(fmt='%Y%m%d_%H%M%S') }}" --privsep 0 --output-format json
       loop: "{{ service_accounts_pve }}"
       register: shell_output_api_token
 
@@ -81,3 +87,63 @@
       loop: "{{ shell_output_api_token.results }}"
       loop_control:
         label: "{{ item.item }}"
+
+# Bootstrap: Proxmox VM Template ----------------------------------------- #
+- name: "Bootstrap: Proxmox VM Template (Ubuntu)"
+  hosts: proxmox_primary
+  become: true
+  remote_user: root # Requires `--ask-pass` flag during command execution.
+  gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
+
+  vars:
+    ubuntu_dist_name: "resolute"
+    ubuntu_dist_version: "2604"
+    ubuntu_image_file: "{{ ubuntu_dist_name }}-server-cloudimg-amd64.img"
+    ubuntu_image_url: "https://cloud-images.ubuntu.com/{{ ubuntu_dist_name }}/current/{{ ubuntu_image_file }}"
+    ubuntu_image_checksum: "8196be9d7958059cb56c6c75c80fdf6cee8a8885bc149ea791d7db1c7ef93035"
+    pve_template_id: "9000"
+    pve_template_name: "ztmp-ubuntu-server-{{ ubuntu_dist_name }}-{{ ubuntu_dist_version }}"
+    pve_template_fs: "16G" # Expand file system to value.
+    pve_image_dest_path: "/var/lib/vz/template/iso" # Final destination for image file.
+    credentials_path: "../../files/credentials" # Path to credentials directory to save generated passwords.
+
+  tasks:
+    - name: "Download Ubuntu Cloud-Init Image"
+      ansible.builtin.get_url:
+        url: "{{ ubuntu_image_url }}"
+        dest: "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}"
+        checksum: sha256:"{{ ubuntu_image_checksum }}"
+        mode: "0644" # Owner: RW, Group: R, Other: R
+
+    # RUN ONCE TASK:
+    # Cannot delete a template created as a linked clone if other VMs or templates still depend on its underlying disk volumes.
+    # Must delete or rebase the child clones first. Ok if using full clones.
+    - name: "Destroy Existing Template"
+      ansible.builtin.shell: qm destroy {{ pve_template_id }} &> /dev/null
+
+    - name: "Generate/Export Password"
+      ansible.builtin.set_fact:
+        default_password: "{{ lookup('ansible.builtin.password', '{{ credentials_path }}/default_vm_template.txt length=12 chars=ascii_letters,digits') }}"
+
+    # Run provisioning prep tasks: Expand file system, install guest agent, set root password.
+    - name: "Prepare Image File"
+      ansible.builtin.shell: |
+        qemu-img resize "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}" "{{ pve_template_fs }}"
+        virt-customize -a "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}" --install qemu-guest-agent
+        virt-customize -a "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}" --root-password password:"{{ default_password }}"
+
+    - name: "Deploy Proxmox VM"
+      ansible.builtin.shell: |
+        qm create "{{ pve_template_id }}" --name "{{ pve_template_name }}" \
+          --ostype l26 --agent 1 --cpu host --sockets 1 --cores 2 --memory 1024 --balloon 0 \
+          --bios seabios --boot order=scsi0 --scsihw virtio-scsi-pci \
+          --scsi0 local-lvm:0,import-from="{{ pve_image_dest_path }}/{{ ubuntu_image_file }}",backup=0,cache=writeback,discard=on \
+          --scsi1 local-lvm:cloudinit --vga virtio --net0 virtio,bridge=vmbr0
+
+    - name: "Check VM Status"
+      ansible.builtin.shell: qm status "{{ pve_template_id }}" | grep -q "status:"
+      register: pve_vm_status
+
+    - name: "Convert VM to Template"
+      ansible.builtin.shell: qm template "{{ pve_template_id }}"
+      when: pve_vm_status.rc = 0 # Check return code on VM status command.
