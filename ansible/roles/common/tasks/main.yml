@@ -70,8 +70,10 @@
 # Configure service account for passwordless sudo permissions (required for automation).
 - name: Configure Passwordless Sudo Privilege
   ansible.builtin.copy:
-    content: "{{ item.name }} ALL=(ALL) NOPASSWD:ALL"
+    content: "{{ item.name }} ALL=(ALL) NOPASSWD:ALL\n"
     dest: "/etc/sudoers.d/{{ item.name }}"
+    owner: root
+    group: root
     mode: "0440"
     validate: /usr/sbin/visudo -cf %s
   loop: "{{ service_accounts_local }}"
