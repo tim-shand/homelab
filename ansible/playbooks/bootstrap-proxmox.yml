@@ -105,7 +105,6 @@
     pve_template_name: "ztmp-ubuntu-server-{{ ubuntu_dist_name }}-{{ ubuntu_dist_version }}"
     pve_template_fs: "16G" # Expand file system to value.
     pve_image_dest_path: "/var/lib/vz/template/iso" # Final destination for image file.
-    credentials_path: "../../files/credentials" # Path to credentials directory to save generated passwords.
 
   tasks:
     - name: "Download Ubuntu Cloud-Init Image"
