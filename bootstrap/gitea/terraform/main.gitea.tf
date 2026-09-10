@@ -4,29 +4,6 @@
 # - Creates new VM from cloning template from Proxmox bootstrapping process.
 # =========================================================================== #
 
-# # Generate PEM and OpenSSH formatted private key ------------------------------------------- #
-# # Access the keys using `tls_private_key.this.public_key_openssh` or `tls_private_key.this.public_key_pem`
-# # https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key
-# resource "tls_private_key" "gitvm" {
-#   algorithm = "ED25519"
-#   rsa_bits  = 2048
-# }
-
-# # Export SSH Keys ------------------------------------------- #
-# # Export the Private Key to a local file.
-# resource "local_sensitive_file" "gitvm_private_key" {
-#   content         = tls_private_key.gitvm.private_key_openssh
-#   filename        = "${path.module}/../ssh_keys/gitvm-ssh"
-#   file_permission = "0600"
-# }
-
-# # Export the Public Key to a local file.
-# resource "local_file" "gitvm_public_key" {
-#   content         = tls_private_key.gitvm.public_key_openssh
-#   filename        = "${path.module}/../ssh_keys/gitvm-ssh.pub"
-#   file_permission = "0644"
-# }
-
 # Generate random password for the default user ------------------------------------------- #
 # https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password
 resource "random_password" "gitvm" {
@@ -51,14 +28,14 @@ resource "proxmox_virtual_environment_vm" "gitvm" {
     datastore_id = var.datastore_id
     version      = "v2.0"
   }
-  node_name       = var.pve_nodes["node1"].hostname # Use the first node in the Proxmox cluster for creating the VM.
-  started         = true                            # VM should be started after creation.
-  on_boot         = true                            # Started automatically on Proxmox host boot.
-  machine         = "q35"                           # Machine type for the VM, using QEMU machine type for UEFI support.
-  bios            = "ovmf"                          # Use OVMF BIOS for UEFI support, required for secure boot.
-  keyboard_layout = "en-us"                         # Keyboard layout for the VM, using US English layout.
+  node_name       = var.pve_nodes["node1"].node_name # Use the first node in the Proxmox cluster for creating the VM.
+  started         = true                             # VM should be started after creation.
+  on_boot         = true                             # Started automatically on Proxmox host boot.
+  machine         = "q35"                            # Machine type for the VM, using QEMU machine type for UEFI support.
+  bios            = "ovmf"                           # Use OVMF BIOS for UEFI support, required for secure boot.
+  keyboard_layout = "en-us"                          # Keyboard layout for the VM, using US English layout.
   cpu {
-    type  = "x86-64-v2-AES"       # Recommended for modern CPUs.
+    type  = "host"
     cores = var.vm_specs.vm_cores # Number of CPU cores allocated to the VM, using 4 cores for better performance.
   }
   memory {
@@ -75,8 +52,8 @@ resource "proxmox_virtual_environment_vm" "gitvm" {
     size         = 32
   }
   network_device {
-    bridge  = var.pve_network.guest.bridge # Get from global variables. Use the specified "guest" bridge for the VM network device.
-    vlan_id = "20"                         # VLAN ID for the VM network device, used for network segmentation. No SDN configured yet.
+    bridge  = var.pve_nodes["node1"].network.guest.bridge # Get from global variables. Use the specified "guest" bridge for the VM network device.
+    vlan_id = var.vm_networking.vlan_id                   # VLAN ID for the VM network device, used for network segmentation. No SDN configured yet.
   }
   # Cloud-init Configuration
   # https://registry.terraform.io/providers/bpg/proxmox/latest/docs/guides/cloud-init

@@ -21,7 +21,7 @@ set -euo pipefail
 
 DIR_SSH_KEYS="../../files/ssh_keys"
 DIR_TERRAFORM="./terraform"
-DIR_TFVARS_GLOBAL="../../../variables/global-proxmox.tfvars"
+DIR_TFVARS_GLOBAL="../../../variables/global-proxmox.tfvars.json"
 DIR_ANSIBLE="./ansible"
 REQUIRED_APPS=("terraform" "ansible" "az")
 REQUIRED_FILES_TERRAFORM=("backend.tf" "terraform.tfvars")
@@ -149,7 +149,7 @@ else
 
     # Ansible --------------------------------------------------------- #
     log_info "Executing Ansible playbook..."
-    ansible-playbook -i "${VM_IP}," "../../ansible/playbooks/git-server-gitea.yml" -e "target_host=${VM_IP}"
+    ansible-playbook -i "${VM_IP}," "../../ansible/playbooks/bootstrap-gitea.yml" -e "target_host=${VM_IP}"
 
     echo
     echo -e "${BLUE}# =======${NC} COMPLETE!!! ${BLUE}======= #${NC}"
