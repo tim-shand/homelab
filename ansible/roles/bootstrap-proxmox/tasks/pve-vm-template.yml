@@ -1,0 +1,52 @@
+---
+- name: "Download Ubuntu Cloud-Init Image"
+  ansible.builtin.get_url:
+    url: "{{ ubuntu_image_url }}"
+    dest: "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}"
+    checksum: sha256:"{{ ubuntu_image_checksum }}"
+    mode: "0644" # Owner: RW, Group: R, Other: R
+
+# RUN ONCE TASK:
+# Cannot delete a template created as a linked clone if other VMs or templates still depend on its underlying disk volumes.
+# Must delete or rebase the child clones first. Ok if using full clones.
+- name: "Destroy Existing Template"
+  ansible.builtin.shell: qm destroy {{ pve_template_id }} &> /dev/null
+
+- name: "Generate/Export Password"
+  ansible.builtin.set_fact:
+    default_password: "{{ lookup('ansible.builtin.password', '/dev/null length=12 chars=ascii_letters,digits') }}"
+
+# Run provisioning prep tasks: Expand file system, install guest agent, set root password.
+- name: "Prepare Image File"
+  ansible.builtin.shell: |
+    qemu-img resize "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}" "{{ pve_template_fs }}"
+    virt-customize -a "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}" --install qemu-guest-agent
+    virt-customize -a "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}" --root-password password:"{{ default_password }}"
+
+- name: "Set Automation Account"
+  ansible.builtin.shell: |
+    export NEW_USER="{{ ubuntu_user }}"
+    export PUB_KEY="{{ ubuntu_user_public_key }}"
+    virt-customize -a "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}" \
+      --run-command "useradd -m -s /bin/bash ${NEW_USER}" \
+      --run-command "usermod -aG sudo ${NEW_USER}" \
+      --run-command "echo \"${NEW_USER} ALL=(ALL) NOPASSWD:ALL\" > /etc/sudoers.d/${NEW_USER}" \
+      --run-command "chmod 0440 /etc/sudoers.d/${NEW_USER}" \
+      --ssh-inject "${NEW_USER}":string:"${PUB_KEY}"
+
+- name: "Deploy Proxmox VM"
+  ansible.builtin.shell: |
+    qm create "{{ pve_template_id }}" --name "{{ pve_template_name }}" \
+      --description "TEMPLATE: Ubuntu Server {{ ubuntu_dist_version }} | root: {{ default_password }}" \
+      --tags "template" --ostype l26 --agent 1 --cpu host --sockets 1 --cores 2 --memory 1024 --balloon 0 \
+      --bios seabios --boot order=scsi0 --scsihw virtio-scsi-pci \
+      --scsi0 local-lvm:0,import-from="{{ pve_image_dest_path }}/{{ ubuntu_image_file }}",backup=0,cache=writeback,discard=on \
+      --scsi1 local-lvm:cloudinit --vga virtio --net0 virtio,bridge=vmbr0
+
+- name: "Check VM Status"
+  ansible.builtin.shell: sleep 5 && qm status "{{ pve_template_id }}"
+  register: pve_vm_status
+
+- name: "Convert VM to Template"
+  ansible.builtin.shell: qm template "{{ pve_template_id }}" && sleep 5
+  when: pve_vm_status.rc == 0 # Check return code on VM status command.

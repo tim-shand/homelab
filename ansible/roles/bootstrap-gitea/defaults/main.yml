@@ -1,4 +1,8 @@
 ---
+# Default ----------------------------------------- #
+enable_task_gitea_server: false
+enable_task_gitea_runner: false
+
 # Gitea Server
 gitea_version: "1.27.3"
 gitea_user: gitea
