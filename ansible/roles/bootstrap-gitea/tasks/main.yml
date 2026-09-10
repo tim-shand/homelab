@@ -1,0 +1,13 @@
+# ================================================== #
+# ROLE: Gitea Server
+# https://docs.gitea.com/installation/install-from-binary/
+# ================================================== #
+---
+- name: "Gitea: Deploy VM"
+  ansible.builtin.import_tasks: gitea-vm.yml
+
+- name: "Gitea: Configure Server"
+  ansible.builtin.import_tasks: gitea-server.yml
+
+- name: "Gitea: Configure Runner"
+  ansible.builtin.import_tasks: gitea-runner.yml

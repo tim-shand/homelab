@@ -4,19 +4,19 @@
 # ================================================== #
 
 # Install Docker to use runners in containers locally.
-- name: Install Docker
+- name: "Install Docker"
   ansible.builtin.package:
     name: docker.io
     state: present
 
-- name: Create Gitea-Runner System Group
+- name: "Create Gitea-Runner System Group"
   ansible.builtin.group:
     name: "{{ runner_group }}"
     system: true
 
 # Run as a systemd service.
 # Create an unprivileged user, install the binary, and register the runner as that user so the .runner file ends up in the service’s working directory.
-- name: Create Gitea-Runner User
+- name: "Create Gitea-Runner User"
   ansible.builtin.user:
     name: "{{ runner_user }}"
     group: "{{ runner_group }}"
@@ -25,14 +25,14 @@
     system: true
     create_home: true
 
-- name: Add Gitea-Runner User to Docker Group
+- name: "Add Gitea-Runner User to Docker Group"
   ansible.builtin.user:
     name: "{{ runner_user }}"
     groups: docker
     append: yes
 
 # Create Gitea-Runner Config Directory
-- name: Create Gitea-Runner Config Directory
+- name: "Create Gitea-Runner Config Directory"
   ansible.builtin.file:
     path: /etc/gitea-runner
     state: directory
@@ -40,7 +40,7 @@
     owner: "{{ runner_group }}"
     group: "{{ runner_group }}"
 
-- name: Download Gitea-Runner Binary
+- name: "Download Gitea-Runner Binary"
   ansible.builtin.get_url:
     url: "https://dl.gitea.com/gitea-runner/{{ runner_version }}/gitea-runner-{{ runner_version }}-linux-amd64"
     dest: "/opt/gitea-runner-{{ runner_version }}-linux-amd64"
@@ -49,13 +49,13 @@
     group: root
     mode: "0755"
 
-- name: Install Gitea-Runner
+- name: "Install Gitea-Runner"
   ansible.builtin.shell: install -m 0755 "/opt/gitea-runner-{{ runner_version }}-linux-amd64" /usr/local/bin/gitea-runner
 
 # Generate Gitea runner configuration as the gitea-runner user account.
 # The 'shell' module is required instead of 'command' because of the '>'.
 # Using 'command' module doesn't invoke a shell, so redirection operators are passed through as literal argument text rather than interpreted.
-- name: Generate Gitea-Runner Configuration
+- name: "Generate Gitea-Runner Configuration"
   become: true
   become_user: "{{ runner_user }}"
   ansible.builtin.shell: gitea-runner config generate > /etc/gitea-runner/config.yaml
@@ -63,7 +63,7 @@
 # Obtain Runner Token Value
 # https://docs.gitea.com/usage/actions/runner/
 # TEST: sudo -u gitea gitea --config /etc/gitea/app.ini actions generate-runner-token
-- name: Obtain Runner Token Value
+- name: "Obtain Runner Token Value"
   become: true
   become_user: "{{ gitea_user }}"
   ansible.builtin.shell: gitea --config /etc/gitea/app.ini actions generate-runner-token
@@ -71,7 +71,7 @@
 
 # Register Runner Using Token
 # https://docs.gitea.com/runner/registration/
-- name: Register Gitea-Runner Configuration
+- name: "Register Gitea-Runner Configuration"
   become: true
   become_user: "{{ runner_user }}"
   ansible.builtin.shell: |
@@ -81,7 +81,7 @@
   when:
     - runner_token.stdout is defined
 
-- name: Deploy Gitea-Runner systemd Unit
+- name: "Deploy Gitea-Runner systemd Unit"
   ansible.builtin.template:
     src: gitea-runner.service.j2
     dest: /etc/systemd/system/gitea-runner.service

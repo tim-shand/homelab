@@ -3,67 +3,28 @@
 # Bootstrap a new Gitea server within Proxmox.
 # Usage: ansible-playbook -i inventory/main.ini playbooks/bootstrap-gitea.yml --ask-pass
 # TIP: Purge the previously stored host key from known hosts and add the new host key.
-#    ssh-keygen -R "10.0.20.10" &> /dev/null && ssh-keyscan -H "10.0.20.10" >> ~/.ssh/known_hosts
+#  ssh-keygen -R "10.0.20.10" &> /dev/null && ssh-keyscan -H "10.0.20.10" >> ~/.ssh/known_hosts
 # ======================================================================================== #
 
 ---
-- name: "Proxmox: Deploy Gitea VM"
-  hosts: "{{ groups['proxmox_nodes'][0] }}" # Run on first node in group.
+# Initial Setup: Install updates, required packages, configure Ansible service account.
+- name: "Gitea: Initial Setup"
+  hosts: git
   become: true
   #remote_user: root # Requires `--ask-pass` flag during command execution.
   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
-
   vars:
-    pve_template_id: "9000"
-    gitea_vm_id: "200"
-    gitea_vm_name: "svr-mgt-gitea-dev"
-    gitea_vm_desc: "Management: Git Server (Gitea)"
-    gitea_vm_tags: "management"
-    gitea_vm_network_bridge: "vmbr1"
-    gitea_vm_network_vlan: "20"
-    gitea_vm_network_ipv4: "10.0.20.10/24"
-    gitea_vm_network_gw: "10.0.20.254"
-    gitea_vm_network_namerserver: "10.0.20.254"
-    gitea_vm_compute_cores: "4"
-    gitea_vm_compute_mem: "2048"
-
+    enable_task_common_role: true
   tasks:
-    # Check for existing VM (1), register value to variable.
-    - name: "Gitea VM: Existing VM Check"
-      ansible.builtin.shell: qm status "{{ gitea_vm_id }}" &>/dev/null
-      register: gitea_vm_check
+    - name: "Common Configuration"
+      ansible.builtin.include_role:
+        name: common
+      when: enable_task_common_role
 
-    # Hard fail the play if VM exists.
-    - name: "Gitea VM: "
-      ansible.builtin.fail:
-        msg: "WARNING: A VM already exists with ID {{ gitea_vm_id }} ({{ gitea_vm_check.stdout }})."
-      when: gitea_vm_check.stdout != 0
-
-    - name: "Gitea VM: Clone Template"
-      ansible.builtin.shell: |
-        qm clone "{{ pve_template_id }}" "{{ gitea_vm_id }}" --name "{{ gitea_vm_name }}" --description "{{ gitea_vm_desc }}" --full
-
-    - name: "Gitea VM: Configure Hardware"
-      ansible.builtin.shell: |
-        qm set "{{ gitea_vm_id }}" --tags "{{ gitea_vm_tags }}" --ostype l26 --agent 1 --cpu host \
-         --cores "{{ gitea_vm_compute_cores }}" --memory {{ gitea_vm_compute_mem }} --balloon 0 \
-         --net0 virtio,bridge="{{ gitea_vm_network_bridge }}",tag="{{ gitea_vm_network_vlan }}" --autostart 1 --onboot 1
-
-    - name: "Gitea VM: Configure Networking"
-      ansible.builtin.shell: |
-        qm set "{{ gitea_vm_id }}" --ipconfig0 ip="{{ gitea_vm_network_ipv4 }}",gw="{{ gitea_vm_network_gw }}" \
-          --nameserver "{{ gitea_vm_network_namerserver }}"
-
-    - name: "Gitea VM: Check Status"
-      ansible.builtin.shell: qm status "{{ gitea_vm_id }}"
-      register: gitea_vm_status
-
-    - name: "Gitea VM: Start"
-      ansible.builtin.shell: qm start "{{ gitea_vm_id }}"
-      when: gitea_vm_status.rc == 0 &&
-# - name: "Gitea: Setup Gitea Server"
-#   hosts: git # Target 'git' host group.
-#   become: true
-#   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
-#   roles:
-#     - common
+- name: Install and Configure Gitea Server
+  hosts: git
+  become: true
+  gather_facts: true
+  roles:
+    - common
+    - bootstrap-gitea
