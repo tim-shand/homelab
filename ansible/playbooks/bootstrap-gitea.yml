@@ -7,22 +7,10 @@
 # ======================================================================================== #
 
 ---
-# Initial Setup: Install updates, required packages, configure Ansible service account.
-- name: "Gitea: Initial Setup"
-  hosts: git
-  become: true
-  gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
-  vars:
-    enable_task_common_role: true
-  tasks:
-    - name: "Common Configuration"
-      ansible.builtin.include_role:
-        name: common
-      when: enable_task_common_role
-
 - name: "Gitea: Bootstrap"
   hosts: git
   become: true
   gather_facts: true
   roles:
     - bootstrap-gitea
+    - common
