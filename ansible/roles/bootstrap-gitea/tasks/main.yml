@@ -3,9 +3,9 @@
 # https://docs.gitea.com/installation/install-from-binary/
 # ================================================== #
 ---
-- name: "Gitea: Deploy VM"
-  ansible.builtin.import_tasks: gitea-vm.yml
-  when: enable_task_gitea_vm
+# - name: "Gitea: Deploy VM"
+#   ansible.builtin.import_tasks: gitea-vm.yml
+#   when: enable_task_gitea_vm
 
 - name: "Gitea: Configure Server"
   ansible.builtin.import_tasks: gitea-server.yml

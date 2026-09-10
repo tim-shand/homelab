@@ -1,22 +1,7 @@
 ---
 # Default ----------------------------------------- #
-enable_task_gitea_vm: true
 enable_task_gitea_server: false
 enable_task_gitea_runner: false
-
-# Gitea VM
-pve_template_id: "9000"
-gitea_vm_id: "200"
-gitea_vm_name: "svr-mgt-gitea-dev"
-gitea_vm_desc: "Management: Git Server (Gitea)"
-gitea_vm_tags: "management"
-gitea_vm_network_bridge: "vmbr1"
-gitea_vm_network_vlan: "20"
-gitea_vm_network_ipv4: "10.0.20.10/24"
-gitea_vm_network_gw: "10.0.20.254"
-gitea_vm_network_nameserver: "10.0.20.254"
-gitea_vm_compute_cores: "4"
-gitea_vm_compute_mem: "2048"
 
 # Gitea Server
 gitea_version: "1.27.3"
