@@ -1,0 +1,39 @@
+# UPDATE PACKAGE CACHE --------------------------------------------------- #
+- name: Update Package Cache (Debian-based Systems)
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Update Package Cache (RHEL-based Systems)
+  ansible.builtin.dnf:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_facts['os_family'] == "RedHat"
+
+# UPGRADE PACKAGES --------------------------------------------------- #
+- name: Upgrade Packages (Debian-based Systems)
+  ansible.builtin.apt:
+    upgrade: safe
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Upgrade Packages (RHEL-based Systems)
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+  when: ansible_facts['os_family'] == "RedHat"
+
+# INSTALL PACKAGES --------------------------------------------------- #
+# Install common packages (defaults\main.yml).
+- name: Install Common Packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ common_packages }}"
+
+# Install distribution specific packages (vars\os_family.yml).
+- name: Install Distribution Packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ dist_packages }}"

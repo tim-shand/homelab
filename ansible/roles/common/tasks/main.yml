@@ -1,79 +1,16 @@
-# TASKS: main.yml
-
+# ======================================================================================== #
+# ROLE: Common Configuration
+# Applied to all hosts across all OS versions.
+# ======================================================================================== #
+---
 # LOAD VARS --------------------------------------------------- #
 # Load OS-based variables using 'OS Family' name to read relevant file.
 # Deprecated Version: `include_vars: "{{ ansible_os_family }}.yml"`
-- name: Load_OS_Variables
+- name: "Load OS Variables"
   include_vars: "{{ ansible_facts['os_family'] }}.yml"
 
-# UPDATE PACKAGE CACHE --------------------------------------------------- #
-- name: Update Package Cache (Debian-based Systems)
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 3600
-  when: ansible_facts['os_family'] == "Debian"
+- name: "Common: Service Accounts"
+  ansible.builtin.import_tasks: common-accounts.yml
 
-- name: Update Package Cache (RHEL-based Systems)
-  ansible.builtin.dnf:
-    update_cache: true
-    cache_valid_time: 3600
-  when: ansible_facts['os_family'] == "RedHat"
-
-# UPGRADE PACKAGES --------------------------------------------------- #
-- name: Upgrade Packages (Debian-based Systems)
-  ansible.builtin.apt:
-    upgrade: safe
-  when: ansible_facts['os_family'] == "Debian"
-
-- name: Upgrade Packages (RHEL-based Systems)
-  ansible.builtin.dnf:
-    name: "*"
-    state: latest
-  when: ansible_facts['os_family'] == "RedHat"
-
-# INSTALL PACKAGES --------------------------------------------------- #
-# Install common packages (defaults\main.yml).
-- name: Install Common Packages
-  ansible.builtin.package:
-    name: "{{ item }}"
-    state: present
-  loop: "{{ common_packages }}"
-
-# Install distribution specific packages (vars\os_family.yml).
-- name: Install Distribution Packages
-  ansible.builtin.package:
-    name: "{{ item }}"
-    state: present
-  loop: "{{ dist_packages }}"
-
-# CONFIGURE LOCAL SERVICE ACCOUNTS --------------------------------------------------- #
-
-# Loop each service account in variable and create locally.
-- name: Create Service Accounts
-  ansible.builtin.user:
-    name: "{{ item.name }}"
-    state: "{{ item.state }}" # present / absent
-    groups: "{{ item.groups }}"
-    append: yes
-    shell: /bin/bash
-    create_home: yes
-  loop: "{{ service_accounts_local }}"
-
-# Add SSH public key to service account 'authorized_keys' file.
-- name: Deploy SSH Public Keys
-  ansible.posix.authorized_key:
-    user: "{{ item.name }}"
-    state: present
-    key: "{{ lookup('file', ssh_key_path + '/' + item.name + '.ssh.pub') }}"
-  loop: "{{ service_accounts_local }}"
-
-# Configure service account for passwordless sudo permissions (required for automation).
-- name: Configure Passwordless Sudo Privilege
-  ansible.builtin.copy:
-    content: "{{ item.name }} ALL=(ALL) NOPASSWD:ALL\n"
-    dest: "/etc/sudoers.d/{{ item.name }}"
-    owner: root
-    group: root
-    mode: "0440"
-    validate: /usr/sbin/visudo -cf %s
-  loop: "{{ service_accounts_local }}"
+- name: "Common: Package Management"
+  ansible.builtin.import_tasks: common-packages.yml
