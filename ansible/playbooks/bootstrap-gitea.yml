@@ -66,12 +66,13 @@
   become: true
   gather_facts: true
   roles:
-    - bootstrap-gitea
     - common
+    - bootstrap-gitea
 
 - name: "System: Reboot"
   hosts: git
   become: true
   tasks:
     - name: "systemctl-reboot"
-      ansible.builtin.shell: systemctl reboot now
+      ansible.builtin.reboot:
+        reboot_timeout: 600 # Maximum time to wait for the VM to respond.
