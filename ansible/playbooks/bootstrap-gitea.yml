@@ -14,3 +14,10 @@
   roles:
     - bootstrap-gitea
     - common
+
+- name: "System: Reboot"
+  hosts: git
+  become: true
+  tasks:
+    - name: "systemctl-reboot"
+      ansible.builtin.shell: systemctl reboot

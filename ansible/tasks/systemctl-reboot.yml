@@ -1,3 +1,0 @@
----
-- name: "System: Reboot"
-  ansible.builtin.shell: systemctl reboot
