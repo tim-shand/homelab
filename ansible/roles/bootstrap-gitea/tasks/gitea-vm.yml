@@ -9,7 +9,7 @@
   register: gitea_vm_check
 
 # Hard fail the play if VM exists.
-- name: "Gitea VM: "
+- name: "Gitea VM: Fail On Exists"
   ansible.builtin.fail:
     msg: "WARNING: A VM already exists with ID {{ gitea_vm_id }} ({{ gitea_vm_check.stdout }})."
   when: gitea_vm_check.stdout != 0

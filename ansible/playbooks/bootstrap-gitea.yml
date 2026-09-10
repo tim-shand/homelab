@@ -8,10 +8,9 @@
 
 ---
 # Initial Setup: Install updates, required packages, configure Ansible service account.
-- name: "Common Configuration"
+- name: "Gitea: Initial Setup"
   hosts: git
   become: true
-  #remote_user: root # Requires `--ask-pass` flag during command execution.
   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
   vars:
     enable_task_common_role: true
