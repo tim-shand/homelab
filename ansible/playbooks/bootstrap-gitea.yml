@@ -51,7 +51,7 @@
     - name: "Gitea VM: Configure Networking"
       ansible.builtin.shell: |
         qm set "{{ gitea_vm_id }}" --ipconfig0 ip="{{ gitea_vm_network_ipv4 }}",gw="{{ gitea_vm_network_gw }}" \
-          --nameserver "{{ gitea_vm_network_nameserver }}"
+          --nameserver "{{ gitea_vm_network_nameserver }}" --ciupgrade 0
 
     - name: "Gitea VM: Check Status"
       ansible.builtin.shell: qm status "{{ gitea_vm_id }}"
