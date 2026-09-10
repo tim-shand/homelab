@@ -1,8 +1,8 @@
 ---
 # Default ----------------------------------------- #
-enable_task_gitea_vm: true
-enable_task_gitea_server: true
-enable_task_gitea_runner: true
+enable_task_gitea_vm: false
+enable_task_gitea_server: false
+enable_task_gitea_runner: false
 
 # Gitea VM
 pve_template_id: "9000"
