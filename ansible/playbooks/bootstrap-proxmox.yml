@@ -12,8 +12,13 @@
   become: true
   remote_user: root # Requires `--ask-pass` flag during command execution.
   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
-  roles:
-    - common
+  vars:
+    enable_task_common_role: false
+  tasks:
+    - name: "Common Configuration"
+      ansible.builtin.include_role:
+        name: common
+      when: enable_task_common_role
 
 - name: "Proxmox: Bootstrap (Single Node)"
   hosts: "{{ groups['proxmox_nodes'][0] }}" # Run on first node in group only.

@@ -29,9 +29,10 @@
     export PUB_KEY="{{ ubuntu_user_public_key }}"
     virt-customize -a "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}" \
       --run-command "useradd -m -s /bin/bash ${NEW_USER}" \
-      --run-command 'echo "${NEW_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${NEW_USER}' \
-      --run-command "chmod 0440 /etc/sudoers.d/${NEW_USER}"
-    virt-customize -a "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}" --ssh-inject "${NEW_USER}":string:"${PUB_KEY}"
+      --run-command "usermod -aG sudo ${NEW_USER}" \
+      --run-command "echo \"${NEW_USER} ALL=(ALL) NOPASSWD:ALL\" > /etc/sudoers.d/${NEW_USER}" \
+      --run-command "chmod 0440 /etc/sudoers.d/${NEW_USER}" \
+      --ssh-inject "${NEW_USER}":string:"${PUB_KEY}"
 
 - name: "Deploy Proxmox VM"
   ansible.builtin.shell: |

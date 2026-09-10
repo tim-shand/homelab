@@ -10,7 +10,7 @@
 - name: "Proxmox: Deploy Gitea VM"
   hosts: "{{ groups['proxmox_nodes'][0] }}" # Run on first node in group.
   become: true
-  remote_user: root # Requires `--ask-pass` flag during command execution.
+  #remote_user: root # Requires `--ask-pass` flag during command execution.
   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
 
   vars:
@@ -28,12 +28,16 @@
     gitea_vm_compute_mem: "2048"
 
   tasks:
-    - name: "Cleanup Existing VM"
-      ansible.builtin.shell: |
-        qm stop "{{ gitea_vm_id }}" &> /dev/null \
-         && sleep 5 \
-         && qm destroy "{{ gitea_vm_id }}" --purge 1 --destroy-unreferenced-disks 1 &> /dev/null \
-         && sleep 5
+    # Check for existing VM (1), register value to variable.
+    - name: "Gitea VM: Existing VM Check"
+      ansible.builtin.shell: qm status "{{ gitea_vm_id }}" &>/dev/null
+      register: gitea_vm_check
+
+    # Hard fail the play if VM exists.
+    - name: "Gitea VM: "
+      ansible.builtin.fail:
+        msg: "WARNING: A VM already exists with ID {{ gitea_vm_id }} ({{ gitea_vm_check.stdout }})."
+      when: gitea_vm_check.stdout != 0
 
     - name: "Gitea VM: Clone Template"
       ansible.builtin.shell: |
@@ -50,15 +54,13 @@
         qm set "{{ gitea_vm_id }}" --ipconfig0 ip="{{ gitea_vm_network_ipv4 }}",gw="{{ gitea_vm_network_gw }}" \
           --nameserver "{{ gitea_vm_network_namerserver }}"
 
-    - name: "Check VM Status"
+    - name: "Gitea VM: Check Status"
       ansible.builtin.shell: qm status "{{ gitea_vm_id }}"
       register: gitea_vm_status
 
-    - name: "Start Gitea VM"
+    - name: "Gitea VM: Start"
       ansible.builtin.shell: qm start "{{ gitea_vm_id }}"
-      when: gitea_vm_status.rc == 0
-# -------------------------------------------------------------------- #
-
+      when: gitea_vm_status.rc == 0 &&
 # - name: "Gitea: Setup Gitea Server"
 #   hosts: git # Target 'git' host group.
 #   become: true
