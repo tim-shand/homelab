@@ -29,37 +29,36 @@
   tasks:
     # Check for existing VM (1), register value to variable.
     - name: "Gitea VM: Existing VM Check"
-      ansible.builtin.shell: qm status "{{ gitea_vm_id }}" &>/dev/null
+      ansible.builtin.shell: qm status "{{ gitea_vm_id }}"
       register: gitea_vm_check
 
-    # Hard fail the play if VM exists.
-    - name: "Gitea VM: Fail On Exists"
-      ansible.builtin.fail:
-        msg: "WARNING: A VM already exists with ID {{ gitea_vm_id }} ({{ gitea_vm_check.rc }})."
-      when: gitea_vm_check.rc != 0
+    # # Hard fail the play if VM exists.
+    # - name: "Gitea VM: Fail On Exists"
+    #   ansible.builtin.fail:
+    #     msg: "WARNING: A VM already exists with ID {{ gitea_vm_id }} ({{ gitea_vm_check.rc }})."
+    #   when: gitea_vm_check.rc != 0
 
     - name: "Gitea VM: Clone Template"
       ansible.builtin.shell: |
         qm clone "{{ pve_template_id }}" "{{ gitea_vm_id }}" --name "{{ gitea_vm_name }}" --description "{{ gitea_vm_desc }}" --full
+      when: gitea_vm_check.rc != 0
 
     - name: "Gitea VM: Configure Hardware"
       ansible.builtin.shell: |
         qm set "{{ gitea_vm_id }}" --tags "{{ gitea_vm_tags }}" --ostype l26 --agent 1 --cpu host \
           --cores "{{ gitea_vm_compute_cores }}" --memory {{ gitea_vm_compute_mem }} --balloon 0 \
           --net0 virtio,bridge="{{ gitea_vm_network_bridge }}",tag="{{ gitea_vm_network_vlan }}" --autostart 1 --onboot 1
+      when: gitea_vm_check.rc != 0
 
     - name: "Gitea VM: Configure Networking"
       ansible.builtin.shell: |
         qm set "{{ gitea_vm_id }}" --ipconfig0 ip="{{ gitea_vm_network_ipv4 }}",gw="{{ gitea_vm_network_gw }}" \
           --nameserver "{{ gitea_vm_network_nameserver }}" --ciupgrade 0
-
-    - name: "Gitea VM: Check Status"
-      ansible.builtin.shell: qm status "{{ gitea_vm_id }}"
-      register: gitea_vm_status
+      when: gitea_vm_check.rc != 0
 
     - name: "Gitea VM: Start"
       ansible.builtin.shell: qm start "{{ gitea_vm_id }}" && sleep 15
-      when: gitea_vm_status.rc == 0
+      when: gitea_vm_check.rc != 0
 
 # Gitea VM -------------------------------------- #
 - name: "Gitea: Bootstrap Install"
