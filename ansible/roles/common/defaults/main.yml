@@ -9,6 +9,10 @@ common_packages:
   - wget
   - htop
 
+# Define in group_vars file.
+required_packages:
+  - sudo
+
 # SSH KEY FILES  --------------------------------------------------- #
 # Path to SSH key file directory.
 ssh_key_path: "../../../files/ssh_keys"
