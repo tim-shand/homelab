@@ -10,8 +10,8 @@ common_packages:
   - htop
 
 # Define in group_vars file.
-required_packages:
-  - sudo
+# required_packages:
+#   - sudo
 
 # SSH KEY FILES  --------------------------------------------------- #
 # Path to SSH key file directory.

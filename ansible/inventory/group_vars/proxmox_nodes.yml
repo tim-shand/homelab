@@ -4,3 +4,6 @@ required_packages:
   - curl
   - libguestfs-tools
   - jq
+
+pve_disable_enterprise_repo: true
+enable_task_common_role: true
