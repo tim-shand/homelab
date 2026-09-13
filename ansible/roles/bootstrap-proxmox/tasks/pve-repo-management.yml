@@ -1,0 +1,16 @@
+---
+- name: "Disable Enterprise Repo"
+  ansible.builtin.shell: |
+    echo "Enabled: no" >> /etc/apt/sources.list.d/pve-enterprise.sources
+  when: pve_disable_enterprise_repo
+
+- name: "Enable No-Subscription Repo"
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/pve-no-subscription.list
+    content: |
+      Types: deb
+      URIs: http://download.proxmox.com/debian/pve
+      Suites: trixie
+      Components: pve-no-subscription
+      Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+    mode: "0644"

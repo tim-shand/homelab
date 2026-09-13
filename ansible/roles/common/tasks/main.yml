@@ -9,8 +9,8 @@
 - name: "Load OS Variables"
   include_vars: "{{ ansible_facts['os_family'] }}.yml"
 
-- name: "Common: Service Accounts"
-  ansible.builtin.import_tasks: common-accounts.yml
-
 - name: "Common: Package Management"
   ansible.builtin.import_tasks: common-packages.yml
+
+- name: "Common: Service Accounts"
+  ansible.builtin.import_tasks: common-accounts.yml

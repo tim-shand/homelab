@@ -8,12 +8,13 @@
 ---
 # Initial Setup: Install updates, required packages, configure Ansible service account.
 - name: "Proxmox: Initial Setup (All Nodes)"
-  hosts: proxmox_nodes # Run on all Proxmox nodes.
+  #hosts: proxmox_nodes # Run on all Proxmox nodes.
+  hosts: "{{ groups['proxmox_nodes'][0] }}"
   become: true
   remote_user: root # Requires `--ask-pass` flag during command execution. Must be root (before svc accounts).
   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
   vars:
-    enable_task_common_role: false
+    enable_task_common_role: true
   tasks:
     - name: "Common Configuration"
       ansible.builtin.include_role:
