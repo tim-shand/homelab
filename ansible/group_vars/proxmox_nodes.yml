@@ -1,0 +1,6 @@
+---
+required_packages:
+  - sudo
+  - curl
+  - libguestfs-tools
+  - jq

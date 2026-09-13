@@ -4,11 +4,7 @@ enable_task_service_accounts: true
 enable_task_vm_template: true
 
 # Required Packages ----------------------------------------- #
-pve_required_packages:
-  - sudo
-  - curl
-  - libguestfs-tools
-  - jq
+#pve_required_packages: # Moved to group_vars
 
 # Proxmox Repo Control ----------------------------------------- #
 pve_disable_enterprise_repo: true
