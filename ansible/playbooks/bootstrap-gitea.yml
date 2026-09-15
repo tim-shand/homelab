@@ -16,7 +16,7 @@
     # Gitea VM
     pve_template_id: "9000"
     gitea_vm_id: "100"
-    gitea_vm_name: "svr-mgt-gitea-dev"
+    gitea_vm_name: "svr-mgt-git-01"
     gitea_vm_desc: "Management: Git Server (Gitea)"
     gitea_vm_tags: "management"
     gitea_vm_network_bridge: "vmbr1"
