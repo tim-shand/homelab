@@ -32,12 +32,6 @@
       ansible.builtin.shell: qm status "{{ gitea_vm_id }}"
       register: gitea_vm_check
 
-    # # Hard fail the play if VM exists.
-    # - name: "Gitea VM: Fail On Exists"
-    #   ansible.builtin.fail:
-    #     msg: "WARNING: A VM already exists with ID {{ gitea_vm_id }} ({{ gitea_vm_check.rc }})."
-    #   when: gitea_vm_check.rc != 0
-
     - name: "Gitea VM: Clone Template"
       ansible.builtin.shell: |
         qm clone "{{ pve_template_id }}" "{{ gitea_vm_id }}" --name "{{ gitea_vm_name }}" --description "{{ gitea_vm_desc }}" --full
