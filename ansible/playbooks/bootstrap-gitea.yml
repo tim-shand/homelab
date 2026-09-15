@@ -27,15 +27,9 @@
     gitea_vm_compute_cores: "4"
     gitea_vm_compute_mem: "2048"
   tasks:
-    # Check for existing VM (1), register value to variable.
-    - name: "Gitea VM: Existing VM Check"
-      ansible.builtin.shell: qm status "{{ gitea_vm_id }}"
-      register: gitea_vm_check
-
     - name: "Gitea VM: Clone Template"
       ansible.builtin.shell: |
         qm clone "{{ pve_template_id }}" "{{ gitea_vm_id }}" --name "{{ gitea_vm_name }}" --description "{{ gitea_vm_desc }}" --full
-      when: gitea_vm_check.rc != 0
 
     - name: "Gitea VM: Configure Hardware"
       ansible.builtin.shell: |
