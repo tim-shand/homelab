@@ -6,7 +6,7 @@
 # ========================================================================================================= #
 
 # Proxmox: Cluster Configuration ------------------------------------------- #
-resource "proxmox_cluster_options" "options" {
+resource "proxmox_cluster_options" "main" {
   description               = "Proxmox Cluster\n" # Shown in the web-interface datacenter notes panel.
   language                  = "en"
   keyboard                  = "en-us"
@@ -15,6 +15,13 @@ resource "proxmox_cluster_options" "options" {
     lower = 200 # The ranges for the next free VM ID auto-selection pool.
     upper = 999
   }
+}
+
+# Proxmox: Node Details ------------------------------------------- #
+resource "proxmox_node_config" "main" {
+  for_each = var.pve_nodes
+  node_name   = each.value.node_name
+  description = each.value.description
 }
 
 # Proxmox: Resource Pools ------------------------------------------- #
