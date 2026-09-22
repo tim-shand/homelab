@@ -23,44 +23,44 @@ pve_pools = {
 
 # Proxmox: Identity & Access ------------------------------------- #
 # Map to new or existing PVE role. Map 'scope' to 'path' in PVE console to determine access level.
+pve_iam_groups = {
+    "grp-pve-admins"     = {
+        comment = "Privileged: Proxmox Console Administrators"
+        acls = {
+            "Administrator" = "/"
+        }
+    }
+    "grp-svc-automation" = {
+        comment = "Privileged: Automation Service Accounts"
+        acls = {
+            "Administrator" = "/"
+        }
+    }
+    "grp-svc-monitoring" = {
+        comment = "Read Only: Monitoring Service Accounts"
+        acls = {
+            "PVEAuditor" = "/"
+        }
+    }
+}
+
 # pve_iam_groups = {
 #     "grp-adm-pve-admins"     = {
 #         comment = "Privileged: Proxmox Console Administrators"
-#         roles_scopes = {
-#             "Administrator" = "/"
-#         }
+#         role    = "Administrator"
+#         scope   = "/"
 #     }
 #     "grp-adm-svc-automation" = {
 #         comment = "Privileged: Automation Service Accounts"
-#         roles_scopes = {
-#             "Administrator" = "/"
-#         }
+#         role    = "Administrator"
+#         scope   = "/"
 #     }
 #     "grp-std-svc-monitoring" = {
 #         comment = "Standard: Monitoring Service Accounts"
-#         roles_scopes = {
-#             "PVEAuditor" = "/"
-#         }
+#         role    = "PVEAuditor"
+#         scope   = "/"
 #     }
 # }
-
-pve_iam_groups = {
-    "grp-adm-pve-admins"     = {
-        comment = "Privileged: Proxmox Console Administrators"
-        role    = "Administrator"
-        scope   = "/"
-    }
-    "grp-adm-svc-automation" = {
-        comment = "Privileged: Automation Service Accounts"
-        role    = "Administrator"
-        scope   = "/"
-    }
-    "grp-std-svc-monitoring" = {
-        comment = "Standard: Monitoring Service Accounts"
-        role    = "PVEAuditor"
-        scope   = "/"
-    }
-}
 
 # Proxmox: Node Configuration ------------------------------------- #
 pve_nodes = {

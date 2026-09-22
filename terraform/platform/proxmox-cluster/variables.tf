@@ -74,22 +74,22 @@ variable "pve_pools" {
     type = map(string)
 }
 
-# variable "pve_iam_groups" {
-#     description = "Map of objects defining Proxmox groups and permissions."
-#     type = map(object({
-#         comment = string
-#         roles_scopes = map(string)
-#     }))
-# }
-
 variable "pve_iam_groups" {
     description = "Map of objects defining Proxmox groups and permissions."
     type = map(object({
         comment = string
-        role    = string
-        scope   = string
+        acls = map(string)
     }))
 }
+
+# variable "pve_iam_groups" {
+#     description = "Map of objects defining Proxmox groups and permissions."
+#     type = map(object({
+#         comment = string
+#         role    = string
+#         scope   = string
+#     }))
+# }
 
 variable "pve_sdn_vnets" {
     description = "Object of defined Proxmox SDN VNets to be configured."
