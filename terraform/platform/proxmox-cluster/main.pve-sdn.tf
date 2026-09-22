@@ -6,96 +6,47 @@
 # - Proxmox SDN Hierarchy: Zone --> VNet --> Subnet
 # ========================================================================================================= #
 
+# Runs first, applies any pre-existing pending state (manual, interrupted, failed).
+resource "proxmox_sdn_applier" "init" {}
+
 # SDN: Zones ================================================================== #
 
-# Internal Zone --------------------------------- #
+# Zone: Internal --------------------------------- #
 resource "proxmox_sdn_zone_simple" "znint" {
   id        = "znint" # Max 8 characters, no symbols.
   #nodes     = local.pve_nodes_production # Comment out to add to all nodes in cluster.
   mtu       = 1500     # Default 1550 for VLAN zones.
   ipam      = "pve"    # Use Proxmox IPAM.
   depends_on = [
-    proxmox_sdn_applier.prep # Runs first, applies any pre-existing pending state (manual, interrupted, failed). 
+    proxmox_sdn_applier.init # Runs first, applies any pre-existing pending state (manual, interrupted, failed). 
   ]
 }
 
-# VLAN Zone --------------------------------- #
+# Zone: VLAN --------------------------------- #
 resource "proxmox_sdn_zone_vlan" "znvlan" {
   id        = "znvlan" # Max 8 characters, no symbols.
-  nodes     = local.pve_nodes_production # Remove line to add to all nodes.
-  bridge    = "vmbr1"  # VLAN aware bridge for workloads.
+  nodes     = [for node in local.pve_nodes_production : node.node_name ] # Remove line to add to all nodes.
+  bridge    = local.pve_nodes_production[0].guest_bridge  # VLAN aware bridge for workloads.
   mtu       = 1500     # Default 1550 for VLAN zones.
   ipam      = "pve"    # Use Proxmox IPAM.
   depends_on = [
-    proxmox_sdn_applier.prep # Runs first, applies any pre-existing pending state (manual, interrupted, failed).
+    proxmox_sdn_applier.init # Runs first, applies any pre-existing pending state (manual, interrupted, failed).
   ]
 }
 
 # SDN: VNets ================================================================== #
-
-# Management (VLAN10) --------------------------------- #
-resource "proxmox_sdn_vnet" "mgt10" {
-  id            = "mgt10"                           # Max 8 characters, no symbols.
-  zone          = proxmox_sdn_zone_vlan.znvlan.id   # Zone ID from above.
-  alias         = "mgt10"                           # VNet alias, used for identification and management in Proxmox UI.
-  tag           = 10                                # VLAN tag for VNet, used for traffic isolation and segmentation.
-  isolate_ports = false                             # True/False: Guests can only send traffic to non-isolated bridge-ports (the bridge itself).
-  vlan_aware    = false                             # Disable for VNet level tagging. Enables vlan-aware on interface, requiring configuration in the guest. 
+# Deploy VNets, VLANs and subnets using custom module.
+module "pve_sdn_vnet" {
+  source        = "../../modules/pve-sdn-vnet"
+  for_each      = var.pve_sdn_vnets                # Loop each defined VNet and it's subnets from variables.
+  zone_id       = proxmox_sdn_zone_vlan.znvlan.id  # Zone ID from above.
+  vnet_id       = each.key                         # Use looped key value for name.
+  vlan_tag      = each.value.vlan_tag              # VLAN tag for VNet, used for traffic isolation and segmentation.
+  isolate_ports = each.value.isolate_ports         # True/False: Guests can only send traffic to non-isolated bridge-ports (the bridge itself).
+  vlan_aware    = each.value.vlan_aware            # Disable for VNet level tagging. Enables vlan-aware on interface, requiring configuration in the guest.
+  subnets       = each.value.subnets               # Map of subnets to create in the VNet.
   depends_on = [
-    proxmox_sdn_applier.prep
-  ]
-}
-
-resource "proxmox_sdn_subnet" "mgt10_1" {
-  cidr            = "10.0.10.0/24"              # Subnet IP range.
-  vnet            = proxmox_sdn_vnet.mgt10.id   # VNet ID for target/parent VNet.
-  gateway         = "10.0.10.254"               # Network gateway address.
-  depends_on = [
-    proxmox_sdn_applier.prep # Runs first, applies any pre-existing pending state (manual, interrupted, failed).
-  ]
-}
-
-# Production Servers (VLAN20) --------------------------------- #
-resource "proxmox_sdn_vnet" "svr20" {
-  id            = "svr20"                           # Max 8 characters, no symbols.
-  zone          = proxmox_sdn_zone_vlan.znvlan.id   # Zone ID from above.
-  alias         = "svr20"                           # VNet alias, used for identification and management in Proxmox UI.
-  tag           = 20                                # VLAN tag for VNet, used for traffic isolation and segmentation.
-  isolate_ports = false                             # True/False: Guests can only send traffic to non-isolated bridge-ports (the bridge itself).
-  vlan_aware    = false                             # Disable for VNet level tagging. Enables vlan-aware on interface, requiring configuration in the guest. 
-  depends_on = [
-    proxmox_sdn_applier.prep
-  ]
-}
-
-resource "proxmox_sdn_subnet" "svr20_1" {
-  cidr            = "10.0.20.0/24"              # Subnet IP range.
-  vnet            = proxmox_sdn_vnet.svr20.id   # VNet ID for target/parent VNet.
-  gateway         = "10.0.20.254"               # Network gateway address.
-  depends_on = [
-    proxmox_sdn_applier.prep # Runs first, applies any pre-existing pending state (manual, interrupted, failed).
-  ]
-}
-
-# DMZ Network - Internet Only, isolated (VLAN99) --------------------------------- #
-resource "proxmox_sdn_vnet" "dmz99" {
-  id            = "dmz99"
-  zone          = proxmox_sdn_zone_vlan.znvlan.id
-  alias         = "dmz99"
-  tag           = 99
-  isolate_ports = true # Prevent host to host communication (host to bridge only).
-  vlan_aware    = false
-  depends_on = [
-    proxmox_sdn_applier.prep
-  ]
-}
-
-resource "proxmox_sdn_subnet" "dmz99_1" {
-  cidr            = "10.0.99.0/24" # Subnet IP range.
-  vnet            = proxmox_sdn_vnet.dmz99.id
-  gateway         = "10.0.99.254"
-  depends_on = [
-    proxmox_sdn_applier.prep
+    proxmox_sdn_applier.init # Runs first, applies any pre-existing pending state (manual, interrupted, failed). 
   ]
 }
 
@@ -103,8 +54,10 @@ resource "proxmox_sdn_subnet" "dmz99_1" {
 # Used to trigger updates to the Proxmox SDN configuration when changes are made to zones or VNets. 
 # SDN configuration is applied to the Proxmox cluster without manual effort (clicking 'Apply' button).
 
-# Runs first, applies any pre-existing pending state (manual, interrupted, failed).
-resource "proxmox_sdn_applier" "prep" {}
+# Create a proxy resource that monitors the VNet module output.
+resource "terraform_data" "vnet_trigger" {
+  input = module.pve_sdn_vnet
+}
 
 # Final SDN apply.
 resource "proxmox_sdn_applier" "final" {
@@ -112,22 +65,12 @@ resource "proxmox_sdn_applier" "final" {
     replace_triggered_by = [
       proxmox_sdn_zone_simple.znint,
       proxmox_sdn_zone_vlan.znvlan,
-      proxmox_sdn_vnet.mgt10,
-      proxmox_sdn_subnet.mgt10_1,
-      proxmox_sdn_vnet.svr20,
-      proxmox_sdn_subnet.svr20_1,
-      proxmox_sdn_vnet.dmz99,
-      proxmox_sdn_subnet.dmz99_1,
+      terraform_data.vnet_trigger
     ]
   }
   depends_on = [
     proxmox_sdn_zone_simple.znint,
     proxmox_sdn_zone_vlan.znvlan,
-    proxmox_sdn_vnet.mgt10,
-    proxmox_sdn_subnet.mgt10_1,
-    proxmox_sdn_vnet.svr20,
-    proxmox_sdn_subnet.svr20_1,
-    proxmox_sdn_vnet.dmz99,
-    proxmox_sdn_subnet.dmz99_1,
+    module.pve_sdn_vnet
   ]
 }

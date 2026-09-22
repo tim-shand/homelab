@@ -45,3 +45,17 @@ variable "pve_pools" {
     description = "Map of Proxmox cluster pools."
     type = map(string)
 }
+
+variable "pve_sdn_vnets" {
+    description = "Object of defined Proxmox SDN VNets to be configured."
+    type = map(object({
+        id = string
+        vlan_tag      = number
+        isolate_ports = bool
+        vlan_aware    = bool
+        subnets = map(object({
+            cidr_address = string
+            gateway = string
+        }))
+    }))
+}
