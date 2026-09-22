@@ -44,23 +44,20 @@ pve_iam_groups = {
     }
 }
 
-# pve_iam_groups = {
-#     "grp-adm-pve-admins"     = {
-#         comment = "Privileged: Proxmox Console Administrators"
-#         role    = "Administrator"
-#         scope   = "/"
-#     }
-#     "grp-adm-svc-automation" = {
-#         comment = "Privileged: Automation Service Accounts"
-#         role    = "Administrator"
-#         scope   = "/"
-#     }
-#     "grp-std-svc-monitoring" = {
-#         comment = "Standard: Monitoring Service Accounts"
-#         role    = "PVEAuditor"
-#         scope   = "/"
-#     }
-# }
+pve_iam_users_svc = {
+    "svc-ansible" = {
+        comment = "Service Account: Ansible"
+        enabled = true
+        realm   = "pam" # Use 'pam' for local host level account, use 'pve' for Proxmox user only.
+        groups = ["grp-svc-automation"]
+    }
+    "svc-terraform" = {
+        comment = "Service Account: Terraform"
+        enabled = true
+        realm   = "pve" # Use 'pam' for local host level account, use 'pve' for Proxmox user only.
+        groups = ["grp-svc-automation"]
+    }
+}
 
 # Proxmox: Node Configuration ------------------------------------- #
 pve_nodes = {

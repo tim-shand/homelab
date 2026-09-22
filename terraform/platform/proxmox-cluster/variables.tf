@@ -82,14 +82,15 @@ variable "pve_iam_groups" {
     }))
 }
 
-# variable "pve_iam_groups" {
-#     description = "Map of objects defining Proxmox groups and permissions."
-#     type = map(object({
-#         comment = string
-#         role    = string
-#         scope   = string
-#     }))
-# }
+variable "pve_iam_users_svc" {
+    description = "Map of objects defining Proxmox service accounts and group memberships."
+    type = map(object({
+        comment = string
+        enabled = bool
+        realm = string
+        groups = list(string)
+    }))
+}
 
 variable "pve_sdn_vnets" {
     description = "Object of defined Proxmox SDN VNets to be configured."

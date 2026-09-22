@@ -15,13 +15,13 @@ terraform {
 
 # Proxmox: Groups --------------------------------------------------- #
 resource "proxmox_virtual_environment_group" "main" {
-  group_id = var.pve_group_name
-  comment  = var.pve_group_comment
+  group_id = var.group_name
+  comment  = var.group_comment
 }
 
 resource "proxmox_acl" "main" {
-  for_each  = var.pve_group_acls
-  group_id  = var.pve_group_name
+  for_each  = var.group_acls
+  group_id  = var.group_name
   role_id   = each.key
   path      = each.value
   propagate = true

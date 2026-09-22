@@ -5,17 +5,20 @@
 # https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_group
 # ========================================================================================================= #
 
-# # Proxmox: Groups --------------------------------------------------- #
-# resource "proxmox_virtual_environment_group" "main" {
-#   for_each = var.pve_iam_groups
-#   group_id = each.key
-#   comment  = each.value
-# }
-
+# Proxmox: Groups --------------------------------------------------- #
 module "pve_iam_group_acls" {
   source = "../../modules/pve-iam-group-acls"
   for_each = var.pve_iam_groups
-  pve_group_name = each.key
-  pve_group_comment = each.value.comment
-  pve_group_acls = each.value.acls
+  group_name = each.key
+  group_comment = each.value.comment
+  group_acls = each.value.acls
+}
+
+# Proxmox: Service Account Users --------------------------------------------------- #
+module "pve_iam_users_svc" {
+  source = "../../modules/pve-iam-users-svc"
+  for_each = var.pve_iam_users_svc
+  user_id = "${each.key}@${each.value.realm}"
+  user_comment = each.value.comment
+  user_groups = each.value.groups
 }
