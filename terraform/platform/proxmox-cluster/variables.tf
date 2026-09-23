@@ -78,6 +78,7 @@ variable "pve_iam_groups" {
     description = "Map of objects defining Proxmox groups and permissions."
     type = map(object({
         comment = string
+        enabled = string
         acls = map(string)
     }))
 }

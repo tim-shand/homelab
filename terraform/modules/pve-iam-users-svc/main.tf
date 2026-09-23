@@ -24,7 +24,7 @@ resource "proxmox_virtual_environment_user" "main" {
   groups   = var.user_groups
 }
 
-resource "proxmox_user_token" "user_token" {
+resource "proxmox_user_token" "main" {
   user_id         = proxmox_virtual_environment_user.main.user_id
   token_name      = "api" # Used to form the connection string (svc-account@pve!api=token_string).
   comment         = "Managed by Terraform: ${local.formatted_date}"

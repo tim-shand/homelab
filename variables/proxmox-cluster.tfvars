@@ -26,18 +26,21 @@ pve_pools = {
 pve_iam_groups = {
     "grp-pve-admins"     = {
         comment = "Privileged: Proxmox Console Administrators"
+        enabled = true
         acls = {
             "Administrator" = "/"
         }
     }
     "grp-svc-automation" = {
         comment = "Privileged: Automation Service Accounts"
+        enabled = true
         acls = {
             "Administrator" = "/"
         }
     }
     "grp-svc-monitoring" = {
         comment = "Read Only: Monitoring Service Accounts"
+        enabled = true
         acls = {
             "PVEAuditor" = "/"
         }
