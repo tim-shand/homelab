@@ -20,13 +20,16 @@ locals {
 # Proxmox: Service Account Users --------------------------------------------------- #
 resource "proxmox_virtual_environment_user" "main" {
   user_id  = var.user_id
-  comment  = "Managed by Terraform: ${var.user_comment}"
+  comment  = "[Managed by Terraform] ${var.user_comment}"
   groups   = var.user_groups
 }
 
 resource "proxmox_user_token" "main" {
   user_id         = proxmox_virtual_environment_user.main.user_id
   token_name      = "api" # Used to form the connection string (svc-account@pve!api=token_string).
-  comment         = "Managed by Terraform: ${local.formatted_date}"
+  comment         = "[Managed by Terraform] ${local.formatted_date}"
   privileges_separation = false
+  lifecycle {
+    ignore_changes = [ comment ] # Ignore for update as timestamp changes each run.
+  }
 }
