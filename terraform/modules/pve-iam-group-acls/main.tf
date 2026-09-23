@@ -21,7 +21,7 @@ resource "proxmox_virtual_environment_group" "main" {
 
 resource "proxmox_acl" "main" {
   for_each  = var.group_acls
-  group_id  = var.group_name
+  group_id  = proxmox_virtual_environment_group.main.group_id
   role_id   = each.key
   path      = each.value
   propagate = true
