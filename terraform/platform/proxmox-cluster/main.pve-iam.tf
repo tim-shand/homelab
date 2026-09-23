@@ -21,4 +21,5 @@ module "pve_iam_users_svc" {
   user_id = "${each.key}@${each.value.realm}"
   user_comment = each.value.comment
   user_groups = each.value.groups
+  depends_on = [ module.pve_iam_group_acls ]
 }
