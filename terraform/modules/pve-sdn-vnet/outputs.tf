@@ -1,4 +1,4 @@
-output "vnets" {
+output "vnet" {
     description = "Output of all created VNets."
     value = proxmox_sdn_vnet.main
 }
