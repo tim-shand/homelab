@@ -57,8 +57,14 @@ pve_iam_users_svc = {
     "svc-terraform" = {
         comment = "Service Account: Terraform"
         enabled = true
-        realm   = "pve" # Use 'pam' for local host level account, use 'pve' for Proxmox user only.
+        realm   = "pve"
         groups = ["grp-svc-automation"]
+    }
+    "svc-monitor" = {
+        comment = "Service Account: Monitoring"
+        enabled = true
+        realm   = "pve"
+        groups = ["grp-svc-monitoring"]
     }
 }
 
