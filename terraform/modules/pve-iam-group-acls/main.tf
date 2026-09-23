@@ -16,7 +16,7 @@ terraform {
 # Proxmox: Groups --------------------------------------------------- #
 resource "proxmox_virtual_environment_group" "main" {
   group_id = var.group_name
-  comment  = var.group_comment
+  comment  = "[Managed by Terraform] ${var.group_comment}"
 }
 
 resource "proxmox_acl" "main" {

@@ -50,19 +50,25 @@ pve_iam_groups = {
 pve_iam_users_svc = {
     "svc-ansible" = {
         comment = "Service Account: Ansible"
-        enabled = true
-        realm   = "pam" # Use 'pam' for local host level account, use 'pve' for Proxmox user only.
+        enabled          = true   # Enable/disable user account creation.
+        password_enabled = false  # Enable for service accounts that cannot use API token.
+        token_enabled    = true   # Enable to generate API token for authentication.
+        realm   = "pam"           # Use 'pam' for local host level account, use 'pve' for Proxmox user only.
         groups = ["grp-svc-automation"]
     }
     "svc-terraform" = {
         comment = "Service Account: Terraform"
         enabled = true
+        password_enabled = false
+        token_enabled    = true
         realm   = "pve"
         groups = ["grp-svc-automation"]
     }
     "svc-monitor" = {
         comment = "Service Account: Monitoring"
         enabled = true
+        password_enabled = true
+        token_enabled    = true
         realm   = "pve"
         groups = ["grp-svc-monitoring"]
     }

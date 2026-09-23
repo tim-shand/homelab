@@ -20,6 +20,8 @@ module "pve_iam_users_svc" {
   for_each = local.pve_iam_users_svc_enabled
   user_id = "${each.key}@${each.value.realm}"
   user_comment = each.value.comment
+  user_password_enabled = each.value.password_enabled
+  user_token_enabled    = each.value.token_enabled
   user_groups = each.value.groups
   depends_on = [ module.pve_iam_group_acls ]
 }

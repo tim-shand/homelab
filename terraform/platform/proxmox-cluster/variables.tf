@@ -88,6 +88,8 @@ variable "pve_iam_users_svc" {
     type = map(object({
         comment = string
         enabled = bool
+        password_enabled = bool
+        token_enabled    = bool
         realm = string
         groups = list(string)
     }))
