@@ -7,7 +7,7 @@
 terraform {
   required_providers {
     proxmox = {
-      source = "bpg/proxmox"
+      source  = "bpg/proxmox"
       version = "~> 0.112.0"
     }
   }
@@ -22,10 +22,10 @@ resource "random_password" "main" {
   count            = var.user_password_enabled ? 1 : 0 # If password is enabled, then create else do not.
   length           = 16
   special          = true
-  upper = true
-  lower = true
-  min_upper = 3
-  min_lower = 3
+  upper            = true
+  lower            = true
+  min_upper        = 3
+  min_lower        = 3
   override_special = "!#%&-_"
 }
 
@@ -39,12 +39,12 @@ resource "proxmox_virtual_environment_user" "main" {
 
 # Proxmox: Service Account API Token --------------------------------------------------- #
 resource "proxmox_user_token" "main" {
-  count           = var.user_token_enabled ? 1 : 0 # If token is enabled, then create else do not.
-  user_id         = proxmox_virtual_environment_user.main.user_id
-  token_name      = "api" # Used to form the connection string (svc-account@pve!api=token_string).
-  comment         = "[Managed by Terraform] ${local.formatted_date}"
+  count                 = var.user_token_enabled ? 1 : 0 # If token is enabled, then create else do not.
+  user_id               = proxmox_virtual_environment_user.main.user_id
+  token_name            = "api" # Used to form the connection string (svc-account@pve!api=token_string).
+  comment               = "[Managed by Terraform] ${local.formatted_date}"
   privileges_separation = false
   lifecycle {
-    ignore_changes = [ comment ] # Ignore for update as timestamp changes each run.
+    ignore_changes = [comment] # Ignore for update as timestamp changes each run.
   }
 }
