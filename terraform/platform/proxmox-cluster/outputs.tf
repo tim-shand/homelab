@@ -5,6 +5,7 @@ output "pve_groups" {
   }
 }
 
+# terraform output -json pve_users_sensitive | jq -r '.'
 output "pve_users_sensitive" {
   description = "Output of all created Proxmox users, including sensitive values."
   sensitive   = true
