@@ -26,7 +26,7 @@ resource "proxmox_sdn_zone_simple" "znint" {
 resource "proxmox_sdn_zone_vlan" "znvlan" {
   id     = "znvlan"                                                  # Max 8 characters, no symbols.
   nodes  = [for node in local.pve_nodes_production : node.node_name] # Remove line to add to all nodes.
-  bridge = local.pve_nodes_production[0].guest_bridge                # VLAN aware bridge for workloads.
+  bridge = var.pve_default_bridge_guest                              # VLAN aware bridge for workloads.
   mtu    = 1500                                                      # Default 1550 for VLAN zones.
   ipam   = "pve"                                                     # Use Proxmox IPAM.
   depends_on = [

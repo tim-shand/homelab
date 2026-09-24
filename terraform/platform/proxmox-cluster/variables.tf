@@ -4,12 +4,6 @@
 # - Variable definitions for Proxmox configuration.
 # ====================================================================== #
 
-# variable "pve_auth_api_token" {
-#     description = "Proxmox API token for authentication, should be stored securely and passed in via environment variable or workflow secrets."
-#     type = string
-#     sensitive = true
-# }
-
 variable "pve_api_terraform_user" {
   description = "Proxmox API service account for Terraform."
   type        = string
@@ -55,6 +49,8 @@ variable "pve_nodes" {
     description = string
     hostname    = string
     production  = bool
+    storage_img = string
+    storage_vms = string
     network = object({
       ip_address = string
       cluster = object({
@@ -106,5 +102,24 @@ variable "pve_sdn_vnets" {
       cidr_address = string
       gateway      = string
     }))
+  }))
+}
+
+variable "pve_default_bridge_guest" {
+  description = "Default string value of the network bridge used for guest workloads."
+  type = string
+  default = "vmbr1"
+}
+
+# Proxmox VM Templates --------------------------------------------- #
+
+variable "vm_templates" {
+  description = "Map of objects containing the Proxmox VM template parameters."
+  type = map(object({
+    template_id = number
+    description = string
+    enabled = bool
+    src_url = string
+    dst_file = string
   }))
 }
