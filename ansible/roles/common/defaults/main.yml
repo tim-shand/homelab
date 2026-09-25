@@ -2,11 +2,16 @@
 # COMMON PACKAGES --------------------------------------------------- #
 # Define package names to be installed (common across distributions).
 common_packages:
+  - sudo
   - git
   - nano
   - curl
   - wget
   - htop
+
+# Define in group_vars file.
+# required_packages:
+#   - sudo
 
 # SSH KEY FILES  --------------------------------------------------- #
 # Path to SSH key file directory.

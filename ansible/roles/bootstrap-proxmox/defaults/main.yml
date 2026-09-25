@@ -1,13 +1,7 @@
 # Default ----------------------------------------- #
 # Control individual task execution, skip when needed or for testing.
-enable_task_service_accounts: false
+enable_task_service_accounts: true
 enable_task_vm_template: true
-
-# Required Packages ----------------------------------------- #
-pve_required_packages:
-  - curl
-  - libguestfs-tools
-  - jq
 
 # Proxmox Groups ----------------------------------------- #
 pve_group_admin_users:

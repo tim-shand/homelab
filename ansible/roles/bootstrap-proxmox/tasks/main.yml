@@ -4,10 +4,10 @@
 # Note: Apply to Proxmox nodes already joined to cluster.
 # ======================================================================================== #
 ---
-- name: "Bootstrap Proxmox: Service Accounts"
+- name: "Configure Service Accounts"
   ansible.builtin.import_tasks: pve-service-accounts.yml
   when: enable_task_service_accounts # true/false: Set in 'defaults.yml' for role.
 
-- name: "Bootstrap Proxmox: VM Template"
+- name: "Configure VM Template"
   ansible.builtin.import_tasks: pve-vm-template.yml
   when: enable_task_vm_template # true/false: Set in 'defaults.yml' for role.

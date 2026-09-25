@@ -6,14 +6,34 @@
 # ======================================================================================== #
 
 ---
+- name: "Proxmox: Package Management"
+  hosts: proxmox_nodes
+  become: true
+  remote_user: root # Requires `--ask-pass` flag during command execution. Must be root (before svc accounts).
+  gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
+  tasks:
+    - name: "Disable Enterprise Repo"
+      ansible.builtin.shell: |
+        echo "Enabled: no" >> /etc/apt/sources.list.d/pve-enterprise.sources
+      when: pve_disable_enterprise_repo
+
+    - name: "Enable No-Subscription Repo"
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/pve-no-subscription.sources
+        content: |
+          Types: deb
+          URIs: http://download.proxmox.com/debian/pve
+          Suites: trixie
+          Components: pve-no-subscription
+          Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+        mode: "0644"
+
 # Initial Setup: Install updates, required packages, configure Ansible service account.
 - name: "Proxmox: Initial Setup (All Nodes)"
   hosts: proxmox_nodes # Run on all Proxmox nodes.
   become: true
   remote_user: root # Requires `--ask-pass` flag during command execution. Must be root (before svc accounts).
   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
-  vars:
-    enable_task_common_role: false
   tasks:
     - name: "Common Configuration"
       ansible.builtin.include_role:

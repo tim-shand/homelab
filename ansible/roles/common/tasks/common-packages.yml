@@ -37,3 +37,10 @@
     name: "{{ item }}"
     state: present
   loop: "{{ dist_packages }}"
+
+# Install distribution specific packages (vars\os_family.yml).
+- name: "Install Required Packages"
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ required_packages }}"
