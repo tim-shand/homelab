@@ -15,6 +15,7 @@ terraform {
 
 locals {
   prefix = "ztmp" # Used at the beginning of the template name.
+  formatted_date = formatdate("YYYY-MM-DD_HH-mm", timestamp())
 }
 
 # Download Image File ----------------------------------------------- #
@@ -33,7 +34,7 @@ resource "proxmox_virtual_environment_vm" "main" {
   node_name = var.pve_node
   vm_id     = var.template_id
   name      = "${local.prefix}-${replace(var.dst_img_file,"/(?<=\\.).*$/","")}" # Remove all after '.'
-  description = var.description
+  description = "${var.description} (Updated: ${local.formatted_date})"
   tags        = ["template"]
   template = true # Required to create as VM template.
   started  = false
