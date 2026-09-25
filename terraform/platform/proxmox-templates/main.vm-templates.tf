@@ -15,7 +15,6 @@ module "vm_template_ubuntu_server" {
     source       = "../../modules/pve-vm-template"
     pve_node     = var.pve_nodes[each.key].node_name # Map node name from global 'pve_nodes' variable to 'vm_ids' map.
     template_id  = each.value # Use loop from template 'vm_ids' map.
-    template_name = var.vm_templates.ubuntu_server.template_name
     description  = var.vm_templates.ubuntu_server.description
     src_img_url  = var.vm_templates.ubuntu_server.src_url
     dst_img_file = var.vm_templates.ubuntu_server.dst_file
@@ -30,7 +29,6 @@ module "vm_template_fedora_server" {
     source       = "../../modules/pve-vm-template"
     pve_node     = var.pve_nodes[each.key].node_name # Map node name from global 'pve_nodes' variable to 'vm_ids' map.
     template_id  = each.value # Use loop from template 'vm_ids' map.
-    template_name = var.vm_templates.fedora_server.template_name
     description  = var.vm_templates.fedora_server.description
     src_img_url  = var.vm_templates.fedora_server.src_url
     dst_img_file = var.vm_templates.fedora_server.dst_file
