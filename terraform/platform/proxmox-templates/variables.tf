@@ -14,5 +14,6 @@ variable "vm_templates" {
     enabled = bool
     src_url = string
     dst_file = string
+    network_bridge = string
   }))
 }

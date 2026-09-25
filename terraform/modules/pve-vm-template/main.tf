@@ -60,6 +60,6 @@ resource "proxmox_virtual_environment_vm" "main" {
     size = 16
   }
   network_device {
-    bridge = var.nic_bridge
+    bridge = var.network_bridge
   }
 }

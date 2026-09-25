@@ -20,7 +20,7 @@ module "vm_template_ubuntu_server" {
     dst_img_file = var.vm_templates.ubuntu_server.dst_file
     datastore_id_img = var.pve_nodes[each.key].storage_img
     datastore_id_vms = var.pve_nodes[each.key].storage_vms
-    nic_bridge   = var.pve_nodes[each.key].network.guest.bridge
+    network_bridge   = var.vm_templates.ubuntu_server.network_bridge
 }
 
 module "vm_template_fedora_server" {
@@ -34,5 +34,5 @@ module "vm_template_fedora_server" {
     dst_img_file = var.vm_templates.fedora_server.dst_file
     datastore_id_img = var.pve_nodes[each.key].storage_img
     datastore_id_vms = var.pve_nodes[each.key].storage_vms
-    nic_bridge   = var.pve_nodes[each.key].network.guest.bridge
+    network_bridge   = var.vm_templates.fedora_server.network_bridge
 }

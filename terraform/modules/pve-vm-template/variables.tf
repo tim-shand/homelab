@@ -50,7 +50,7 @@ variable "description" {
   type = string
 }
 
-variable "nic_bridge" {
+variable "network_bridge" {
   description = "String value of the network interface bridge name on the host."
   type = string
   nullable = false
