@@ -1,13 +1,16 @@
-# Proxmox: Cluster-wide Options ------------------------------------- #
+# =============================================================== #
+# VARIABLES: Proxmox - Cluster Wide Definitions
+# =============================================================== #
+
 pve_cluster_options = {
-    description = "Proxmox Cluster\n"
-    email_from  = "alerts@pve.int"
+    description = "Proxmox Cluster: Managed by Terraform\n"
     language    = "en"
     keyboard    = "en-us"
     mac_prefix  = "BC:24:11" # Proxmox default = 'BC:24:11'.
+    crs_ha = "basic" # The number of active guests on each node is used to choose the best-fitting node for an HA resource.
     next_id = {
-        lower = 200 # Next VM or container ID to use, starting point.
-        upper = 999 # Highest ID number VM or container can be assigned.
+        lower = 200  # Next VM or container ID to use, starting point.
+        upper = 9999 # Highest ID number VM or container can be assigned.
     }
 }
 
@@ -71,113 +74,5 @@ pve_iam_users_svc = {
         token_enabled    = true
         realm   = "pve"
         groups = ["grp-svc-monitoring"]
-    }
-}
-
-# Proxmox: Node Configuration ------------------------------------- #
-pve_default_bridge_guest = "vmbr1"
-pve_nodes = {
-    "node1" =  {
-        node_name = "inf-hvr-pve-01"
-        description = "Proxmox Node 1: Managed by Terraform | Storage=Local,ZFS | Dual NIC"
-        hostname = "inf-hvr-pve-01.mgt.tshand.net"
-        production = true
-        storage_img = "local" # Storage location for VM templates.
-        storage_vms = "pve-zfs-pool" # Storage location for VMs and containers.
-        network = {
-            ip_address = "10.0.10.1"
-            cluster = {
-                interface = "nic0"
-                bridge = "vmbr0"
-            }
-            guest = {
-                interface = "nic1"
-                bridge = "vmbr1"
-            }
-        }
-    }
-    "node2" =  {
-        node_name = "inf-hvr-pve-02"
-        description = "Proxmox Node 2: Managed by Terraform | Storage=Local,ZFS | Dual NIC"
-        hostname = "inf-hvr-pve-02.mgt.tshand.net"
-        production = true
-        storage_img = "local" # Storage location for VM templates.
-        storage_vms = "pve-zfs-pool" # Storage location for VMs and containers.
-        network = {
-            ip_address = "10.0.10.2"
-            cluster = {
-                interface = "nic0"
-                bridge = "vmbr0"
-            }
-            guest = {
-                interface = "nic1"
-                bridge = "vmbr1"
-            }
-        }
-    }
-    "node3" =  {
-        node_name = "inf-hvr-pve-03"
-        description = "Proxmox Node 3: Managed by Terraform | Storage=Local | Single NIC"
-        hostname = "inf-hvr-pve-03.mgt.tshand.net"
-        production = false
-        storage_img = "local" # Storage location for VM templates.
-        storage_vms = "local-lvm" # Storage location for VMs and containers.
-        network = {
-            ip_address = "10.0.10.3"
-            cluster = {
-                interface = "nic0"
-                bridge = "vmbr0"
-            }
-            guest = {
-                interface = "nic0"
-                bridge = "vmbr0"
-            }
-        }
-    }
-}
-
-# Proxmox: Software Defined Networking ------------------------------------- #
-pve_sdn_vnets = {
-    "mgt10" = {
-        id            = "mgt10"
-        vlan_tag      = 10
-        isolate_ports = false
-        vlan_aware    = false
-        subnets = {
-            "mgt10_1" = {
-                cidr_address = "10.0.10.0/24"
-                gateway      = "10.0.10.254"
-            }
-        }
-    }
-    "svr20" = {
-        id            = "svr20"
-        vlan_tag      = 20
-        isolate_ports = false
-        vlan_aware    = false
-        subnets = {
-            "svr20_1" = {
-                cidr_address = "10.0.20.0/24"
-                gateway      = "10.0.20.254"
-            }
-        }
-    }
-}
-
-# Proxmox: VM Templates ------------------------------------- #
-vm_templates = {
-    ubuntu_server = {
-        template_id = 900
-        description = "[Managed by Terraform] VM Template - Ubuntu Server"
-        enabled = true
-        src_url = "https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img"
-        dst_file = "ubuntu-server-26-04-resolute-cloudimg.qcow2"
-    }
-    fedora_server = {
-        template_id = 910
-        description = "[Managed by Terraform] VM Template - Fedora Server"
-        enabled = true
-        src_url = "https://download.fedoraproject.org/pub/fedora/linux/releases/44/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-44-1.7.x86_64.qcow2"
-        dst_file = "fedora-server-44-1-7-cloudimg.img"
     }
 }

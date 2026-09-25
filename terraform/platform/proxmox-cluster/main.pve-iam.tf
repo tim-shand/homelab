@@ -1,9 +1,10 @@
-# ========================================================================================================= #
+# ============================================================================================================ #
 # Proxmox: Identity and Access Management
 # Description:
 # - Manages Proxmox VE User, Groups and Permissions.
-# https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_group
-# ========================================================================================================= #
+# - Notes: https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_group
+# - Export Tokens: terraform -chdir=./terraform/platform/proxmox-cluster output -json pve_users_sensitive | jq -r '.'
+# ============================================================================================================ #
 
 # Proxmox: Groups --------------------------------------------------- #
 module "pve_iam_group_acls" {

@@ -20,8 +20,3 @@ output "pve_users_safe" {
     for k, v in module.pve_iam_users_svc : k => v.user_safe
   }
 }
-
-output "pve_sdn_vnets_subnets" {
-  description = "Output of all VNets and subnets."
-  value       = module.pve_sdn_vnet
-}
