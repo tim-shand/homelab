@@ -13,8 +13,8 @@ vm_templates = {
         network_bridge = "vlan20"
         vm_ids = {
             node1 = 910
-            #node2 = 911
-            #node3 = 912
+            node2 = 911
+            node3 = 912
         }
     }
     fedora_server = {
