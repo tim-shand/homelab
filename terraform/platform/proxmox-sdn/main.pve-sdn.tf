@@ -38,6 +38,7 @@ resource "proxmox_sdn_zone_vlan" "main" {
 module "pve_sdn_vnet" {
   source        = "../../modules/pve-sdn-vnet"
   for_each      = var.pve_sdn_vnets               # Loop each defined VNet and it's subnets from variables.
+  alias         = each.value.alias
   zone_id       = each.value.zone_id
   vnet_id       = each.key                        # Use looped key value for name.
   vlan_tag      = each.value.vlan_tag             # VLAN tag for VNet, used for traffic isolation and segmentation.

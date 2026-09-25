@@ -11,6 +11,19 @@ variable "vnet_id" {
   }
 }
 
+variable "alias" {
+  description = "Alias of VNet to create in Proxmox."
+  type        = string
+  validation {
+    condition     = length(var.alias) <= 8
+    error_message = "The value length is a max of 8 characters."
+  }
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9]+$", var.alias))
+    error_message = "The value must contain only alphanumeric characters with no spaces or special characters."
+  }
+}
+
 variable "zone_id" {
   description = "ID value of the target VLAN zone."
   type        = string

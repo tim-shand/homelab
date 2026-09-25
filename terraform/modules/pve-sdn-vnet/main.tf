@@ -16,7 +16,7 @@ terraform {
 resource "proxmox_sdn_vnet" "main" {
   id            = var.vnet_id       # Max 8 characters, no symbols.
   zone          = var.zone_id       # Zone ID from above.
-  alias         = var.vnet_id       # VNet alias, used for identification and management in Proxmox UI.
+  alias         = var.alias         # VNet alias, used for identification and management in Proxmox UI.
   tag           = var.vlan_tag      # VLAN tag for VNet, used for traffic isolation and segmentation.
   isolate_ports = var.isolate_ports # True/False: Guests can only send traffic to non-isolated bridge-ports (the bridge itself).
   vlan_aware    = var.vlan_aware    # Disable for VNet level tagging. Enables vlan-aware on interface, requiring configuration in the guest. 
