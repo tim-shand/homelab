@@ -15,11 +15,12 @@ module "vm_template_ubuntu_server" {
     source       = "../../modules/pve-vm-template"
     pve_node     = var.pve_nodes[each.key].node_name # Map node name from global 'pve_nodes' variable to 'vm_ids' map.
     template_id  = each.value # Use loop from template 'vm_ids' map.
+    template_name = var.vm_templates.ubuntu_server.template_name
     description  = var.vm_templates.ubuntu_server.description
     src_img_url  = var.vm_templates.ubuntu_server.src_url
     dst_img_file = var.vm_templates.ubuntu_server.dst_file
-    datastore_id_img = var.pve_nodes[each.key].storage_img
-    datastore_id_vms = var.pve_nodes[each.key].storage_vms
+    datastore_id_img = var.pve_nodes[each.key].datastore_img
+    datastore_id_vms = var.pve_nodes[each.key].datastore_vms
     network_bridge   = var.vm_templates.ubuntu_server.network_bridge
 }
 
@@ -29,10 +30,11 @@ module "vm_template_fedora_server" {
     source       = "../../modules/pve-vm-template"
     pve_node     = var.pve_nodes[each.key].node_name # Map node name from global 'pve_nodes' variable to 'vm_ids' map.
     template_id  = each.value # Use loop from template 'vm_ids' map.
+    template_name = var.vm_templates.fedora_server.template_name
     description  = var.vm_templates.fedora_server.description
     src_img_url  = var.vm_templates.fedora_server.src_url
     dst_img_file = var.vm_templates.fedora_server.dst_file
-    datastore_id_img = var.pve_nodes[each.key].storage_img
-    datastore_id_vms = var.pve_nodes[each.key].storage_vms
+    datastore_id_img = var.pve_nodes[each.key].datastore_img
+    datastore_id_vms = var.pve_nodes[each.key].datastore_vms
     network_bridge   = var.vm_templates.fedora_server.network_bridge
 }

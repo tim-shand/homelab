@@ -14,8 +14,9 @@ terraform {
 }
 
 locals {
-  prefix = "ztmp" # Used at the beginning of the template name.
+  name_prefix = "ztmp" # Used at the beginning of the template name.
   formatted_date = formatdate("YYYY-MM-DD_HH-mm", timestamp())
+  template_name = replace(var.dst_img_file, "/\\.[^.]*$/", "")
 }
 
 # Download Image File ----------------------------------------------- #
@@ -33,7 +34,7 @@ resource "proxmox_download_file" "main" {
 resource "proxmox_virtual_environment_vm" "main" {
   node_name = var.pve_node
   vm_id     = var.template_id
-  name      = "${local.prefix}-${replace(var.dst_img_file,"/(?<=\\.).*$/","")}" # Remove all after '.'
+  name      = "${local.name_prefix}-${local.template_name}"
   description = "${var.description} (Updated: ${local.formatted_date})"
   tags        = ["template"]
   template = true # Required to create as VM template.
@@ -62,5 +63,8 @@ resource "proxmox_virtual_environment_vm" "main" {
   }
   network_device {
     bridge = var.network_bridge
+  }
+  lifecycle {
+    ignore_changes = [description] # Ignore for update as timestamp changes each run.
   }
 }

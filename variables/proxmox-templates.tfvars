@@ -4,6 +4,7 @@
 
 vm_templates = {
     ubuntu_server = {
+        template_name = "ztmp-ubuntu-server-resolute-2604-cloudinit"
         description = "[Managed by Terraform] VM Template - Ubuntu Server"
         enabled = true
         src_url = "https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img"
@@ -13,10 +14,11 @@ vm_templates = {
         vm_ids = {
             node1 = 910
             #node2 = 911
-            node3 = 912
+            #node3 = 912
         }
     }
     fedora_server = {
+        template_name = "ztmp-fedora-server-44-1-7-cloudinit"
         description = "[Managed by Terraform] VM Template - Fedora Server"
         enabled = false
         src_url = "https://download.fedoraproject.org/pub/fedora/linux/releases/44/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-44-1.7.x86_64.qcow2"

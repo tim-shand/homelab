@@ -45,6 +45,11 @@ variable "template_id" {
   }
 }
 
+variable "template_name" {
+  description = "Name of the template."
+  type = string
+}
+
 variable "description" {
   description = "Description of the template."
   type = string
