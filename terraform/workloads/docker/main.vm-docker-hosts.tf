@@ -12,6 +12,8 @@ locals {
         for k,v in var.docker_hosts : k => v
         if v.enabled # If value = TRUE
     }
+    # Read in the local file containing Ansible user SSH public key.
+    ansible_ssh_public_key = file("${path.module}/${var.ansible_user}.ssh.pub")
 }
 
 module "docker_host" {

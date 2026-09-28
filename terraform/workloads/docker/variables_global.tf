@@ -23,11 +23,6 @@ variable "ansible_user" {
   default = "svc-ansible"
 }
 
-variable "ansible_ssh_public_key" {
-  description = "String value of the public SSH key used by Ansible service account."
-  type = string
-}
-
 # PROXMOX CLUSTER ------------------------------------------- #
 
 variable "pve_nodes" {
