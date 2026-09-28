@@ -67,6 +67,14 @@ pve_iam_users_svc = {
         realm   = "pve"
         groups = ["grp-svc-automation"]
     }
+    "svc-packer" = {
+        comment = "Service Account: Packer"
+        enabled = true
+        password_enabled = false
+        token_enabled    = true
+        realm   = "pve"
+        groups = ["grp-svc-automation"]
+    }
     "svc-monitor" = {
         comment = "Service Account: Monitoring"
         enabled = true
