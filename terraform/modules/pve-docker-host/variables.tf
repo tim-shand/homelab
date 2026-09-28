@@ -37,7 +37,7 @@ variable "tags" {
 
 variable "pool_id" {
     description = "Optional value of Pool ID to assign VM to."
-    type = optional(string, null)
+    type = string
     nullable = true
 }
 
