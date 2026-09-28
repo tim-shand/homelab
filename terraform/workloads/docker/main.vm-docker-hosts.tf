@@ -13,7 +13,7 @@ locals {
         if v.enabled # If value = TRUE
     }
     # Read in the local file containing Ansible user SSH public key.
-    ansible_ssh_public_key = file("${path.module}/${var.ansible_user}.ssh.pub")
+    ansible_ssh_public_key = file("${path.module}/../../../files/ssh_keys/${var.ansible_user}.ssh.pub")
 }
 
 module "docker_host" {
@@ -21,7 +21,7 @@ module "docker_host" {
     source          = "../../modules/pve-docker-host"
     hostname        = each.key
     pve_node        = var.pve_nodes[each.value.pve_node].node_name # Use short code to select node.
-    template_id     = var.template_id
+    template_id     = each.value.template_id
     #description     = "" # Use default value.
     pool_id         = each.value.pool_id
     ip_address      = each.value.ip_address
@@ -29,5 +29,5 @@ module "docker_host" {
     dns_servers     = each.value.dns_servers
     dns_domain      = each.value.dns_domain
     ansible_user           = var.ansible_user # Global variables.
-    ansible_ssh_public_key = var.ansible_ssh_public_key # Global variables.
+    ansible_ssh_public_key = local.ansible_ssh_public_key # Global variables.
 }
