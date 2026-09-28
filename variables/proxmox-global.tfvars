@@ -8,6 +8,8 @@ pve_network = {
     bridge_guest   = "vmbr1"
 }
 
+ansible_user = "svc-ansible"
+
 # Proxmox: Node Configuration
 pve_nodes = {
     "node1" =  {
