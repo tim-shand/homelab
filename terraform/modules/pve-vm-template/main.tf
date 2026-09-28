@@ -1,8 +1,7 @@
-# ======================================================== #
-# MODULE: Proxmox IAM - Service Account Users
-# DESCRIPTION: Create service account users and assign to groups + add API token.
-# https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_user
-# ======================================================== #
+# ================================================================= #
+# MODULE: Proxmox VM Templates
+# DESCRIPTION: Create VM template from downloaded disk image file.
+# ================================================================= #
 
 terraform {
   required_providers {
