@@ -24,6 +24,7 @@ module "docker_host" {
     template_id     = each.value.template_id
     #description     = "" # Use default value.
     pool_id         = each.value.pool_id
+    disk_datastore  = each.value.disk_datastore
     ip_address      = each.value.ip_address
     gateway_address = each.value.gateway_address
     dns_servers     = each.value.dns_servers
