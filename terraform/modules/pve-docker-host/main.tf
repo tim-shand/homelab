@@ -22,6 +22,7 @@ resource "proxmox_virtual_environment_vm" "main" {
   started         = var.start_after_creation
   stop_on_destroy = true # Force stop the VM instead of shutting it down when destroying.
   clone {
+      full  = true
       vm_id = var.template_id
   }
   agent {
