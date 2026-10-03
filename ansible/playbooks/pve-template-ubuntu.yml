@@ -6,8 +6,8 @@
 
 ---
 - name: "Proxmox: Deploy Template (Ubuntu Server)"
-  hosts: "{{ groups['proxmox_nodes'][0] }}"
-  #hosts: proxmox_nodes # Run on all Proxmox nodes. "{{ groups['proxmox_nodes'][0] }}" # Run on first node in group only.
+  #hosts: "{{ groups['proxmox_nodes'][0] }}"
+  hosts: proxmox_nodes # Run on all Proxmox nodes. "{{ groups['proxmox_nodes'][0] }}" # Run on first node in group only.
   become: true
   gather_facts: true
   roles:

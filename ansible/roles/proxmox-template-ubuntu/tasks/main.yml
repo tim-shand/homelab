@@ -32,8 +32,16 @@
 # RUN ONCE TASK:
 # Cannot delete a template created as a linked clone if other VMs or templates still depend on its underlying disk volumes.
 # Must delete or rebase the child clones first. Ok if using full clones.
+
+- name: "Check Existing Template"
+  ansible.builtin.command: qm status {{ template_id }}
+  register: existing_template
+  failed_when: false
+  changed_when: false
+
 - name: "Destroy Existing Template"
-  ansible.builtin.shell: qm destroy {{ template_id }} &> /dev/null
+  ansible.builtin.command: qm destroy {{ template_id }} --purge
+  when: existing_template.rc == 0
 
 # Run provisioning prep tasks: Expand file system, install guest agent, set root password.
 - name: "Prepare Image File"

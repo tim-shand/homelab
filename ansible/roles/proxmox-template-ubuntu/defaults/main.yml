@@ -13,8 +13,10 @@ default_user: "svc-ansible"
 ssh_key_path: "../../../files/ssh_keys"
 default_user_public_key: "{{ lookup('ansible.builtin.file', ssh_key_path + '/' + default_user + '.ssh.pub') }}"
 
-template_id: "9000"
-template_name: "ztmp-ubuntu-{{ os_dist_version }}-{{ os_dist_name }}-cloudinit"
+template_base_id: 9010
+template_id: "{{ template_base_id + (groups['proxmox_nodes'] | sort).index(inventory_hostname) }}"
+template_name: "ztmp-ubuntu-{{ os_dist_version }}-{{ os_dist_name }}-cloudinit-{{ (groups['proxmox_nodes'] | sort).index(inventory_hostname) }}"
+
 template_bridge: "vlan20"
 template_disk_size: "16G" # Expand file system to value.
 image_dest_path: "/var/lib/vz/template/iso" # Final destination for image file.
