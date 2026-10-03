@@ -1,11 +1,23 @@
 # ======================================================================================== #
 # PLAYBOOK: Proxmox [BOOTSTRAP]
-# Used to bootstrap new Proxmox nodes and configure service accounts.
+# Used to bootstrap new Proxmox nodes and configure Terraform service account.
 # - Apply to Proxmox nodes already joined to cluster.
 # Usage: ansible-playbook -i inventory/main.ini playbooks/bootstrap-proxmox.yml --ask-pass
 # ======================================================================================== #
 
 ---
+# Initial Setup: Install updates, required packages, configure Ansible service account.
+- name: "Proxmox: Initial Setup (All Nodes)"
+  hosts: proxmox_nodes # Run on all Proxmox nodes.
+  become: true
+  remote_user: root # Requires `--ask-pass` flag during command execution. Must be root (before svc accounts).
+  gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
+  tasks:
+    - name: "Common Configuration"
+      ansible.builtin.include_role:
+        name: common
+      when: enable_task_common_role
+
 - name: "Proxmox: Package Management"
   hosts: proxmox_nodes
   become: true
@@ -28,22 +40,37 @@
           Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
         mode: "0644"
 
-# Initial Setup: Install updates, required packages, configure Ansible service account.
-- name: "Proxmox: Initial Setup (All Nodes)"
-  hosts: proxmox_nodes # Run on all Proxmox nodes.
-  become: true
-  remote_user: root # Requires `--ask-pass` flag during command execution. Must be root (before svc accounts).
-  gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
-  tasks:
-    - name: "Common Configuration"
-      ansible.builtin.include_role:
-        name: common
-      when: enable_task_common_role
-
-- name: "Proxmox: Bootstrap (Single Node)"
+- name: "Proxmox: Bootstrap Terraform"
   hosts: "{{ groups['proxmox_nodes'][0] }}" # Run on first node in group only.
   become: true
   remote_user: root # Requires `--ask-pass` flag during command execution.
   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
-  roles:
-    - bootstrap-proxmox
+  vars:
+    api_token_name: "api"
+    ssh_key_path: "../../../files/ssh_keys"
+    service_accounts_pve:
+      - name: "svc-terraform@pve"
+        comment: "Service Account: Terraform API"
+  tasks:
+    - name: "Create Proxmox Terraform Service Account"
+      ansible.builtin.shell: |
+        pveum user add "{{ item.name }}" --comment "{{ item.comment }}" &> /dev/null
+        pveum aclmod "/" --users "{{ item.name }}" --role "Administrator" &> /dev/null
+      loop: "{{ service_accounts_pve }}"
+
+    # Create service account API token (delete old one first).
+    - name: "Create Proxmox API Tokens (Service Accounts)"
+      ansible.builtin.shell: |
+        pveum user token delete "{{ item.name }}" "{{ api_token_name}}" &> /dev/null
+        sleep 2
+        pveum user token add "{{ item.name }}" "{{ api_token_name}}" --comment "[Bootstrap Deployment] Created: {{ now(fmt='%Y%m%d_%H%M%S') }}" \
+          --privsep 0 --output-format json | jq -r '"\(.["full-tokenid"])=\(.value)"'
+      loop: "{{ service_accounts_pve }}"
+      register: shell_output_api_token
+
+    - name: Print API Token Output
+      ansible.builtin.debug:
+        msg: "{{ item.stdout }}"
+      loop: "{{ shell_output_api_token.results }}"
+      loop_control:
+        label: "{{ item.item }}"

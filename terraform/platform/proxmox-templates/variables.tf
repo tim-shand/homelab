@@ -10,10 +10,10 @@ variable "vm_templates" {
   description = "Map of objects containing the Proxmox VM template parameters."
   type = map(object({
     description = string
-    enabled = bool
+    enabled = bool # Enable/disable the template globally.
     src_url = string
     dst_file = string
     network_bridge = string
-    vm_ids = map(string)
+    vm_ids = map(string) # VM IDs per Proxmox node.
   }))
 }

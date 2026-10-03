@@ -1,0 +1,22 @@
+pve_nodes_required_packages:
+  - curl
+  - libguestfs-tools
+
+os_dist_name: "resolute"
+os_dist_version: "2604"
+os_image_file: "{{ os_dist_name }}-server-cloudimg-amd64.img"
+os_image_url: "https://cloud-images.ubuntu.com/{{ os_dist_name }}/current/{{ os_image_file }}"
+# Source: https://cloud-images.ubuntu.com/resolute/current/
+os_image_checksum: "8800651811af9a85465ad1d552add729947bb16488dddb4a9b5305a3d97332b2"
+
+default_user: "svc-ansible"
+ssh_key_path: "../../../files/ssh_keys"
+default_user_public_key: "{{ lookup('ansible.builtin.file', ssh_key_path + '/' + default_user + '.ssh.pub') }}"
+
+template_base_id: 9010
+template_id: "{{ template_base_id + (groups['proxmox_nodes'] | sort).index(inventory_hostname) }}"
+template_name: "ztmp-ubuntu-{{ os_dist_version }}-{{ os_dist_name }}-cloudinit-{{ (groups['proxmox_nodes'] | sort).index(inventory_hostname) }}"
+
+template_bridge: "vlan20"
+template_disk_size: "16G" # Expand file system to value.
+image_dest_path: "/var/lib/vz/template/iso" # Final destination for image file.

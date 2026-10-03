@@ -1,8 +1,7 @@
-# ======================================================== #
-# MODULE: Proxmox IAM - Service Account Users
-# DESCRIPTION: Create service account users and assign to groups + add API token.
-# https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_user
-# ======================================================== #
+# ================================================================= #
+# MODULE: Proxmox VM Templates
+# DESCRIPTION: Create VM template from downloaded disk image file.
+# ================================================================= #
 
 terraform {
   required_providers {
@@ -37,14 +36,15 @@ resource "proxmox_virtual_environment_vm" "main" {
   name      = "${local.name_prefix}-${local.template_name}"
   description = "${var.description} (Updated: ${local.formatted_date})"
   tags        = ["template"]
-  template = true # Required to create as VM template.
-  started  = false
-  machine = "q35"
+  started     = false
+  machine     = "q35"
+  bios        = "ovmf" # UEFI
   operating_system {
     type = "l26" # Linux Kernel 2.6 - 6.X.
   }
   cpu {
     cores = 2
+    type  = "x86-64-v2-AES"  # recommended for modern CPUs
   }
   memory {
     dedicated = 1024
@@ -57,9 +57,15 @@ resource "proxmox_virtual_environment_vm" "main" {
     datastore_id = var.datastore_id_vms # Defaults to 'local-lvm' if not provided.
     import_from = proxmox_download_file.main.id
     interface = "virtio0"
+    size = 16
     iothread = true
     discard  = "on"
-    size = 16
+    backup     = false
+    replicate  = false
+  }
+  tpm_state {
+    datastore_id = var.datastore_id_vms
+    version = "v2.0"
   }
   network_device {
     bridge = var.network_bridge

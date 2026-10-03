@@ -8,6 +8,8 @@
 *.bak
 *prompt*.md
 .prompts/
+crash.log
+crash.*.log
 
 # Secrets ----------------------------- #
 *.key
@@ -18,7 +20,13 @@
 !*.pub
 *.pwd
 
-# Variables----------------------------- #
+# Packer ------------------------------ #
+secrets.pkrvars.hcl
+*.auto.pkrvars.hcl
+packer_cache/
+
+
+# Variables ----------------------------- #
 terraform.tfvars
 prd.tfvars
 auth.tfvars
@@ -34,8 +42,6 @@ tfplan.*
 *.tfstate
 *.tfstate.*
 *.lock.*
-crash.log
-crash.*.log
 backend.conf
 backend.tf
 override.tf
