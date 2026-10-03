@@ -1,6 +1,6 @@
-# Bootstrap: Gitea Server + Actions Runner
+# Gitea Server + Actions Runner
 
-Bootstrap a Gitea instance within a Proxmox VM to provide a local code repository, repo mirroring and local runner for execution of pipelines.
+Deploy a Gitea instance within a Proxmox VM to provide a local code repository, repo mirroring and local runner for execution of pipelines.
 
 ## 🧭 Strategy
 
