@@ -36,7 +36,6 @@ resource "proxmox_virtual_environment_vm" "main" {
   name      = "${local.name_prefix}-${local.template_name}"
   description = "${var.description} (Updated: ${local.formatted_date})"
   tags        = ["template"]
-  template    = var.maintenance_mode ? true : false # Required to create as VM template.
   started     = false
   machine     = "q35"
   bios        = "ovmf" # UEFI

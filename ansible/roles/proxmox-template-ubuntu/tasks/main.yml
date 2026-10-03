@@ -1,5 +1,14 @@
----
-- name: "Download Ubuntu Cloud-Init Image"
+# ======================================================================================== #
+# ROLE: Proxmox Template - Ubuntu Server
+# Deploys Ubuntu VM templates to Proxmox nodes.
+# ======================================================================================== #
+
+- name: "Install Required Packages"
+  ansible.builtin.apt:
+    name: "{{ item }}"
+  loop: "{{ required_packages }}"
+
+- name: "Download Ubuntu Image"
   ansible.builtin.get_url:
     url: "{{ ubuntu_image_url }}"
     dest: "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}"
@@ -12,7 +21,7 @@
 - name: "Destroy Existing Template"
   ansible.builtin.shell: qm destroy {{ pve_template_id }} &> /dev/null
 
-- name: "Generate/Export Password"
+- name: "Generate Default Password"
   ansible.builtin.set_fact:
     default_password: "{{ lookup('ansible.builtin.password', '/dev/null length=12 chars=ascii_letters,digits') }}"
 
@@ -25,8 +34,8 @@
 
 - name: "Set Automation Account"
   ansible.builtin.shell: |
-    export NEW_USER="{{ ubuntu_user }}"
-    export PUB_KEY="{{ ubuntu_user_public_key }}"
+    export NEW_USER="{{ default_user }}"
+    export PUB_KEY="{{ default_user_public_key }}"
     virt-customize -a "{{ pve_image_dest_path }}/{{ ubuntu_image_file }}" \
       --run-command "useradd -m -s /bin/bash ${NEW_USER}" \
       --run-command "usermod -aG sudo ${NEW_USER}" \

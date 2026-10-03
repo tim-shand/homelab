@@ -55,9 +55,3 @@ variable "network_bridge" {
   type = string
   nullable = false
 }
-
-variable "maintenance_mode" {
-  description = "Enable maintenance mode to convert template to VM for updates."
-  type = bool
-  default = false
-}

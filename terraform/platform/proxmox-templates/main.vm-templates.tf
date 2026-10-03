@@ -16,7 +16,6 @@ module "vm_template_ubuntu_server" {
     pve_node     = var.pve_nodes[each.key].node_name # Map node name from global 'pve_nodes' variable to 'vm_ids' map.
     template_id  = each.value # Use loop from template 'vm_ids' map.
     description  = var.vm_templates.ubuntu_server.description
-    maintenance_mode = var.vm_templates.ubuntu_server.maintenance_mode # Set to 'enable' to convert back to VM for maintenance.
     src_img_url  = var.vm_templates.ubuntu_server.src_url
     dst_img_file = var.vm_templates.ubuntu_server.dst_file
     datastore_id_img = var.pve_nodes[each.key].datastore_img
@@ -31,7 +30,6 @@ module "vm_template_fedora_server" {
     pve_node     = var.pve_nodes[each.key].node_name # Map node name from global 'pve_nodes' variable to 'vm_ids' map.
     template_id  = each.value # Use loop from template 'vm_ids' map.
     description  = var.vm_templates.fedora_server.description
-    maintenance_mode = var.vm_templates.ubuntu_server.maintenance_mode # Set to 'enable' to convert back to VM for maintenance.
     src_img_url  = var.vm_templates.fedora_server.src_url
     dst_img_file = var.vm_templates.fedora_server.dst_file
     datastore_id_img = var.pve_nodes[each.key].datastore_img
