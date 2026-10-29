@@ -8,7 +8,7 @@
 
 # Proxmox: Groups --------------------------------------------------- #
 module "pve_iam_group_acls" {
-  source        = "../../modules/pve-iam-group-acls"
+  source        = "../modules/pve-iam-group-acls"
   for_each      = local.pve_iam_groups_enabled
   group_name    = each.key
   group_comment = each.value.comment
@@ -17,7 +17,7 @@ module "pve_iam_group_acls" {
 
 # Proxmox: Service Account Users --------------------------------------------------- #
 module "pve_iam_users_svc" {
-  source                = "../../modules/pve-iam-users-svc"
+  source                = "../modules/pve-iam-users-svc"
   for_each              = local.pve_iam_users_svc_enabled
   user_id               = "${each.key}@${each.value.realm}"
   user_comment          = each.value.comment
