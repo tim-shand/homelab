@@ -36,7 +36,7 @@ resource "proxmox_sdn_zone_vlan" "main" {
 # SDN: VNets ================================================================== #
 # Deploy VNets, VLANs and subnets using custom module.
 module "pve_sdn_vnet" {
-  source        = "../../modules/pve-sdn-vnet"
+  source        = "../modules/pve-sdn-vnet"
   for_each      = var.pve_sdn_vnets               # Loop each defined VNet and it's subnets from variables.
   alias         = each.value.alias
   zone_id       = each.value.zone_id
