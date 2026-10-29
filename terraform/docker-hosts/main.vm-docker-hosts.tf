@@ -2,6 +2,7 @@
 # Proxmox: Docker Host VMs
 # Description:
 # - Deploy Docker VMs using Ubuntu cloud-init template.
+# terraform -chdir=./terraform/docker-hosts plan -var-file=../../variables/proxmox-global.tfvars -var-file=../../variables/docker-hosts.tfvars
 # ========================================================================================================= #
 
 # Proxmox: Deploy VM (Docker Host) ----------------------------------------------- #
@@ -13,12 +14,12 @@ locals {
         if v.enabled # If value = TRUE
     }
     # Read in the local file containing Ansible user SSH public key.
-    ansible_ssh_public_key = file("${path.module}/../../../files/ssh_keys/${var.ansible_user}.ssh.pub")
+    ansible_ssh_public_key = file("${path.module}/../../files/ssh_keys/${var.ansible_user}.ssh.pub")
 }
 
 module "docker_host" {
     for_each        = local.docker_hosts_enabled # Loop each definition in var.docker_hosts
-    source          = "../../modules/pve-docker-host"
+    source          = "../modules/pve-docker-host"
     hostname        = each.key
     pve_node        = var.pve_nodes[each.value.pve_node].node_name # Use short code to select node.
     template_id     = each.value.template_id
