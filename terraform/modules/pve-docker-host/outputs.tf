@@ -1,5 +1,5 @@
 output "vm_id" {
-  description = "Proxmox VM ID of docker host."
+  description = "Proxmox VM ID."
   value       = proxmox_virtual_environment_vm.main.vm_id
 }
 
@@ -19,6 +19,6 @@ output "ip_address" {
 }
 
 output "ansible_user" {
-  description = "User Ansible should use."
+  description = "Default Ansible user name."
   value       = var.ansible_user
 }

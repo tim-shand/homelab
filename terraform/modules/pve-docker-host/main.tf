@@ -1,6 +1,6 @@
 # ================================================================= #
-# MODULE: Proxmox VM
-# DESCRIPTION: Create VM from existing VM template.
+# MODULE: Proxmox VM (Ubuntu)
+# DESCRIPTION: Create VM from existing Ubuntu VM template.
 # ================================================================= #
 
 terraform {
@@ -19,6 +19,7 @@ locals  {
     pve2 = 9011 # Ubuntu Cloud-Init template ID on PVE node 2.
     pve3 = 9012 # Ubuntu Cloud-Init template ID on PVE node 3.
   }
+  tags = concat(["os-ubuntu"],var.tags)
 }
 
 # Create VM ----------------------------------------------- #
@@ -26,7 +27,7 @@ resource "proxmox_virtual_environment_vm" "main" {
   node_name       = var.pve_node.node_name # Get PVE node name from object passed in.
   name            = var.hostname
   description     = "[Managed by Terraform] ${var.description}"
-  tags            = var.tags
+  tags            = local.tags # Merged module tags with tags passed in.
   on_boot         = var.start_on_boot
   started         = var.start_after_creation
   stop_on_destroy = true # Force stop the VM instead of shutting it down when destroying.
@@ -37,13 +38,18 @@ resource "proxmox_virtual_environment_vm" "main" {
   agent {
     enabled = true # Requires 'qemu-guest-agent' to be pre-baked into template image.
   }
+  network_device {
+    bridge = var.network_bridge
+  }
+  # Compute ----------------------------------- #
   cpu {
     cores = var.cpu_cores
-    type  = "x86-64-v2-AES"
+    type  = "x86-64-v2-AES" # Most compatible across different PVE nodes.
   }
   memory {
     dedicated = var.memory_mb
   }
+  # Disks ---------------------------------------- #
   disk {
     datastore_id = var.disk_datastore # Defaults to 'local-lvm' if not provided.
     interface    = "virtio0"
@@ -51,9 +57,20 @@ resource "proxmox_virtual_environment_vm" "main" {
     discard      = "on"
     size         = var.disk_size_gb # 32GB
   }
-  network_device {
-    bridge = var.network_bridge
+
+  # Dynamically add an extra data disks if set.
+  dynamic "disk" {
+    for_each = var.data_disks
+    content {
+      datastore_id = var.disk_datastore
+      interface    = disk.key # Use interface name as value.
+      size         = disk.value # Disk size in GB.
+      iothread     = true
+      discard      = "on"
+    }
   }
+
+  # Cloud-Init ------------------------------------ #
   initialization {
     datastore_id = var.disk_datastore
     ip_config {
