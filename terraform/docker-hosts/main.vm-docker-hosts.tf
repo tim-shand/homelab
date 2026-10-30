@@ -25,8 +25,10 @@ module "docker_host_prd" {
     for_each        = local.docker_hosts_enabled_prd # Loop each definition in var.docker_hosts
     source          = "../modules/pve-docker-host"
     hostname        = each.key
-    pve_node        = var.pve_nodes[each.value.pve_node].node_name # Use short code to select node.
-    template_id     = each.value.template_id
+    #pve_node        = var.pve_nodes[each.value.pve_node].node_name # Use short code to select node.
+    pve_node        = var.pve_nodes[each.value.pve_node] # Pass in PVE node object to module to access all properties.
+    #pve_node_id     = var.pve_nodes[each.value.pve_node].node_id # Select PVe node based on ID, pass in object properties.
+    #template_id     = each.value.template_id
     description     = "Docker Host - Production Node"
     tags            = ["docker-prd","ubuntu"]
     pool_id         = each.value.pool_id
@@ -47,8 +49,10 @@ module "docker_host_dev" {
     for_each        = local.docker_hosts_enabled_dev # Loop each definition in var.docker_hosts
     source          = "../modules/pve-docker-host"
     hostname        = each.key
-    pve_node        = var.pve_nodes[each.value.pve_node].node_name # Use short code to select node.
-    template_id     = each.value.template_id
+    #pve_node        = var.pve_nodes[each.value.pve_node].node_name # Use short code to select node.
+    pve_node        = var.pve_nodes[each.value.pve_node] # Pass in PVE node object to module to access all properties.
+    #pve_node_id     = var.pve_nodes[each.value.pve_node].node_id # Select PVe node based on ID, pass in object properties.
+    #template_id     = each.value.template_id
     description     = "Docker Host - Development Node"
     tags            = ["docker-dev","ubuntu"]
     pool_id         = each.value.pool_id

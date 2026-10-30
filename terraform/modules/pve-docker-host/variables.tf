@@ -1,13 +1,13 @@
 # General ------------------------------------------------ #
 
-variable "template_id" {
-    description = "ID of the source VM template."
-    type = number
-    validation {
-        condition = var.template_id >=100 && var.template_id <=9999
-        error_message = "Template ID must be valid (between 100 and 9999)."
-    }
-}
+# variable "template_id" {
+#     description = "ID of the source VM template."
+#     type = number
+#     validation {
+#         condition = var.template_id >=100 && var.template_id <=9999
+#         error_message = "Template ID must be valid (between 100 and 9999)."
+#     }
+# }
 
 variable "hostname" {
     description = "Name of the Docker host VM."
@@ -18,13 +18,25 @@ variable "hostname" {
     }
 }
 
+# variable "pve_node" {
+#     description = "Proxmox node where the VM will run."
+#     type        = string
+# }
+
 variable "pve_node" {
-    description = "Proxmox node where the VM will run."
-    type        = string
+  description = "Object defining the target Proxmox node to deploy VM."
+  type = object({
+    node_id = string
+    node_name   = string
+    description = string
+    datastore_img = string
+    datastore_vms = string
+    ip_address = string
+  })
 }
 
 variable "description" {
-    description = "Description assigned to the VM."
+    description = "Description appended to the VM after default banner message."
     type        = string
     default     = "Docker Host"
 }
@@ -64,7 +76,7 @@ variable "cpu_cores" {
 variable "memory_mb" {
     description = "Memory in MB (4096)."
     type        = number
-    default     = 4096
+    default     = 1024
 }
 
 variable "disk_datastore" {
@@ -76,7 +88,7 @@ variable "disk_datastore" {
 variable "disk_size_gb" {
     description = "Additional disk size in GiB."
     type        = number
-    default     = 32
+    default     = 16
 }
 
 # Network ------------------------------------------------ #
