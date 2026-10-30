@@ -66,9 +66,9 @@
     qm create "{{ template_id }}" --name "{{ template_name }}" \
       --description "TEMPLATE: Ubuntu Server {{ os_dist_version }} | root: {{ default_password }}" \
       --tags "template" --ostype l26 --agent 1 --cpu "x86-64-v2-AES" --sockets 1 --cores 2 --memory 1024 --balloon 0 \
-      --bios seabios --boot order=scsi0 --scsihw virtio-scsi-pci \
-      --scsi0 local-lvm:0,import-from="{{ image_dest_path }}/{{ os_image_file }}",backup=0,cache=writeback,discard=on \
-      --scsi1 local-lvm:cloudinit --vga virtio --net0 virtio,bridge="{{ template_bridge }}"
+      --vga virtio --net0 virtio,bridge="{{ template_bridge }}" --bios seabios --boot order=scsi1 \
+      --scsihw virtio-scsi-pci --scsi0 local-lvm:cloudinit \
+      --scsi1 local-lvm:0,import-from="{{ image_dest_path }}/{{ os_image_file }}",backup=0,cache=writeback,discard=on
 
 - name: "Check VM Status"
   ansible.builtin.shell: sleep 5 && qm status "{{ template_id }}"
