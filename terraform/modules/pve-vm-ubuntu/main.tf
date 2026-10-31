@@ -52,8 +52,7 @@ resource "proxmox_virtual_environment_vm" "main" {
   # Disks ---------------------------------------- #
   disk {
     datastore_id = var.disk_datastore # Defaults to 'local-lvm' if not provided.
-    interface    = "virtio0"
-    iothread     = true
+    interface    = "scsi0"
     discard      = "on"
     size         = var.disk_size_gb # 32GB
   }
@@ -65,7 +64,6 @@ resource "proxmox_virtual_environment_vm" "main" {
       datastore_id = var.disk_datastore
       interface    = disk.key # Use interface name as value.
       size         = disk.value # Disk size in GB.
-      iothread     = true
       discard      = "on"
     }
   }

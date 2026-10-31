@@ -5,7 +5,7 @@ docker_host_config = {
     disk_gb      = 16             # Size of primary disk in GB.
     datastore_id = "pve-zfs-pool" # Target datastore for resources (local-lvm).
     data_disks = {
-      "virtio1" = 16 # Use interface and GB value per entry.
+      "scsi1" = 8 # Use interface and GB value per entry.
     }
   }
   "dev" = {
@@ -14,7 +14,7 @@ docker_host_config = {
     disk_gb      = 16             # Size of primary disk in GB.
     datastore_id = "pve-zfs-pool" # Target datastore for resources (local-lvm).
     data_disks = {
-      "virtio1" = 8 # Use interface and GB value per entry.
+      "scsi1" = 8 # Use interface and GB value per entry.
     }
   }
 }
@@ -45,7 +45,7 @@ docker_hosts = {
   }
   # Docker: Development Hosts -------------------------------- #
   "svr-dkr-dev-01" = {
-    enabled        = true
+    enabled        = false
     enable_prod    = false # True/False - Enable to mark as production host.
     pve_node       = "node1" # Short code (map key) used by global variable 'pve_nodes'.
     pool_id        = "pool-dev"
