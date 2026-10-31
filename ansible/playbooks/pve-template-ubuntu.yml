@@ -1,14 +1,107 @@
 # ======================================================================================== #
 # PLAYBOOK: Proxmox - Template (Ubuntu Server)
-# Deploy/upgrade VM template in Proxmox.
+# Deploy/upgrade Ubuntu VM template in Proxmox.
 # Usage: ansible-playbook -i inventory/main.ini playbooks/pve-template-ubuntu.yml
 # ======================================================================================== #
 
 ---
 - name: "Proxmox: Deploy Template (Ubuntu Server)"
-  #hosts: "{{ groups['proxmox_nodes'][0] }}"
   hosts: proxmox_nodes # Run on all Proxmox nodes. "{{ groups['proxmox_nodes'][0] }}" # Run on first node in group only.
   become: true
   gather_facts: true
-  roles:
-    - proxmox-template-ubuntu
+  vars:
+    os_dist_name: "resolute"
+    os_dist_version: "2604"
+    os_image_file: "{{ os_dist_name }}-server-cloudimg-amd64.img"
+    os_image_url: "https://cloud-images.ubuntu.com/{{ os_dist_name }}/current/{{ os_image_file }}"
+    # Source: https://cloud-images.ubuntu.com/resolute/current/
+    os_image_checksum: "5645d0318ad21f643ebb1ac4567514620e9893380b07b0201fda163baa5b7eb5"
+    ssh_key_path: "../../files/ssh_keys"
+    default_user: "svc-ansible"
+    default_user_public_key: "{{ lookup('ansible.builtin.file', ssh_key_path + '/' + default_user + '.ssh.pub') }}"
+    template_base_id: 9010
+    template_id: "{{ template_base_id + (groups['proxmox_nodes'] | sort).index(inventory_hostname) }}"
+    template_name: "ztmp-ubuntu-{{ os_dist_version }}-{{ os_dist_name }}-cloudinit-{{ (groups['proxmox_nodes'] | sort).index(inventory_hostname) }}"
+    template_bridge: "vlan20"
+    template_disk_size: "16G" # Expand file system to value.
+    image_dest_path: "/var/lib/vz/template/iso" # Final destination for image file.
+    pve_nodes_required_packages:
+      - curl
+      - libguestfs-tools
+
+  tasks:
+    # Pre-Flight Validations ----------------------------------------- #
+
+    - name: "Validation: SSH Key"
+      ansible.builtin.debug:
+        msg: "SSH Key {{ default_user_public_key }}"
+
+    - name: "Generate Default Password"
+      ansible.builtin.set_fact:
+        default_password: "{{ lookup('ansible.builtin.password', '/dev/null length=12 chars=ascii_letters,digits') }}"
+
+    # Proxmox Node Preparation -------------------------------------------------- #
+
+    - name: "Install Required Packages"
+      ansible.builtin.apt:
+        name: "{{ item }}"
+      loop: "{{ pve_nodes_required_packages }}"
+
+    - name: "Download Ubuntu Image"
+      ansible.builtin.get_url:
+        url: "{{ os_image_url }}"
+        dest: "{{ image_dest_path }}/{{ os_image_file }}"
+        checksum: sha256:"{{ os_image_checksum }}"
+        mode: "0644" # Owner: RW, Group: R, Other: R
+
+    # Build Image -------------------------------------------------- #
+
+    # RUN ONCE TASK:
+    # Cannot delete a template created as a linked clone if other VMs or templates still depend on its underlying disk volumes.
+    # Must delete or rebase the child clones first. Ok if using full clones.
+
+    - name: "Check Existing Template"
+      ansible.builtin.command: qm status {{ template_id }}
+      register: existing_template
+      failed_when: false
+      changed_when: false
+
+    - name: "Destroy Existing Template"
+      ansible.builtin.command: qm destroy {{ template_id }} --purge
+      when: existing_template.rc == 0
+
+    # Run provisioning prep tasks: Expand file system, install guest agent, set root password.
+    - name: "Prepare Image File"
+      ansible.builtin.shell: |
+        qemu-img resize "{{ image_dest_path }}/{{ os_image_file }}" "{{ template_disk_size }}"
+        virt-customize -a "{{ image_dest_path }}/{{ os_image_file }}" --install qemu-guest-agent
+        virt-customize -a "{{ image_dest_path }}/{{ os_image_file }}" --root-password password:"{{ default_password }}"
+
+    - name: "Set Automation Account"
+      ansible.builtin.shell: |
+        export NEW_USER="{{ default_user }}"
+        export PUB_KEY="{{ default_user_public_key }}"
+        virt-customize -a "{{ image_dest_path }}/{{ os_image_file }}" \
+          --run-command "useradd -m -s /bin/bash ${NEW_USER}" \
+          --run-command "usermod -aG sudo ${NEW_USER}" \
+          --run-command "echo \"${NEW_USER} ALL=(ALL) NOPASSWD:ALL\" > /etc/sudoers.d/${NEW_USER}" \
+          --run-command "chmod 0440 /etc/sudoers.d/${NEW_USER}" \
+          --ssh-inject "${NEW_USER}":string:"${PUB_KEY}"
+
+    - name: "Deploy Proxmox VM"
+      ansible.builtin.shell: |
+        qm create "{{ template_id }}" --name "{{ template_name }}" \
+          --description "TEMPLATE: Ubuntu Server {{ os_dist_version }} | root: {{ default_password }}" \
+          --tags "template" --ostype l26 --agent 1 --cpu "x86-64-v2-AES" --sockets 1 --cores 2 --memory 1024 --balloon 0 \
+          --vga virtio --net0 virtio,bridge="{{ template_bridge }}" --bios seabios \
+          --scsihw virtio-scsi-pci --boot order=scsi0 \
+          --sata0 local-lvm:cloudinit \
+          --scsi0 local-lvm:0,import-from="{{ image_dest_path }}/{{ os_image_file }}",backup=0,cache=writeback,discard=on
+
+    - name: "Check VM Status"
+      ansible.builtin.shell: sleep 5 && qm status "{{ template_id }}"
+      register: pve_vm_status
+
+    - name: "Convert VM to Template"
+      ansible.builtin.shell: qm template "{{ template_id }}" && sleep 5
+      when: pve_vm_status.rc == 0 # Check return code on VM status command.

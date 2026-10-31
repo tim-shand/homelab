@@ -19,6 +19,7 @@ variable "pve_api_terraform_token" {
 variable "pve_nodes" {
   description = "Map of objects defining Proxmox nodes in the cluster."
   type = map(object({
+    node_id = string
     node_name   = string
     description = string
     datastore_img = string
