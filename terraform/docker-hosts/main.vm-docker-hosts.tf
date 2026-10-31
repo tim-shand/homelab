@@ -20,7 +20,7 @@ locals {
 
 module "docker_host" {
     for_each        = local.docker_hosts_enabled # Loop each definition in var.docker_hosts
-    source          = "../modules/pve-docker-host"
+    source          = "../modules/pve-vm-ubuntu"
     hostname        = each.key
     pve_node        = var.pve_nodes[each.value.pve_node] # Pass in PVE node object to module to access all properties.
     description     = "Docker Host - ${each.value.enable_prod ? "Production" : "Development"}"
