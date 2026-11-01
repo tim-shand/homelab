@@ -32,24 +32,6 @@ variable "pve_pools" {
   type        = map(string)
 }
 
-variable "pve_storage_smb_config" {
-  description = "Object of configuration for cluster level SMB/CIFS storage."
-  type = object({
-    server   = string
-    share_name = string
-    sub_directory = string
-    username = string
-    # Password stored in workflow secrets or local `.tfvars` file.
-    domain   = string
-  })
-}
-
-variable "pve_storage_smb_password" {
-  description = "Password used for authenticating SMB/CIFS share in cluster (see 'pve_storage_smb_config')."
-  type = string
-  sensitive = true
-}
-
 variable "pve_iam_groups" {
   description = "Map of objects defining Proxmox groups and permissions."
   type = map(object({
