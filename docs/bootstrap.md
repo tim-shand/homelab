@@ -140,10 +140,11 @@ The playbook uses the `root` user account to create and configure service accoun
 
 **VM Template:**
   
+- Uses the Ansible service account created in prior bootstrapping step.
 - Downloads Ubuntu Server cloud-init image.
 - Installs guest agent and other required packages.
-- Configures default root password.
-- Converts the VM into VM template.
+- Creates Ansible service account with passwordless sudo access.
+- Converts the VM into VM template for each Proxmox node.
 
 #### Process
 
@@ -163,6 +164,15 @@ ssh-keygen -q -t ed25519 -N "" -C "<ansible_account>" -f "files/ssh_keys/<ansibl
 ```bash
 cd ansible && ansible-playbook -i inventory/main.ini playbooks/bootstrap-proxmox.yml --ask-pass
 ```
+
+5. Execute the Ubuntu VM template playbook to deploy VM template to each Proxmox node.
+
+```bash
+ansible-playbook -i inventory/main.ini playbooks/pve-template-ubuntu.yml
+```
+
+> [!TIP]
+> This same Ansible playbook can be used to update/replace the existing Ubuntu VM template if/when required.
 
 ### 3. Git Server (Gitea)
 

@@ -24,6 +24,16 @@ pve_pools = {
     pool-lab   = "Lab Workloads"
 }
 
+# Removed: Due to issues with mounting CIFS on VM - TBC.
+# pve_storage_smb_config = {
+#     server        = "svr-mgt-fls-01.svr.tshand.net"
+#     share_name    = "shared"
+#     sub_directory = "/Proxmox"
+#     username      = "svc-share"
+#     # Password stored in workflow secrets or local `.tfvars` file.
+#     domain        = "WORKGROUP"
+# }
+
 # Proxmox: Identity & Access ------------------------------------- #
 # Map to new or existing PVE role. Map 'scope' to 'path' in PVE console to determine access level.
 pve_iam_groups = {

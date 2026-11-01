@@ -40,17 +40,17 @@
           Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
         mode: "0644"
 
-- name: "Proxmox: Bootstrap Terraform"
+- name: "Proxmox: Bootstrap Terraform API Account"
   hosts: "{{ groups['proxmox_nodes'][0] }}" # Run on first node in group only.
   become: true
   remote_user: root # Requires `--ask-pass` flag during command execution.
   gather_facts: true # Collects detailed information about target systems to enable dynamic behavior in playbooks.
   vars:
     api_token_name: "api"
-    ssh_key_path: "../../../files/ssh_keys"
+    ssh_key_path: "../../files/ssh_keys"
     service_accounts_pve:
       - name: "svc-terraform@pve"
-        comment: "Service Account: Terraform API"
+        comment: "[Bootstrapped by Ansible] Service Account: Terraform API"
   tasks:
     - name: "Create Proxmox Terraform Service Account"
       ansible.builtin.shell: |
@@ -63,7 +63,7 @@
       ansible.builtin.shell: |
         pveum user token delete "{{ item.name }}" "{{ api_token_name}}" &> /dev/null
         sleep 2
-        pveum user token add "{{ item.name }}" "{{ api_token_name}}" --comment "[Bootstrap Deployment] Created: {{ now(fmt='%Y%m%d_%H%M%S') }}" \
+        pveum user token add "{{ item.name }}" "{{ api_token_name}}" --comment "[Bootstrapped by Ansible] Created: {{ now(fmt='%Y-%m-%d_%H-%M') }}" \
           --privsep 0 --output-format json | jq -r '"\(.["full-tokenid"])=\(.value)"'
       loop: "{{ service_accounts_pve }}"
       register: shell_output_api_token

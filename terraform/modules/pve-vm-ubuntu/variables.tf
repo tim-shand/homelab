@@ -117,7 +117,6 @@ variable "dns_domain" {
 variable "ansible_user" {
   description = "Initial user account for Ansible account."
   type        = string
-  default     = "svc-ansible"
 }
 
 variable "ansible_ssh_public_key" {

@@ -35,3 +35,5 @@ pve_nodes = {
         datastore_vms = "local-lvm" # Storage location for VMs and containers.
     }
 }
+
+ansible_user = "svc-ansible" # Used for default VM user.

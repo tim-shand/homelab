@@ -1,3 +1,4 @@
+# Docker: General Host Configuration -------------------------------- #
 docker_host_config = {
   "prd" = {
     cpu_cores    = 4              # Number of CPU cores assigned.
@@ -22,7 +23,7 @@ docker_host_config = {
 docker_hosts = {
   # Docker: Production Hosts -------------------------------- #
   "svr-dkr-prd-01" = {
-    enabled        = true
+    enabled        = false
     enable_prod    = true # True/False - Enable to mark as production host.
     pve_node       = "node1" # Short code (map key) used by global variable 'pve_nodes' to map with template IDs.
     pool_id        = "pool-prd-1"
@@ -45,7 +46,7 @@ docker_hosts = {
   }
   # Docker: Development Hosts -------------------------------- #
   "svr-dkr-dev-01" = {
-    enabled        = false
+    enabled        = true
     enable_prod    = false # True/False - Enable to mark as production host.
     pve_node       = "node1" # Short code (map key) used by global variable 'pve_nodes'.
     pool_id        = "pool-dev"
