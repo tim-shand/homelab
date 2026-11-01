@@ -6,8 +6,9 @@ Tracks known issues, limitations, and workarounds for this project.
 
 ## 📬 Open Issues
 
-| ID      | Date       | Severity | Stack      | Summary                                                    | Status     |
-| ------- | ---------- | -------- | ---------- | ---------------------------------------------------------- | ---------- |
+| ID      | Date       | Severity | Stack       | Summary                                                    | Status     |
+| ------- | ---------- | -------- | ----------- | ---------------------------------------------------------- | ---------- |
+| ISS-002 | 2026-11-01 | Low      | PVE Cluster | Terraform errors deploying SMB shared storage in cluster.  | New        |
 
 ---
 
