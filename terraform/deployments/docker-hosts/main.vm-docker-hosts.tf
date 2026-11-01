@@ -15,7 +15,7 @@ locals {
       if v.enabled # Only add to map if VM is enabled.
     }
     # Read in the local file containing Ansible user SSH public key.
-    ansible_ssh_public_key = file("${path.module}/../../files/ssh_keys/${var.ansible_user}.ssh.pub")
+    ansible_ssh_public_key = file("${path.module}/../../../files/ssh_keys/${var.ansible_user}.ssh.pub")
 }
 
 module "docker_host" {
