@@ -24,6 +24,7 @@ pve_pools = {
     pool-lab   = "Lab Workloads"
 }
 
+# Removed: Due to issues with mounting CIFS on VM - TBC.
 pve_storage_smb_config = {
     server        = "svr-mgt-fls-01.svr.tshand.net"
     share_name    = "shared"
