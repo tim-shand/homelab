@@ -16,7 +16,7 @@ This stack contains the Terraform configuration used to deploy and manage the co
 
 ## ▶️ Usage
 
-Executed as part of the initial bootstrapping process, and in subsequent workflow runs.
+_Executed as part of the initial bootstrapping process, and in subsequent workflow runs._
 
 1. Prepare local directory for initial run (update modules).
 
