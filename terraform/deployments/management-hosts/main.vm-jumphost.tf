@@ -3,6 +3,7 @@
 # Description:
 # - Deploy VMs for general purpose, management, utility and jump host purposes.
 # Remove local host entry for SSH key: ssh-keygen -R <hostname_or_ip>
+# Usage: terraform -chdir=./terraform/deployments/management-hosts plan -var-file=../../variables/proxmox-global.tfvars
 # ========================================================================================================= #
 
 # Proxmox: Deploy VMs ----------------------------------------------- #
