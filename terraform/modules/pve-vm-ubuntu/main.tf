@@ -1,6 +1,7 @@
 # ================================================================= #
 # MODULE: Proxmox VM (Ubuntu)
 # DESCRIPTION: Create VM from existing Ubuntu VM template.
+# Usage: terraform -chdir=./terraform/deployments/management-hosts plan -var-file=../../variables/proxmox-global.tfvars
 # ================================================================= #
 
 terraform {
@@ -14,6 +15,7 @@ terraform {
 
 # Map nodes to specific base/template VM IDs. Select VM ID based on the node targeted.
 locals  {
+  # Map node to template ID.
   node_template_map = {
     pve1 = 9010 # Ubuntu Cloud-Init template ID on PVE node 1.
     pve2 = 9011 # Ubuntu Cloud-Init template ID on PVE node 2.
