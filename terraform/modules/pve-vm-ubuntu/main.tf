@@ -33,6 +33,7 @@ resource "proxmox_virtual_environment_vm" "main" {
   on_boot         = var.start_on_boot
   started         = var.start_after_creation
   stop_on_destroy = true # Force stop the VM instead of shutting it down when destroying.
+  pool_id         = var.pool_id # Used to group VMs into pools for patching and backups.
   clone {
       full  = true
       vm_id = local.node_template_map[var.pve_node.node_id] # Get template ID based on mapping on PVE node. #var.template_id
