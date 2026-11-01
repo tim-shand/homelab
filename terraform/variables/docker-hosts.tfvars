@@ -46,7 +46,7 @@ docker_hosts = {
   }
   # Docker: Development Hosts -------------------------------- #
   "svr-dkr-dev-01" = {
-    enabled        = false
+    enabled        = true
     enable_prod    = false # True/False - Enable to mark as production host.
     pve_node       = "node1" # Short code (map key) used by global variable 'pve_nodes'.
     pool_id        = "pool-dev"

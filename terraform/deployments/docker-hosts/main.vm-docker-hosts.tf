@@ -23,8 +23,8 @@ module "docker_host" {
     source          = "../../modules/pve-vm-ubuntu"
     hostname        = each.key
     pve_node        = var.pve_nodes[each.value.pve_node] # Pass in PVE node object to module to access all properties.
-    description     = "Docker Host - ${each.value.enable_prod ? "Production" : "Development"}"
-    tags            = ["docker","env-${each.value.enable_prod ? "prd" : "dev"}"]
+    description     = "Docker Host: ${each.value.enable_prod ? "Production" : "Development"}"
+    tags            = ["app-docker","env-${each.value.enable_prod ? "prd" : "dev"}"]
     pool_id         = each.value.pool_id
     cpu_cores       = var.docker_host_config[each.value.enable_prod ? "prd" : "dev"].cpu_cores
     memory_mb       = var.docker_host_config[each.value.enable_prod ? "prd" : "dev"].memory_mb
