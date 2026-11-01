@@ -2,7 +2,7 @@
 # Proxmox: Docker Host VMs
 # Description:
 # - Deploy Docker VMs using Ubuntu cloud-init template.
-# terraform -chdir=./terraform/docker-hosts plan -var-file=../../variables/proxmox-global.tfvars -var-file=../../variables/docker-hosts.tfvars
+# terraform -chdir=./terraform/deployments/docker-hosts plan -var-file=../../variables/proxmox-global.tfvars -var-file=../../variables/docker-hosts.tfvars
 # Remove local host entry for SSH key: ssh-keygen -R <hostname_or_ip>
 # ========================================================================================================= #
 
