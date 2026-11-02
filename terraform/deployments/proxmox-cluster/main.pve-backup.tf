@@ -11,7 +11,7 @@ locals {
   # Build new map of pools to backup, only if backup is enabled.
   pve_backup_pools_enabled = {
     for k,v in var.pve_backup_pools : k => v
-    if v.enable
+    if v.enabled
   }
 }
 
