@@ -5,6 +5,7 @@
 # - Must be updated in each root module when changes are needed.
 # =============================================================== #
 
+# AUTHENTICATION ------------------------------------------- #
 variable "pve_api_terraform_user" {
   description = "Proxmox API service account for Terraform."
   type        = string
@@ -15,6 +16,14 @@ variable "pve_api_terraform_token" {
   type        = string
   sensitive   = true
 }
+
+variable "ansible_user" {
+  description = "Username of the Ansible service account."
+  type = string
+  default = "svc-ansible"
+}
+
+# PROXMOX CLUSTER ------------------------------------------- #
 
 variable "pve_nodes" {
   description = "Map of objects defining Proxmox nodes in the cluster."
