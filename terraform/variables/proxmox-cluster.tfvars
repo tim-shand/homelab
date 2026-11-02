@@ -24,15 +24,27 @@ pve_pools = {
     pool-lab   = "Lab Workloads"
 }
 
-# Removed: Due to issues with mounting CIFS on VM - TBC.
-# pve_storage_smb_config = {
-#     server        = "svr-mgt-fls-01.svr.tshand.net"
-#     share_name    = "shared"
-#     sub_directory = "/Proxmox"
-#     username      = "svc-share"
-#     # Password stored in workflow secrets or local `.tfvars` file.
-#     domain        = "WORKGROUP"
-# }
+# Proxmox: Backup ------------------------------------- #
+pve_backup_pools = {
+  "pool-prd-1" = {
+    enabled  = true
+    job_name = "backup_daily_0200_pool-prd-1"
+    schedule = "*-*-* 02:00" # Daily at 02:00.
+    datastore = "pve-smb-shared"
+  }
+  "pool-prd-2" = {
+    enabled  = true
+    job_name = "backup_daily_0300_pool-prd-2"
+    schedule = "*-*-* 03:00" # Daily at 03:00.
+    datastore = "pve-smb-shared"
+  }
+  "pool-dev" = {
+    enabled  = false # Disabled.
+    job_name = "backup_daily_0300_pool-dev"
+    schedule = "*-*-* 03:00" # Daily at 03:00.
+    datastore = "local"
+  }
+}
 
 # Proxmox: Identity & Access ------------------------------------- #
 # Map to new or existing PVE role. Map 'scope' to 'path' in PVE console to determine access level.
