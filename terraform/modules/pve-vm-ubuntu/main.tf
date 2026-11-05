@@ -38,7 +38,7 @@ resource "proxmox_virtual_environment_vm" "main" {
   started         = var.start_after_creation
   stop_on_destroy = true # Force stop the VM instead of shutting it down when destroying.
   pool_id         = var.pool_id # Used to group VMs into pools for patching and backups.
-  # Machine Config ----------------------------------- #
+  # Machine Config
   machine         = "q35"  # Machine type for the VM, using QEMU machine type for UEFI support.
   bios            = "ovmf" # Use OVMF BIOS for UEFI support, required for secure boot.
   operating_system {
@@ -54,7 +54,7 @@ resource "proxmox_virtual_environment_vm" "main" {
   network_device {
     bridge = var.network_bridge
   }
-  # Compute ----------------------------------- #
+  # Compute
   cpu {
     cores = var.cpu_cores
     type  = "x86-64-v2-AES" # Most compatible across different PVE nodes.
@@ -62,7 +62,7 @@ resource "proxmox_virtual_environment_vm" "main" {
   memory {
     dedicated = var.memory_mb
   }
-  # Disks ---------------------------------------- #
+  # Disks
   efi_disk {
     datastore_id = var.disk_datastore
     type         = "4m" # Disk type for EFI disk.
@@ -86,8 +86,7 @@ resource "proxmox_virtual_environment_vm" "main" {
       discard = "on"
     }
   }
-
-  # Cloud-Init ------------------------------------ #
+  # Cloud-Init
   initialization {
     upgrade      = false # Disable auto-update for packages on first boot. This can lock up Apt and prevent Ansible processes.
     datastore_id = var.disk_datastore
