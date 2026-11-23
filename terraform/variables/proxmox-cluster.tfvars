@@ -2,6 +2,8 @@
 # VARIABLES: Proxmox - Cluster Wide Definitions
 # =============================================================== #
 
+# Proxmox: Cluster Configuration ------------------------------------- #
+
 pve_cluster_options = {
     description = "Proxmox Cluster: Managed by Terraform\n"
     language    = "en"
@@ -15,38 +17,34 @@ pve_cluster_options = {
 }
 
 # Proxmox: Resource Pools ------------------------------------- #
+
 pve_pools = {
     pool-prd-1 = "Production Workloads 1"
     pool-prd-2 = "Production Workloads 2"
-    pool-stg   = "Staging Workloads"
     pool-dev   = "Development Workloads"
     pool-tst   = "Test Workloads"
     pool-lab   = "Lab Workloads"
 }
 
 # Proxmox: Backup ------------------------------------- #
+
 pve_backup_pools = {
   "pool-prd-1" = {
-    enabled  = true
-    job_name = "backup_daily_0200_pool-prd-1"
-    schedule = "*-*-* 02:00" # Daily at 02:00.
+    enabled   = true
+    job_name  = "pool-prd-1_daily_0200"
+    schedule  = "*-*-* 02:00" # Daily at 02:00.
     datastore = "pve-smb-shared"
   }
   "pool-prd-2" = {
-    enabled  = true
-    job_name = "backup_daily_0300_pool-prd-2"
-    schedule = "*-*-* 03:00" # Daily at 03:00.
+    enabled   = true
+    job_name  = "pool-prd-2_daily_0400"
+    schedule  = "*-*-* 04:00" # Daily at 04:00.
     datastore = "pve-smb-shared"
-  }
-  "pool-dev" = {
-    enabled  = false # Disabled.
-    job_name = "backup_daily_0300_pool-dev"
-    schedule = "*-*-* 03:00" # Daily at 03:00.
-    datastore = "local"
   }
 }
 
 # Proxmox: Identity & Access ------------------------------------- #
+
 # Map to new or existing PVE role. Map 'scope' to 'path' in PVE console to determine access level.
 pve_iam_groups = {
     "grp-pve-admins"     = {
@@ -91,54 +89,23 @@ pve_iam_users_svc = {
     }
 }
 
-# =============================================================== #
-# VARIABLES: Proxmox - Software Defined Networking
-# =============================================================== #
+# Proxmox: Storage ------------------------------------- #
 
-# Proxmox SDN: Zones (Simple) -------------------------------------- #
-pve_sdn_zones_simple = {
-    "zn0intl" = {
-        enabled = true
-        mtu     = 1500
-        ipam    = "pve"
-    }
-}
-
-# Proxmox SDN: Zones (VLAN) -------------------------------------- #
-pve_sdn_zones_vlan = {
-    "zn0vlan" = {
-        enabled = true
-        mtu     = 1500
-        ipam    = "pve"
-    }
-}
-
-# Proxmox SDN: VNets -------------------------------------- #
-pve_sdn_vnets = {
-    "vlan10" = {
-        alias   = "mgt10"
-        zone_id = "zn0vlan"        
-        vlan_tag      = 10 # Set to use this tag value at the VNet level, rather than individual VMs.
-        isolate_ports = false # If enabled, will prevent comms between devices on same VNet.
-        vlan_aware    = false # Set to false, with 'vlan_tag' defined to force whole VNet to use VLAN tagging.
-        subnets = {
-            "mgt10_1" = {
-                cidr_address = "10.0.10.0/24"
-                gateway      = "10.0.10.254"
-            }
-        }
-    }
-    "vlan20" = {
-        alias   = "svr20"
-        zone_id = "zn0vlan"
-        vlan_tag      = 20
-        isolate_ports = false
-        vlan_aware    = false
-        subnets = {
-            "svr20_1" = {
-                cidr_address = "10.0.20.0/24"
-                gateway      = "10.0.20.254"
-            }
+pve_storage_nfs = {
+    "shared-nfs-01" = {
+        enabled   = true
+        all_nodes = true              # Enable the storage share for all nodes (cancels variable 'nodes').
+        nodes     = []                 # List of node names to if only required on specific nodes.
+        server    = "10.0.10.10"       # The IP address or DNS name of the NFS server.
+        export    = "/exports/proxmox" # The path of the NFS export.
+        options   = "vers=4.2"         # Version of NFS protocol to use (3, 4, 4.1, 4.2).
+        content   = ["images","iso","backup","import","rootdir","snippets","vztmpl"]
+        backups = {
+            max_protected_backups = 5  # The maximum number of protected backups per guest. Use '-1' for unlimited.
+            keep_hourly           = 12 # The number of hourly backups to keep. Older backups will be removed.
+            keep_daily            = 7
+            keep_weekly           = 4
+            keep_monthly          = 3
         }
     }
 }

@@ -19,9 +19,9 @@ resource "proxmox_cluster_options" "main" {
 
 # Proxmox: Node Details ------------------------------------------- #
 resource "proxmox_node_config" "main" {
-  for_each    = var.pve_nodes
-  node_name   = each.value.node_name
-  description = each.value.description
+  for_each    = toset(data.proxmox_virtual_environment_nodes.pve_nodes.names)
+  node_name   = each.value
+  description = "[Managed by Terraform] Proxmox Node (${each.value})"
 }
 
 # Proxmox: Resource Pools ------------------------------------------- #

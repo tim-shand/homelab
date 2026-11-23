@@ -2,10 +2,9 @@
 # Proxmox: Backup Configuration
 # Description:
 # - Manages Proxmox VE Cluster backup schedules and configuration.
+# - Utilizes pool-based backup job schedules only for simplicity.
 # https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/backup_job
 # ========================================================================================================= #
-
-# Backup Schedule ----------------------------------------------- #
 
 locals {
   # Build new map of pools to backup, only if backup is enabled.
@@ -15,6 +14,7 @@ locals {
   }
 }
 
+# Proxmox: Backup Schedules ----------------------------------------------- #
 resource "proxmox_backup_job" "main" {
   for_each = local.pve_backup_pools_enabled
   id       = each.value.job_name
