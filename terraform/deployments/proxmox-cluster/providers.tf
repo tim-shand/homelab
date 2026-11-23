@@ -19,8 +19,8 @@ terraform {
 
 # Configuration for Proxmox provider, using variables for flexibility and security.
 provider "proxmox" {
-  endpoint  = var.pve_api_endpoint_url # API endpoint for Proxmox cluster, using first host in cluster.
-  api_token = "${var.pve_api_terraform_user}=${var.pve_api_terraform_token}" # Pass in variable to avoid hard-coding.
+  endpoint  = var.pve_api_url # API endpoint for Proxmox cluster, using first host in cluster.
+  api_token = "${var.pve_api_user}=${var.pve_api_token}" # Pass in variable to avoid hard-coding.
   # Disable TLS certificate verification is required when using self-signed certificate.
   insecure  = true
 }

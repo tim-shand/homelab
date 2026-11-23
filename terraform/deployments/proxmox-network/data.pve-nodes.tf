@@ -23,3 +23,8 @@ locals {
     }
   }
 }
+
+output "pve_nodes" {
+    description = "Output map of Proxmox node details."
+    value = local.pve_nodes
+}
