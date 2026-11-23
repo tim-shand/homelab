@@ -75,12 +75,12 @@ variable "pve_iam_users_svc" {
 
 # Proxmox: Backup Schedules ------------------------------------------------- #
 
-# variable "pve_backup_pools" {
-#   description = "Map of objects containing resource pools to backup."
-#   type = map(object({
-#     enabled = bool
-#     job_name = string
-#     schedule = string
-#     datastore = string
-#   }))
-# }
+variable "pve_backup_pools" {
+  description = "Map of objects containing resource pools to backup."
+  type = map(object({
+    enabled = bool
+    job_name = string
+    schedule = string
+    datastore = string
+  }))
+}

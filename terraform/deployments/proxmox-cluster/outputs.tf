@@ -11,3 +11,18 @@ output "pve_users_sensitive" {
 #   description = "Output of PVE datastores."
 #   value = data.proxmox_datastores.pve_nodes
 # }
+
+output "pve_backup_jobs" {
+  description = "Output map of Proxmox pool-based backup job schedules."
+  value = {
+    for k,v in proxmox_backup_job.main : k => {
+      id            = v.id
+      comment       = v.comment
+      mode          = v.mode
+      pool          = v.pool
+      repeat_missed = v.repeat_missed
+      schedule      = v.schedule
+      storage       = v.storage
+    }
+  }
+}

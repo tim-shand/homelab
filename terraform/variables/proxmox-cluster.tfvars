@@ -2,6 +2,8 @@
 # VARIABLES: Proxmox - Cluster Wide Definitions
 # =============================================================== #
 
+# Proxmox: Cluster Configuration ------------------------------------- #
+
 pve_cluster_options = {
     description = "Proxmox Cluster: Managed by Terraform\n"
     language    = "en"
@@ -15,6 +17,7 @@ pve_cluster_options = {
 }
 
 # Proxmox: Resource Pools ------------------------------------- #
+
 pve_pools = {
     pool-prd-1 = "Production Workloads 1"
     pool-prd-2 = "Production Workloads 2"
@@ -24,22 +27,24 @@ pve_pools = {
 }
 
 # Proxmox: Backup ------------------------------------- #
-# pve_backup_pools = {
-#   "pool-prd-1" = {
-#     enabled  = true
-#     job_name = "backup_daily_0200_pool-prd-1"
-#     schedule = "*-*-* 02:00" # Daily at 02:00.
-#     datastore = "pve-smb-shared"
-#   }
-#   "pool-prd-2" = {
-#     enabled  = true
-#     job_name = "backup_daily_0300_pool-prd-2"
-#     schedule = "*-*-* 03:00" # Daily at 03:00.
-#     datastore = "pve-smb-shared"
-#   }
-# }
+
+pve_backup_pools = {
+  "pool-prd-1" = {
+    enabled   = true
+    job_name  = "pool-prd-1_daily_0200"
+    schedule  = "*-*-* 02:00" # Daily at 02:00.
+    datastore = "pve-smb-shared"
+  }
+  "pool-prd-2" = {
+    enabled   = true
+    job_name  = "pool-prd-2_daily_0400"
+    schedule  = "*-*-* 04:00" # Daily at 04:00.
+    datastore = "pve-smb-shared"
+  }
+}
 
 # Proxmox: Identity & Access ------------------------------------- #
+
 # Map to new or existing PVE role. Map 'scope' to 'path' in PVE console to determine access level.
 pve_iam_groups = {
     "grp-pve-admins"     = {
