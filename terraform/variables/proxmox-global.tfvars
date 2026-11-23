@@ -3,10 +3,10 @@
 # =============================================================== #
 
 # Proxmox: Networking Configuration
-pve_network = {
-    bridge_cluster = "vmbr0"
-    bridge_guest   = "vmbr1"
-}
+# pve_network = {
+#     bridge_cluster = "vmbr0"
+#     bridge_guest   = "vmbr1"
+# }
 
 # # Proxmox: Node Configuration
 # pve_nodes = {
