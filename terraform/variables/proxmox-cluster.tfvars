@@ -88,3 +88,24 @@ pve_iam_users_svc = {
         groups = ["grp-svc-monitoring"]
     }
 }
+
+# Proxmox: Storage ------------------------------------- #
+
+pve_storage_nfs = {
+    "shared-nfs-01" = {
+        enabled   = true
+        all_nodes = true              # Enable the storage share for all nodes (cancels variable 'nodes').
+        nodes     = []                 # List of node names to if only required on specific nodes.
+        server    = "10.0.10.10"       # The IP address or DNS name of the NFS server.
+        export    = "/exports/proxmox" # The path of the NFS export.
+        options   = "vers=4.2"         # Version of NFS protocol to use (3, 4, 4.1, 4.2).
+        content   = ["images","iso","backup","import","rootdir","snippets","vztmpl"]
+        backups = {
+            max_protected_backups = 5  # The maximum number of protected backups per guest. Use '-1' for unlimited.
+            keep_hourly           = 12 # The number of hourly backups to keep. Older backups will be removed.
+            keep_daily            = 7
+            keep_weekly           = 4
+            keep_monthly          = 3
+        }
+    }
+}

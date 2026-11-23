@@ -52,6 +52,8 @@ variable "pve_pools" {
   type        = map(string)
 }
 
+# Proxmox: Identity ------------------------------------------------- #
+
 variable "pve_iam_groups" {
   description = "Map of objects defining Proxmox groups and permissions."
   type = map(object({
@@ -82,5 +84,27 @@ variable "pve_backup_pools" {
     job_name = string
     schedule = string
     datastore = string
+  }))
+}
+
+# Proxmox: Storage Configuration ------------------------------------------------- #
+
+variable "pve_storage_nfs" {
+  description = "Map of objects defining NFS storage in Proxmox cluster."
+  type = map(object({
+    enabled   = bool
+    all_nodes = bool
+    nodes     = list(string)
+    server    = string
+    export    = string
+    options   = string
+    content   = list(string)
+    backups   = object({
+      max_protected_backups = number  # The maximum number of protected backups per guest. Use '-1' for unlimited.
+      keep_hourly           = number # The number of hourly backups to keep. Older backups will be removed.
+      keep_daily            = number
+      keep_weekly           = number
+      keep_monthly          = number
+    })
   }))
 }
