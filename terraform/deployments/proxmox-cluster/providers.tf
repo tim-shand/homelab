@@ -9,13 +9,18 @@ terraform {
       source  = "bpg/proxmox"
       version = "~> 0.119.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.9"
+    }
   }
   #backend "azurerm" {} # Leave empty, to be inserted during for workflow.
 }
 
 # Configuration for Proxmox provider, using variables for flexibility and security.
 provider "proxmox" {
-  endpoint  = "https://${var.pve_nodes["node1"].ip_address}:8006/api2/json" # API endpoint for Proxmox cluster, using first host in cluster.
-  api_token = "${var.pve_api_terraform_user}=${var.pve_api_terraform_token}"        # Pass in variable to avoid hard-coding.
-  insecure  = true                                                                  # Disable TLS certificate verification is required when using self-signed certificate.
+  endpoint  = var.pve_api_endpoint_url # API endpoint for Proxmox cluster, using first host in cluster.
+  api_token = "${var.pve_api_terraform_user}=${var.pve_api_terraform_token}" # Pass in variable to avoid hard-coding.
+  # Disable TLS certificate verification is required when using self-signed certificate.
+  insecure  = true
 }

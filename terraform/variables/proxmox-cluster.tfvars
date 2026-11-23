@@ -18,33 +18,26 @@ pve_cluster_options = {
 pve_pools = {
     pool-prd-1 = "Production Workloads 1"
     pool-prd-2 = "Production Workloads 2"
-    pool-stg   = "Staging Workloads"
     pool-dev   = "Development Workloads"
     pool-tst   = "Test Workloads"
     pool-lab   = "Lab Workloads"
 }
 
 # Proxmox: Backup ------------------------------------- #
-pve_backup_pools = {
-  "pool-prd-1" = {
-    enabled  = true
-    job_name = "backup_daily_0200_pool-prd-1"
-    schedule = "*-*-* 02:00" # Daily at 02:00.
-    datastore = "pve-smb-shared"
-  }
-  "pool-prd-2" = {
-    enabled  = true
-    job_name = "backup_daily_0300_pool-prd-2"
-    schedule = "*-*-* 03:00" # Daily at 03:00.
-    datastore = "pve-smb-shared"
-  }
-  "pool-dev" = {
-    enabled  = false # Disabled.
-    job_name = "backup_daily_0300_pool-dev"
-    schedule = "*-*-* 03:00" # Daily at 03:00.
-    datastore = "local"
-  }
-}
+# pve_backup_pools = {
+#   "pool-prd-1" = {
+#     enabled  = true
+#     job_name = "backup_daily_0200_pool-prd-1"
+#     schedule = "*-*-* 02:00" # Daily at 02:00.
+#     datastore = "pve-smb-shared"
+#   }
+#   "pool-prd-2" = {
+#     enabled  = true
+#     job_name = "backup_daily_0300_pool-prd-2"
+#     schedule = "*-*-* 03:00" # Daily at 03:00.
+#     datastore = "pve-smb-shared"
+#   }
+# }
 
 # Proxmox: Identity & Access ------------------------------------- #
 # Map to new or existing PVE role. Map 'scope' to 'path' in PVE console to determine access level.
@@ -94,6 +87,12 @@ pve_iam_users_svc = {
 # =============================================================== #
 # VARIABLES: Proxmox - Software Defined Networking
 # =============================================================== #
+
+# Proxmox: Networking Configuration
+pve_network = {
+    bridge_cluster = "vmbr0"
+    bridge_guest   = "vmbr1"
+}
 
 # Proxmox SDN: Zones (Simple) -------------------------------------- #
 pve_sdn_zones_simple = {
